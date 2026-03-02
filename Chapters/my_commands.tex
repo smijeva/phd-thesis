@@ -1,0 +1,105 @@
+% General
+\newcommand{\Nats}{\ensuremath{\mathbb{N}}}
+\newcommand{\NatsZero}{\ensuremath{\mathbb{N}_0}}
+\newcommand{\bools}{\ensuremath{\mathbb{B}}} % Set of Boolean values (true or false)
+\newcommand{\unspecified}{\ensuremath{{*}}} % Synonym for undefined
+
+% % Networks - common
+\newcommand{\STG}{\ensuremath{\text{\upshape STG}}} % State Transition Graph
+% \newcommand{\oscil}{\ensuremath{\rightleftarrows}} % A symbol for oscillation (phenotype)
+\newcommand{\oscil}{\ensuremath{\circlearrowleft}}
+\newcommand{\oscillation}{\oscil}
+\newcommand{\stability}{\ensuremath{\odot}}
+\newcommand{\disorder}{\ensuremath{\rightleftarrows}}
+
+\newcommand{\var}[1]{\texttt{#1}} % A font for variable names
+\newcommand{\vars}{\ensuremath{\mathbb{X}}}
+\newcommand{\async}{\ensuremath{\textsc{STG}}}
+\newcommand{\vertices}{\ensuremath{\mathbb{V}}}
+\newcommand{\edges}{\ensuremath{\mathbb{E}}}
+\newcommand{\attractor}{\ensuremath{A}}
+\newcommand{\allAttractors}{\ensuremath{\mathbb{A}}}
+\newcommand{\subspace}{S}
+\newcommand{\character}{\ensuremath{\mathcal{U}}}
+\newcommand{\trait}{\ensuremath{\mathcal{T}}}
+\newcommand{\phenotype}{\ensuremath{\phi}}
+\newcommand{\essential}{\ensuremath{\mathcal{E}}}
+\newcommand{\observable}{\essential}
+\newcommand{\activates}{\ensuremath{\mathcal{U}}}
+\newcommand{\inhibits}{\ensuremath{\mathcal{D}}}
+\newcommand{\statesOf}[1]{\ensuremath{\mathrm{\Pi}(#1)}}
+\newcommand{\weakBasin}[1]{\ensuremath{\textsc{WB}(#1)}}
+\newcommand{\strongBasin}[1]{\ensuremath{\textsc{SB}(#1)}}
+
+\newcommand{\asyncOf}[1]{\ensuremath{Async(#1)}}
+
+\newcommand{\SB}{\ensuremath{\mathbb{SB}}}
+\newcommand{\WB}{\ensuremath{\mathbb{WB}}}
+
+% % Regulatory networks
+\newcommand{\rnMath}{\ensuremath{\mathcal{G}}}
+
+% % Boolean networks (fully specified)
+\newcommand{\fun}{f}
+\newcommand{\BN}[1]{BN#1} % Boolean Network (text)
+\newcommand{\bnMath}{\ensuremath{\mathcal{N}}} % Boolean network
+\newcommand{\run}{\ensuremath{\pi}} % Run (trajectory) of e.g. BN
+\newcommand{\allRuns}{\ensuremath{\Pi}} % Run (trajectory) of e.g. BN
+
+
+% % Partially specified Boolean networks
+\newcommand{\PBN}[1]{PSBN#1} % Partially specified Boolean Network (text)
+\newcommand{\funSymbol}{\ensuremath{g}}
+\newcommand{\allFunSymbols}{\ensuremath{\mathbb{G}}}
+\newcommand{\params}{\allFunSymbols}
+\newcommand{\expr}{E}
+\newcommand{\pbnMath}{\ensuremath{\mathcal{M}}}
+\newcommand{\interpretation}{\ensuremath{I}}
+\newcommand{\interpretationSet}{\ensuremath{\mathcal{I}}}
+\newcommand{\allInterpretations}{\ensuremath{\mathbb{I}}}
+
+% % Control related
+\newcommand{\perturbation}{\ensuremath{Q}}
+\newcommand{\allPerturbations}{\ensuremath{\mathbb{Q}}}
+\newcommand{\robustness}{\ensuremath{\rho}}
+\newcommand{\perturbedAsync}{\ensuremath{\textsc{PerturbedSTG}}}
+\newcommand{\osp}{\ensuremath{\textsc{OSP}}}
+\newcommand{\pertApply}{\ensuremath{\delta}}
+\newcommand{\size}{\ensuremath{\text{Size}}}
+\newcommand{\controlRelation}{\ensuremath{\mathbb{C}}}
+\newcommand{\emptyPerturbation}{\o} % An empty perturbation
+
+
+% % Algorithms related
+\newcommand{\fwd}{\ensuremath{\textsc{Fwd}}}
+\newcommand{\bwd}{\ensuremath{\textsc{Bwd}}}
+\newcommand{\fwdClosed}{\ensuremath{\textsc{Trap}}}
+\newcommand{\pre}{\textsc{Pre}}
+\newcommand{\post}{\textsc{Post}}
+\newcommand{\findAttractors}{\ensuremath{\textsc{FindAtts}}}
+
+% % others
+\newcommand{\feature}{\ensuremath{F}}
+\newcommand{\shorteq}{\texttt{=}}
+\newcommand{\MC}[1]{\multicolumn{1}{c|}{#1}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\varhl}[1]{\texttt{\hl{#1}}} % A highlight for variable names
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% FIGURE TOOLS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%helper functions, no direct use
+
+\newlength\fullmarginwidth
+\fullmarginwidth=\marginparwidth
+\advance\fullmarginwidth by \marginparsep
+
+\newlength\fullwidth
+\fullwidth=\textwidth
+\advance\fullwidth by \fullmarginwidth
+
+
+

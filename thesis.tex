@@ -1,0 +1,214 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Classicthesis Typographic Thesis
+% LaTeX Template
+% Version 1.4 (1/1/16)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% André Miede (http://www.miede.de) with commenting modifications by:
+% Vel (vel@LaTeXTemplates.com)
+%
+% License:
+% GNU General Public License (v2)
+%
+% General Tips:
+% 1) Make sure to edit the classicthesis-config.file
+% 2) New enumeration (A., B., C., etc in small caps): \begin{aenumerate} \end{aenumerate}
+% 3) For margin notes: \marginpar or \graffito{}
+% 4) Do not use bold fonts in this style, it is designed around them
+% 5) Use tables as in the examples
+% 6) See classicthesis-preamble.sty for useful commands
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[
+		twoside,openright,titlepage,numbers=noenddot,headinclude,%1headlines,
+	 	footinclude=true,cleardoublepage=empty,
+		dottedtoc, % Make page numbers in the table of contents flushed right with dots leading to them
+		BCOR=5mm,paper=a4,fontsize=11pt, % Binding correction, paper type and font size
+		american, % Languages, change this to your language(s)
+		]{scrreprt} 
+     
+     %\overfullrule=1mm
+                
+% Includes the file which contains all the document configurations and packages - make sure to edit this file
+\input{classicthesis-config}
+
+\addbibresource{Bibliography.bib} % The file housing your bibliography
+%\addbibresource[label=ownpubs]{Self_Publications.bib} % Uncomment for optional self-publications
+
+\DeclareMathAlphabet{\mymathbb}{U}{BOONDOX-ds}{m}{n}
+\SetKwRepeat{Do}{do}{while}
+\SetKw{KwBy}{by}
+
+\newcommand{\PrimaryColor}[1]{{\color{Maroon} #1}}
+
+\newcommand{\axisStyle}[2]{title style={at={(0.5,1.1)},anchor=north, yshift=-0.1},
+    title=#1,
+  x tick label style={/pgf/number format/fixed},
+  ymajorgrids,
+  ymin=0.0,
+  ymax=1.0,
+  ytick={0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0},  
+    % nodes near coords,
+    width=8.5cm,
+    height=7cm,
+  ylabel=#2 robustness,
+  xlabel=Size,
+    enlarge y limits={0.1,upper},
+    enlarge x limits=0.15,    
+    legend pos=south east,
+  ybar=1.4pt,
+    bar width=10pt,}
+
+% \newtheorem{problem2}{Problem}
+% \newtheorem{definition}{Definition}
+
+% \newcommand{\centered}[1]{\begin{tabular}{l} #1 \end{tabular}}
+
+\NewDocumentCommand{\rot}{O{60} O{1em} m}{\makebox[#2][l]{\rotatebox{#1}{#3}}}%
+
+% Uncomment the following line to disable todos
+\usepackage[disable]{todonotes}
+% \usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage{ragged2e}
+\usepackage{longtable}
+\usepackage{lscape}
+\usepackage{marginnote}
+\usepackage{siunitx}
+\usepackage{tabularx}
+\usepackage[export]{adjustbox}
+\usepackage{microtype} 
+\usepackage{cleveref}
+\usepackage{multirow}
+\usepackage{soul,xcolor}
+\usepackage{color,colortbl}
+\definecolor{Gray}{gray}{0.9}
+
+\usepackage[acronym]{glossaries}
+\makeglossaries
+\newacronym{bn}{BN}{Boolean network}
+\newacronym{psbn}{PSBN}{partially specified Boolean network}
+
+% \usepackage{subcaption}
+% \usepackage{caption}
+% \usepackage{graphicx}
+
+\renewcommand{\algorithmautorefname}{Algorithm}
+\newcommand{\exampleautorefname}{Example}
+\newcommand{\definitionautorefname}{Definition}
+
+
+\input{Chapters/my_commands}
+
+\begin{document}
+
+\frenchspacing % Reduces space after periods to make text more compact
+
+\raggedbottom % Makes all pages the height of the text on that page
+
+%\selectlanguage{american} % Select your default language - e.g. american or ngerman
+
+%\renewcommand*{\bibname}{new name} % Uncomment to change the name of the bibliography
+%\setbibpreamble{} % Uncomment to include a preamble to the bibliography - some text before the reference list starts
+
+\pagenumbering{roman} % Roman page numbering prior to the start of the thesis content (i, ii, iii, etc)
+
+\pagestyle{plain} % Suppress headers for the pre-content pages
+
+%----------------------------------------------------------------------------------------
+%	PRE-CONTENT THESIS PAGES
+%----------------------------------------------------------------------------------------
+
+\include{FrontBackMatter/Titlepage} % Main title page
+
+\include{FrontBackMatter/Titleback} % Back of the title page
+
+% \cleardoublepage\include{FrontBackMatter/Dedication} % Dedication page - uncomment and create a Dedication.tex to include a dedication -> moticko? :D
+
+\cleardoublepage\include{FrontBackMatter/Declaration} % Declaration page
+
+%\cleardoublepage\include{FrontBackMatter/Foreword} % Uncomment and create a Foreword.tex to include a foreword
+
+\cleardoublepage\include{FrontBackMatter/Abstract} % Abstract page
+
+\cleardoublepage\include{FrontBackMatter/Publications} % Publications from the thesis page
+
+% \cleardoublepage\include{FrontBackMatter/ReproducibilityStatement} % Links to experiments and benchmarks
+
+\cleardoublepage\include{FrontBackMatter/Acknowledgments} % Acknowledgements page
+
+\cleardoublepage
+
+\pagestyle{scrheadings} % Show chapter titles as headings
+
+\cleardoublepage\include{FrontBackMatter/Contents} % Contents, list of figures/tables/listings and acronyms 
+
+\cleardoublepage
+
+\pagenumbering{arabic} % Arabic page numbering for thesis content (1, 2, 3, etc)
+%\setcounter{page}{90} % Uncomment to manually start the page counter at an arbitrary value (for example if you wish to count the pre-content pages in the page count)
+
+\cleardoublepage % Avoids problems with pdfbookmark 
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - CHAPTERS
+%----------------------------------------------------------------------------------------
+
+\include{Chapters/Introduction}
+
+% \include{Chapters/Preliminaries}
+
+% \include{Chapters/StateOfTheArt}
+ 
+% \include{Chapters/SourceTargetControl}
+
+% \include{Chapters/PhenotypeControl}
+
+\include{Chapters/Software}
+
+% \include{Chapters/Applications}
+
+\cleardoublepage
+
+% Visually separate conclusions from other chapters in TOC
+
+\chapter*{Conclusions}
+\addcontentsline{toc}{chapter}{\textsc{Conclusions}}
+\addtocontents{toc}{\protect\bigskip}
+
+Conclude here...
+
+\cleardoublepage
+
+%----------------------------------------------------------------------------------------
+%	THESIS CONTENT - APPENDICES
+%----------------------------------------------------------------------------------------
+
+\appendix
+
+
+\include{Chapters/AppendixNotation}
+
+\include{Chapters/AppendixDigitals}
+
+%----------------------------------------------------------------------------------------
+%	POST-CONTENT THESIS PAGES
+%----------------------------------------------------------------------------------------
+
+\cleardoublepage\include{FrontBackMatter/Bibliography} % Bibliography
+
+%\cleardoublepage\include{FrontBackMatter/Declaration} % Declaration
+
+%\cleardoublepage\include{FrontBackMatter/Colophon} % Colophon
+
+%----------------------------------------------------------------------------------------
+
+\end{document}

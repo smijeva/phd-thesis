@@ -1,0 +1,120 @@
+% Visually separate introduction from other front matter items
+% \addtocontents{toc}{\protect\bigskip}
+
+\chapter{Introduction}
+% \addcontentsline{toc}{chapter}{\textsc{Introduction}}
+\label{chapter:introduction}
+
+% Control vs. sys. biology
+An attractive challenge for many scientific fields is finding ways to influence systems, so they behave as desired. In reality, this can be very difficult as there might be many different ways to interfere with the systems and at the same time, some interventions can be more efficient than others. Thanks to formal methods such as control or parameter synthesis we can use abstractions of the systems (models) and compute the solution to the original real-world problem. 
+
+
+% In biology, the state into which a system evolves is commonly referred to as \emph{phenotype}~\cite{Cheng2016}. It is a set of observable characteristics of an organism. Therefore, in biology, the goal of control is to drive a system into the desired phenotype. 
+
+% Sys. biology modelling
+The focus of this work is on the control of biological systems. 
+Therefore, the problem falls into the scope of the \emph{systems biology} field where the aim is to apply formal methods developed by computer science to the biological models. The current focus of systems biology is on the cellular level~\cite{Cardelli2005} as it is the basis of biological systems and even this basic level is still considered difficult to model as there might be hundreds of interactions in the play. The task of controlling cells is called \emph{cell reprogramming}, and it is one of the most significant challenges of regenerative medicine~\cite{Cherry2012}.
+
+% BNs
+Systems biology uses a variety of models ranging from discrete (e.g. Boolean networks~\cite{Schwab2020}), through continuous (e.g. ODE~\cite{Gratie2013}), to hybrid models~\cite{Grossman1993}. A very efficient model to capture numerous interactions at the cellular level is \emph{Boolean network} (BN) because this model is both simple and expressive. Moreover, BNs have applications in many other areas, including circuit theory and behavioral science~\cite{Roli2015, Kochemazov2014}.
+
+BNs are composed of two parts: a finite set of Boolean \emph{variables} representing genes or other biochemical substances and \emph{update functions} which specify the way variables dynamically change their value based on influences from other variables. BNs generate a finite discrete state-space which makes them convenient for computational analyses. When starting from any initial state, the BN eventually establishes in some single state or a set of states. These components of BN state space are called \emph{attractors}. This notion can be viewed as an abstraction for phenotypes of the modeled biological systems.
+
+
+% Control
+A computational model is considered controllable if we can assure that from some initial state, it reaches a desired final state in a finite amount of steps. When controlling BNs, we are interested in BN reaching the desired attractor. This property is well-studied in the context of BNs without unknown parts~\cite{Zanudo2015, Mandon2019CMSB, Su2020BCB, Fontanals2020}. However, the problem has not received a lot of attention in the partially specified setting yet. 
+
+The definition of control is rather broad and allows many variations of the problem for BNs. To change the normal behavior of BN, understandably, we need to interfere with the model in some way. We call these interventions \emph{perturbations}. However, we can consider many types of perturbations. They vary in three aspects. Firstly, we can either fix variable values to some fixed value or change the rules of their evolution. Secondly, we can apply the perturbation just as a single transition step, or we can hold the perturbations for more transition steps, even permanent perturbations are considered. Lastly, the perturbation can be applied only once, or we consider applying perturbations and releasing perturbations at any time.
+
+Apart from different kinds of perturbations, control problems also vary in terms of what we are trying to achieve. For example, two elementary types of control problems are: (i) achieving a single desired target attractor irrespective of the current state (target control)~\cite{Kim2013}, (ii) achieving control between every pair of attractors (full-control)~\cite{Fiedler2013}, and (iii) reaching the set of states satisfying the given conditions (phenotype control)~\cite{Fontanals2020}. 
+
+% ParBNs
+In practice, the exact Boolean functions of the model may not be precisely known due to various uncertainties such as insufficient experimental knowledge~\cite{Grieco2013}, inconsistent observations~\cite{Geris2016}, genetic mutations~\cite{Martin2016}, or any other ambiguities. In contrast, there is typically good evidence of the fact that a variable regulates another one. This issue can be addressed by allowing BNs to contain function symbols. \emph{Partially specified Boolean networks} (\PBN{s})~\cite{Zou2013, Benes2019} allows to specify only regulators of a variable and thus capture multiple variants of the possible actual behavior of variables without conducting many more expensive experimental observations. Every interpretation of the unknown parts can be understood as an instance of a standard BN. The number of these instances can be doubly exponential in the worst case~\cite{wang2012}. 
+
+% PSBNs control challenges
+The partially specified setting brings many new challenges to the control problem. First, the nature of BN state transition graph may change dramatically between the interpretations~\cite{Benes2019,aeon}. Even the original goal of the standard control -- to stabilize in a target attractor -- might not be feasible in some instances as the given attractor is not present in them. 
+Secondly, the BN control problem is optimizing -- we are trying to minimize the number of perturbations done to a network, while we must guarantee that the target attractor is reached in all BN non-deterministic runs. It was shown that for many biological models, controlling values of only a few variables is sufficient to drive the network into any attractor of the BN~\cite{Zanudo2015}. On the contrary, this is usually not the case for the \PBN{s}. Due to the uncertainties, we would often need to fix the value of many variables to guarantee \PBN{} to reach the given attractor in all network instances. Such an approach is not applicable in practice as each perturbation can be very costly in the real environment. Therefore, the optimization criteria should be adjusted.
+
+
+In our current research line, we decided to treat the interpretations solely as unknown knowledge and consider only the state perturbations that fix the value of variables. To cope with minimization criteria, the output of the control problem for \PBN{} is a complete \emph{mapping} from the domain of perturbations to the domain of relevant interpretations. This way, it is possible to manually explore the available perturbations and consider both the cost of perturbation and the \emph{robustness} of perturbation -- the proportion of interpretations for which the perturbation ensures \PBN{} stabilization in the given attractor with all considered interpretations.
+
+\section*{Contribution}
+
+\begin{figure}
+    \centering
+    
+    \includegraphics[width=0.5\textwidth]{Figures/topics.png}
+    \caption{
+        The confluence of concepts studied in this thesis. 
+    }
+    \label{fig:topics}
+\end{figure}
+
+The contribution of this thesis lies in its integration of three distinct concepts: control, Boolean network and systems with partial specification. Such a confluence has not yet been explored previously. The Boolean networks are a well-studied model of system biology. Also, control is a commonly employed formal method in systems biology and the topic of controlling BNs was already thoroughly studied as we will see in \autoref{s:control_of_bns}. On the other hand, the promising model of partially specified Boolean networks is just beginning its rise. Other formal methods such as attractor search~\cite{Benes2021}, bifurcation~\cite{Benes2022, Pastva2022}, or parameter synthesis~\cite{Benes2023} are also being investigated only relatively recently.
+ 
+The partial specification of BNs thus makes this work truly novel, although the specific approaches are often inspired by previously investigated intersections of the topics as we will see in the thesis. The objectives of this thesis are four-fold:
+
+\begin{enumerate}
+    \item Formally define control problem for partially specified Boolean networks
+    \item Develop efficient methods that solve the control problem for partially specified Boolean networks 
+    \item Bundle the developed methods to a software toolkit
+    \item Demonstrate applicability for biological systems
+\end{enumerate}
+
+Now let us have a look at these goals in detail and describe in what parts of this thesis they are fulfilled.
+
+\medskip
+
+\noindent\PrimaryColor{\spacedlowsmallcaps{Goal 1 -- Problem definition.}}\hspace{3pt} Problem definition is an essential contribution of this work since the problem of \PBN{} control has not been formalized prior to my work. Several crucial aspects need to be considered for the problem definition. Firstly, attractors of the \PBN{} vary according to the interpretation. Therefore, searching for non-permanent perturbations that drive the network into a target attractor might not make sense for interpretations, where the given attractor is not present in the first place. Secondly, the practical realization of perturbations requires non-trivial effort; therefore, in a normal BN setting the number of perturbations is sought to be minimal. However, there is rarely a solution with a few perturbations in the partially specified setting, which would work for a big portion of interpretations. Thus, optimization criteria should be readjusted accordingly. 
+
+The achievement of this goal is presented in \autoref{s:source_target_problem_definition} where we define \emph{source-target} control for \PBN{} which result is a relation of perturbations with interpretations for which they work as opposed to standard control goal where only minimal perturbation sets are returned. However, the weakness of the source-target control is, that an exact target attractor might not be known in advance, since the landscape of attractors may change between interpretations~\cite{Benes2022}. This caveat is resolved by a more general notion of control -- \emph{phenotype} control which is defined in \autoref{s:phenotype_problem_definition} where only target traits are necessary to be known in advance.
+
+\medskip
+
+
+\noindent\PrimaryColor{\spacedlowsmallcaps{Goal 2 -- Efficient methods development.}}\hspace{3pt} As described before, the control problem for fully specified asynchronous BNs has been well-studied already. Therefore, after control for \PBN{} is formally defined, in theory, we could use the existing methods for asynchronous BN control to solve the problem for every interpretation distinctly. However, the number of these interpretations can be doubly exponential, meaning even a very efficient method for BN control would need to be run too many times to be handled in a realistic time. That is why seeking a novel, efficient approach for the partially specified setting is crucial.
+
+Three types of methods were developed to solve the posed variants of the problem.
+
+\begin{enumerate}
+    \item Semi-symbolic parallel one-step source-target control method for \PBN{} which is described in \autoref{sec:target_semisymbolic}~\cite{Brim2021}
+    \item Symbolic one-step, temporary, and permanent source-target control for \PBN{} which are described in \autoref{sec:ostp_symbolic}~\cite{brim2022}
+    \item Semi-symbolic permanent phenotype control method for \PBN{} which is described in \autoref{chapter:phenotype_control_psbn}~\cite{Benes2023b}
+\end{enumerate}
+
+The aforementioned sections present algorithms, and simple (i.e., quantitative) demonstrations of them.
+
+\medskip
+
+\noindent\PrimaryColor{\spacedlowsmallcaps{Goal 3 -- Software toolkit for methods.}} \hspace{3pt} In order to make the developed methods publicly available, they have become a part of the BioDivine toolkit~\cite{Barnat2009}. A library in Rust based on AEON tool~\cite{aeon} was developed in order to make methods fast and performant. Later, the library was wrapped into Python language as part of AEON.Py tool~\cite{aeonpy}. This helps to make the methods more convenient to work with for the wider scientific audience because the language is easier to learn and offers popular notebook environments such as JuPyter~\cite{Barba2021}. The Python version also has become part of the CoLoMoTo Interactive Notebook tools~\cite{Naldi2015,Levy2018}. The software technical specification and solved challenges are in detail described in \autoref{chapter:software}.
+
+\medskip
+
+\noindent\PrimaryColor{\spacedlowsmallcaps{Goal 4 -- Applicability for biological systems.}}\hspace{3pt} Last, but not least, since the topic of Boolean network control is tightly tied to the cell reprogramming problem of regenerative medicine, it is very suitable to demonstrate that the developed methods are serving the original motivation goal. Moreover, such case studies can serve as a tutorial for the developed software tool. All case studies are presented in \autoref{chapter:applications}.
+
+\section*{Thesis structure}
+
+\textcolor{red}{TODO}
+
+% As mentioned before, this thesis covers multiple interlaced themes. Thus, it is important for the reader to recognize what aspects are considered while reading this thesis, especially distinguishing where only fully specified Boolean networks are discussed and where their partial specification is assumed. \autoref{fig:structure} provides a high-level overview of when each theme of the topics is discussed.
+
+% \begin{figure}
+%     \centering
+    
+%     \includegraphics[width=0.6\textwidth]{Figures/structure.png}
+%     \caption{
+%         Topics covered by the chapters of this thesis. 
+%     }
+%     \label{fig:structure}
+% \end{figure}
+
+% \autoref{chap:bns} describes all necessary preliminaries to understand the basic problematic of the fully specified Boolean networks. Regulatory networks, which are an essential basis for BNs and also \PBN{s} are described at first (\autoref{s:reg_net}). Then, all motivation and formal definitions related to fully specified BNs are introduced (\autoref{section:boolean-networks}). After that, the control aspect is combined with BNs, when state of the art in this field is presented (\autoref{s:control_of_bns}). Finally, the control of discrete systems is also briefly discussed since it has provided roots for the control of BNs (\autoref{sec:control-discrete-sys}).
+
+% \autoref{chap:psbn} focuses on the partially specified Boolean networks and brings all previously introduced concepts for BNs into the partially specified context. Then it also briefly discusses control of partially specified systems other than BNs. The control of \PBN{s} is not yet discussed in this chapter, since it is covered in the next two chapters. 
+
+% \autoref{chapter:source_target_control} gives the problem definition of source-target control problem for \PBN{} and then it also shows two methods that solve this problem. The first one, semi-symbolic and parallel uses only the most trivial one-step perturbation (\autoref{sec:target_semisymbolic}). On the other hand, the fully symbolic method which was later developed is capable of one-step, temporary and permanent perturbations (\autoref{sec:target_symbolic}). Finally, these methods are discussed and compared (\autoref{sec:comparison_source_target}).
+
+
+% The more advanced type of control problem -- phenotype control is explored in \autoref{chapter:phenotype_control_psbn}. First, it is formally defined and then, the trade-offs compared to source-target control are described. Finally, the semi-symbolic method using permanent perturbations is described (Section X) and its quantitative results are demonstrated.
+
+% \autoref{chap:case_studies} is about case studies and \autoref{chapter:software} is about software tools...
