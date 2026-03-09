@@ -4,6 +4,7 @@
 In this chapter, we describe the technical details of the software tools we developed for the control of Boolean networks. We first give an overview of the software. Then we describe the implementation underlying backend details of the main components of the software. Finally, we describe the python package and the web application that we developed to make the software accessible to a wider audience.
 
 \section{Software overview}
+\label{sec:software_architecture}
 
 The software for the control of \PBN{} networks was developed as part of the BioDivine tools\footnote{\url{https://sybila.fi.muni.cz/tools.html}} developed by the SyBiLa (Systems Biology Laboratory) research group at Masaryk University~\footnote{\url{https://sybila.fi.muni.cz/index.html}}. 
 
@@ -31,6 +32,7 @@ Component lib-param-bn is the main library for the performant analysis of \PBN{}
 Finally, we implemented a web application that is built on top of all the rust components. Aeon-server provides a server functionality such as validation of the uploaded models and progress reporting to interact with the software through a web interface. The web application (aeon-react) than uses just the server component of the software, which provides an API for the users to interact with the software through the web interface. Later, also a python package aeon-py was implemented to provide a convenient python interface for all low-level algorithms and data structures. 
 
 \section{Core packages}
+\label{sec:core_packages}
 
 \paragraph{lib-bdd} The lib-bdd library provides a symbolic representation of the state space using binary decision diagrams (BDDs). It provides basic operations for manipulating BDDs, such as conjunction, disjunction, negation, and quantification. 
 
@@ -51,6 +53,7 @@ In particular, it implements the encoding of perturbations as function symbols (
 Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the control algorithms implemented in this thesis, which are described in \textcolor{red}{TODO add ref to chapter 4}, relied on the former semi-symbolic representation of the state space.
 
 \section{Aeon web application}
+\label{sec:aeon_web_app}
 
 Aeon web application is a web-based interface for the analysis of \PBN{} models. It allows users to upload their own models, adjust them and run various analyses, including the control of \PBN{} models. The initial version of the web application was developed to make the bifurcation analysis of \PBN{} models accessible to a wider audience. The initial version was first released in 2020~\cite{aeon}. 
 
@@ -85,9 +88,14 @@ After the model is loaded, the user can run various analyses on the model, inclu
 After the control algorithm is run, the results are displayed in the web application, where the user can inspect the results and download in a CSV format for further analysis. The results include the comprehensive statistics about the control problem, such as elapsed time, number of interpretations that can be controlled, the number of perturbations found, highest robustness achieved, and other relevant information. Moreover, a full list of all possible perturbations that can be applied to reach the target phenotype is also available. The list can be filtered and sorted by various criteria, such as the number of perturbations, the robustness of the perturbation, or the variables that are perturbed. 
 
 \section{Aeon.py}
+\label{sec:python_package}
 
 Since it can be difficult to develop a web application that covers all the functionality of the a very technical software, we also implemented a python package that provides an interface to the control algorithms implemented in the software~\cite{aeonpy}. The python package is available on PyPI and as part of the CoLoMoTo docker image~\cite{Naldi2015}. 
 
 The CoLoMoTo toolset provides a robust and reproducible computational framework for the analysis of Boolean networks, enabling both qualitative and formal investigation of complex biological regulatory systems. Its Jupyter environment based on Docker ensures interoperability and reproducibility while facilitating scalable exploration of state-space dynamics under different updating schemes. Since it is widely used in the community of Boolean network modeling, we decided to make the Aeon control algorithms available as part of the CoLoMoTo docker image. This allows users who are already using the CoLoMoTo toolset to easily integrate the control algorithms into their existing workflows.
 
-The python package provides a convenient interface for users who prefer working with code rather than a web application. It allows users to load their own \PBN{} models, adjust them and run the control algorithms directly from their python and run a large scale experiments programatically.
+The python package provides a convenient interface for users who prefer working with code rather than a web application. It allows users to load their own \PBN{} models, adjust them and run the control algorithms directly from their python and run a large scale experiments programmatically.
+
+
+\section{Summary}
+In this chapter, we described the software tools we developed for the control of Boolean networks. We gave an overview of the software architecture and the main components of the software, including the core libraries for symbolic representation of state spaces and the control algorithms. We also described the web application that we developed to make the software accessible to a wider audience, and the python package that provides a convenient interface for users who prefer working with code. The software is available online and can be used by researchers interested in analyzing and controlling Boolean network models. In the next chapter, we will demonstrate the use of the software on a case studies with real-world applications.

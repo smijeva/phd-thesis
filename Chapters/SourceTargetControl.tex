@@ -83,7 +83,7 @@ The perturbed STG of a PSBN is illustrated in \autoref{fig:psbn_perturbed_stg}.
 Notice, that again the definitions of perturbation and its application to a source state remain almost the same as in the \autoref{def:perturbed_run}. The only differences are that we now also consider the interpretation of the \PBN{} instance. Moreover, since this chapter focuses on source-target control, the perturbation is always applied just to a given source state.
 
 
-\subsection{Control Types and Goal}
+\subsection{Control types and goal}
 \label{ss:control_types_and_goal}
 
 Finally, we can define the source-target control problem goal in the context of partially specified Boolean networks. Here, we consider three types of perturbations: one-step, permanent, and temporary perturbations. The definitions of these perturbation types are similar to those used in classical Boolean networks~\cite{Su2019CMSB,Su2020}, but adapted to the context of partially specified Boolean networks.
@@ -102,7 +102,7 @@ Assume having a \PBN{} $\pbnMath = \{\expr_1, \ldots, \expr_n\}$ with $m$ nullar
 
 Here, note several observations regarding the presented types of \PBN{} control. The one-step and permanent perturbations are rather straightforward since they either do not require any further adjustment of the network's transition system (one-step perturbation) or they require a simple restriction of the transition system to the subspace of states admissible by the perturbation (permanent perturbation). The temporary perturbation, however, is more complex since the network transition system needs to be adjusted only for a finite number of time-steps. The number of these time-steps is not know in advance or specific since the Boolean network is not considered to be observable. Typically, we assume, that network reaches some ``intermediate'' attractor within $\edges_{\perturbation}$ an in any of these states, the perturbation can be withheld. Oftentimes, this intermediate attractor contains the target state $t$ itself. In such case, the exact same perturbation works with both temporary and permanent applications.
 
-Moreover, as already noted, the assumption that target state $t$ is a member of an attractor guarantees that if visited once in an unperturbed system, it is in fact visited infinitely often. Second, permanent control could force a particular $t$ to be visited infinitely often even though it is not a member of any attractor in the original $\pbnMath(\interpretation)$. This is because the perturbed variables remain fixed indefinitely, as opposed to one-step and temporary perturbations where the restrictions are eventually lifted. We allow for such case in the phenotype control as we see in the following (\autoref{chapter:phenotype_control}). Here, to maintain the comparability between all three perturbation types, we strictly restrict ourselves to the interpretations where target is an attractor state.  
+Moreover, as already noted, the assumption that target state $t$ is a member of an attractor guarantees that if visited once in an unperturbed system, it is in fact visited infinitely often. Second, permanent control could force a particular $t$ to be visited infinitely often even though it is not a member of any attractor in the original $\pbnMath(\interpretation)$. This is because the perturbed variables remain fixed indefinitely, as opposed to one-step and temporary perturbations where the restrictions are eventually lifted. We allow for such case in the phenotype control as we see in the following (\autoref{chapter:phenotype_control_psbn}). Here, to maintain the comparability between all three perturbation types, we strictly restrict ourselves to the interpretations where target is an attractor state.  
 
 Note that under this assumption, any successful permanent perturbation is also successful as a temporary perturbation, since the control can be released once target is reached. If we consider the cases where permanent control can introduce the target attractors, this property no longer holds. Nevertheless, a permanent perturbation can also potentially cause target to not be visited infinitely often by disturbing the attractor in which target resides, or it can cause the attractor to be unreachable within the perturbed state space. In this case, such permanent perturbation simply cannot control the network towards the desired target. An example of such scenario (target being unreachable due to permanent perturbation) is shown in \autoref{ex:only_temporary_working}. 
 
@@ -133,7 +133,7 @@ However, if the network is not fully known, there are many possible interpretati
 	Depending on context, the term \emph{controls} refers to either one-step, permanent, or temporary control as defined above.
 \end{definition}
 
-\subsection{Control Problem}
+\subsection{Control problem}
 
 As we can see, both size and robustness are critical factors when selecting viable perturbations for a \PBN{}. To facilitate the search for such perturbations and to compare different perturbations, we define control problem for \PBN{} as computation of the \emph{control relation} of all perturbations that successfully control the network from a given source to a given target:
 
@@ -154,12 +154,12 @@ Intuitively, the maximal robustness $\rho_{\max}$ gives us the best case scenari
 
 To summarize, in this section we defined the source-target control problem for partially specified Boolean networks. We defined three types of perturbations: one-step, permanent, and temporary perturbations. Then, we defined the goal of the source-target control problem as computation of the control relation containing all perturbations that successfully control the network from a given source to a given target. Finally, we introduced the robustness metric to quantify the uncertainty of a perturbation in terms of the portion of PSBN interpretations it can control.
 
-\section{Semi-symbolic Method for One-step Control}
+\section{Semi-symbolic method for one-step control}
 \label{sec:target_semisymbolic}
 
 Now we describe our computational framework for solving the one-step state perturbation control of \PBN{}. We start by introducing our approach for finding strong basins in a \PBN{}. Then we explain the framework for exploring \PBN{} STG and for manipulation with \PBN{} interpretations. Next, a concise workflow for \PBN{} control that employs the proposed algorithms is demonstrated. Finally, we present an evaluation of the method on a collection of \PBN{} models. 
 
-\subsection{Semi-Symbolic labelled strong basin search}
+\subsection{Semi-symbolic labelled strong basin search}
 
 The foundation of our method is based on binary decision diagram (BDD~\cite{Bryant86}) representation of interpretation sets of a \PBN{}. The decision variables of the BDD are the nullary function symbols of the network meaning that every path from the root to a leaf in such a BDD represent a set of interpretations of the \PBN{} while states are represented explicitly.
 
@@ -243,7 +243,7 @@ In \autoref{algo:strong-basin}, we extend the approach from~\cite{Paul2018CMSB} 
 
 We can process the states in parallel and compute for them the interpretations which are not part of the strong basin. To avoid writing to the strong basin structure while it is intensively read from, we store the interpretations which should be removed separately, and after it is computed, we update the strong basin structure sequentially. The procedure is repeated until nothing more can be removed from the strong~basin.
 
-\subsection{Control Computation~Workflow}
+\subsection{Control computation workflow}
 
 Now we can describe a complete workflow for computing the source-target control in \PBN{s}, depicted in \autoref{fig:workflow}. The~workflow consists of three inputs and three computation steps, resulting in the control mapping $\controlRelation_O$. 
 
@@ -363,7 +363,7 @@ It can be seen that the unknown properties of \PBN{} make selection of one parti
 %\enlargethispage*{6mm}
 \textcolor{red}{We introduced the control problem for partially specified Boolean networks and we proposed an algorithm for solving the source-target variant of this problem using one-step perturbations. The core procedure of the algorithm is a fixed-point computation of the labelled strong basin of the given target. The method we proposed is semi-symbolic --- it relies on a unique integration of symbolic (based on BDD representation) and explicit (based on enumerative model checking) formal methods. We demonstrated  that our approach is capable if controlling highly unspecified models in seconds. Owing to the doubly exponential explosion of the number of possible parametrisations, such a result cannot be achieved with the na\"ive interpretation scan approach.}
 
-\section{Symbolic Method for One-step, Temporary and Permanent Control}
+\section{Symbolic method for one-step, temporary and permanent control}
 \label{sec:ostp_symbolic}
 
 \textcolor{red}{Bridge from previous method. From semi-symbolic to fully symbolic and other types of perturbations.}
@@ -401,7 +401,7 @@ We then use $\mathbb{X} = \vertices \times \allInterpretations \times \mathbb{L}
 
 Observe that this approach is more efficient than simply incorporating the set of all possible perturbations $\bools^n_*$ directly into the encoding. Each $\bools_*$ element would require more than one bit per network variable to encode, whereas our approach only adds one bit on top of the existing state space. The details of the decoding for the actual perturbations will be described in \autoref{subsec:supporting_algos}.
 
-\subsection{Symbolic Operations}
+\subsection{Symbolic operations}
 
 Aside from standard set operations ($\cap, \cup, \setminus, \times$, etc.), we also use $\exists_{\mathbb{L}}(X \subseteq \mathbb{X})$ to denote existential projection over the perturbed variables, i.e. $\exists_{\mathbb{L}}(X) = \{ (s, c) \mid \exists l \in \mathbb{L}~(s, c, l) \in X \}$. This can be implemented as a single operation on the directed graph of a BDD as well. Finally, we need a mechanism to symbolically explore the graph $\STG(\pbnMath)$ that is compliant with the applied variable perturbations. For this purpose, we define the following two operations:
 \begin{align*}
@@ -411,7 +411,7 @@ Aside from standard set operations ($\cap, \cup, \setminus, \times$, etc.), we a
 
 Recall that the conditions above are almost exactly the condition under which $(v, \interpretation, u) \in E$ of $\STG(\pbnMath)$ (as per \autoref{def:psbn_perturbed_stg}). That is, $\pre$ and $\post$ compute the sets of predecessors and successors of the states in $X$ under their respective $\pbnMath$ interpretations. However, for each computed transition, we also require that $l_i = 0$, i.e. the $i$-th variable is \emph{not} perturbed. Hence values of the perturbed variables remain constant. For example, when $l_i = 1$ for all $i \in [1,n]$, no transition is possible. Meanwhile, when $l_i = 0$ for all $i \in [1,n]$, we get exactly the behaviour of $\STG(\pbnMath)$ without any perturbations. These two operations can also be implemented using BDDs, since $P_i$ is an expression over Boolean variables (which trivially corresponds to a Boolean function and hence a BDD). The rest are either pure logical operations or quantifications that can be realised as BDD operations.
 
-\subsection{Supporting Algorithms} 
+\subsection{Supporting algorithms} 
 \label{subsec:supporting_algos}
 
 Our main algorithms rely on a collection of utility procedures defined in \autoref{algo:sb}. Before we proceed with the main result, we quickly explain the rationale behind these procedures. 
@@ -463,7 +463,7 @@ Observe that while all procedures introduced so far \emph{respect} existing pert
 
 To compute $\textsc{CanPerturb}(s, X)$, need we respect the following: Let $(s', \interpretation, l) \in X$ be a triple such that $s'_i \not= s_i$ and $l_i = 0$ for some $i \in [1,n]$. That is, source $s$ and $s'$ differ in the value of the $i$-th variable, but the variable is marked as unperturbed in $l$. Then, and only then we have that $\pertApply(s, \perturbation) \not= s'$ for $\perturbation \equiv (s, l)$. In other words, every $(s, c, l)$ for which such variable exists must be removed from $X$ when computing $\textsc{CanPerturb}$. \autoref{algo:sb} thus iterates through all network variables, constructing a symbolic representation of the set of triplets which violate the aforementioned condition, and subtracting this set from the original $X$. The result is a subset of the $X'$ relation where every member is reachable from source $s$ via its respective perturbation.
 
-\subsection{Control Algorithms}
+\subsection{Control algorithms}
 
 In \autoref{algo:permanent},  we describe the bottom-up procedures which compute the relations $\controlRelation_O$, $\controlRelation_P$, and $\controlRelation_T$. Each algorithm relies on the procedures from \autoref{algo:sb}, but incorporates specific adjustments to accommodate the temporal aspects of a specific control approach.
 
@@ -504,6 +504,7 @@ Note that under the assumption that $t$ is a member of an attractor for all $\in
 Correctness of the procedures follows from the discussion above. All introduced procedures also surely terminate. The fixed-point procedures (\bwd{} and \fwdClosed{}) necessarily reach the fixed-point, because the superset $\mathbb{X}$ on which they operate is finite, and the resulting set can only grow (or shrink) in each iteration. The procedure \textsc{CanPerturb} is a straightforward for-loop over all BN variables. All control procedures are thus a composition of the described terminating operations or symbolic operations on BDDs.
 
 \subsection{Evaluation}
+\label{sec:control_evaluation}
 
 To evaluate our methods, we have implemented algorithms from the previous section by using internal libraries of the tool AEON~\cite{aeon}. Our experiments were run using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory. We describe the software implementation and how to access it in the next chapter. %The repository also includes all auxiliary scripts we used for generating partially specified model versions, running the experiments, and visualizing their results.
 
@@ -700,5 +701,3 @@ Another insight of our experiments is a comparison of the novel symbolic approac
 
 % Related work
 % Finally, let us compare our results with the related work discussed in \autoref{s:introduction}. It is important to note that the previously published methods other than~\cite{Brim2021} do not support partially specified BNs. Therefore, we deem our method incomparable to the previous line of research in terms of performance. Hypothetically, the other methods could be used to iteratively process all interpretations of a partially specified BN, resulting in a na\"ive parameter-scan approach. Nonetheless, as the number of interpretations grows exponentially, this approach cannot scale in the same way and thus quickly becomes infeasible. More than that, our approach allows easy evaluation of robustness, which would otherwise also be more complicated when the results are computed na\"ively. Considering other aspects of BN control, our method supports all types of static perturbations (one-step, temporary, permanent)~\cite{Su2020}. However, it does not support more complex, dynamical applications of sequential perturbations~\cite{Mandon2019CMSB, Su2020}. With sequential perturbations, it is possible to achieve minimal perturbations of even smaller sizes. However, we consider such an approach too computationally demanding for the case of partially specified BNs at the moment---the combinatorial space of available perturbations, colours, and attractors (each present only for a subset of colours) would be enormous. Finally, our method supports only source-target control. We leave other types of control, e.g., the target control~\cite{Su2020BCB} and the phenotype control~\cite{Fontanals2022b} for future work.
-
-\section{Summary}

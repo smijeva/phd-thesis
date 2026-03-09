@@ -8,7 +8,7 @@ Moreover, in the context of PSBNs, the target of the control is prone to change 
 In this chapter, we first formally define the problem of phenotype control for PSBNs and its variants. Then we present a symbolic algorithm to solve the posed problem. Finally, we demonstrate the applicability of our approach to middle sized PSBNs.
 
 
-\section{Problem Definition}
+\section{Problem definition}
 \label{s:phenotype_problem_definition}
 
 Before defining the problem of the phenotype control, we need to think about the relationship between attractors and phenotypes. In the context of Boolean networks, an attractor represents a stable state or a set of states that the system can converge to. These attractors are often associated with specific biological phenotypes, which are observable characteristics or behaviors of the system.
@@ -77,7 +77,7 @@ $$
 The concepts of the union robustness would be adjusted in the same way.
 
 \section{Methods}
-\label{sec:Methods}
+\label{sec:phen_control_method}
 
 
 % Partially specified Boolean networks suffer from both state and parameter space explosion, which in practice makes them hard to analyse exhaustively. In the context of control, this problem is further complicated by perturbation space explosion. To mitigate this, we employ symbolic state space exploration which allows us to analyse the full set of possible perturbed STGs within a single algorithm pass. This technique exploits similarities between the STGs of various network interpretations (and perturbations) to significantly speed up the exploration process compared to the naive enumeration~\cite{aeonpy,Brim2021}.
@@ -264,6 +264,7 @@ Note that for simplicity, we do not store the actual perturbations with maximal 
   In the end, the \textsc{IsPhenotypeControl} is done on all perturbed network instances simultaneously. To do that, we take advantage of our symbolic computational model. Since perturbed instances are expected to have similar STGs, this heuristic approach is expected to be more efficient than computing results on each of the graphs distinctively. The perturbed instances which do not satisfy phenotype control objectives are then discarded. As a result, we obtain a "semi-product", which we need to query, to decode the actual perturbation values and the final results as in \autoref{def:complete_phenotype_control}. The details of this algorithm part can be found in~\cite{Benes2023b}.
 
 \section{Evaluation}
+\label{sec:phen_control_evaluation}
 %TODO: Ak bude miesto, tak sa vymedzit voci Fontalnas - my riesime inputy inak
 
 In this section, we evaluate our proposed semi-symbolic method. For the implementation, we use the Rust language and libraries of the AEON tool~\cite{aeon}. This prototype implementation is available as an open-source GitHub repository\footnote{\url{https://github.com/sybila/biodivine-pbn-control/}}. The repository also includes auxiliary scripts we used for the measurements and the raw results. All experiments were performed using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory.
@@ -370,6 +371,7 @@ $\neg$No decis. & $\var{DNA\_dmg}{\shorteq}1,$ $\var{TGFBR\_st}{\shorteq}1$ $\va
 \end{table}
 
 
+\subsection{Method validation}
 
 Now we demonstrate how phenotype control can be used to replicate observations conducted in~\cite{Grieco2013} and even strengthen these results with a more robust assessment of the model. In~\cite{Grieco2013}, various perturbations of a reduced MAPK model are simulated and their effect on phenotypes is observed. Specifically, networks with all inputs set to 0 and with \var{EGFR} or \var{FGFR3} over-expressed (gain-of-function) are exposed to a set of further perturbations. The model has three outputs (\var{Apoptosis}, \var{Growth\_Arrest}, and \var{Proliferation}) and three attractors are observed: apoptosis (\var{Apoptosis}$=$\var{Growth\_Arrest}$=1$), proliferation (\var{Proliferation}$=1$) and no decision (all outputs set to false).
 

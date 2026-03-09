@@ -4,6 +4,7 @@
 This chapter demonstrates the applicability of our method. First, we list practical examples control in the field of regenerative medicine (cell reprogramming). We show the way the cell programming can be achieved on a specific example of a myeloid cell. Then we explain a holistic workflow of how the control of partially specified Boolean networks can be used to design a therapy or to refine the model. Finally, we show the full workflow on the second case study that is focused on the MAPK signalling pathway and demonstrates the control-guided model refinement.
 
 \section{Motivation: cell reprogramming}
+\label{sec:cell_reprogramming}
 
 In nature, the most common process by which a cell acquires a different phenotype is \emph{cell differentiation}. A typical example is the differentiation of stem cells into specialised daughter cells in response to the organism's needs. The outcome of this process is often described as a \emph{cell fate} (or a cell-fate decision). Another natural mechanism is \emph{cell dedifferentiation} (or \emph{retrodifferentiation}), in which differentiated cells revert to an earlier developmental state. Dedifferentiation is observed in certain organisms, such as worms and amphibians~\cite{Jopling2011}. In addition, under specific conditions, differentiated cells can convert directly into a different differentiated cell type; this process is known as \emph{transdifferentiation}. These processes are illustrated in \autoref{fig:transdifferentiation}. The existence of such natural mechanisms has provided important inspiration for the emerging field of \emph{regenerative medicine}.
 
@@ -338,6 +339,7 @@ In more complex cases, it becomes complicated to assess which single feature can
 To summarize, the workflow in \autoref{fig:control_workflow} can be used to design a therapy, or guide the model refinement, or both. The cycle can be repeated any amount of times while having both of these goals in mind. The main difference between the two workflows is the selection of perturbations for the real-world experiments. In the therapy design, we are interested in the perturbations which are the most likely to work, while in the model refinement, we are interested in the perturbations which are the most informative.
 
 \section{MAPK case study}
+\label{sec:mapk_case_study}
 % What is MAPK and why is it important
 The Mitogen-Activated Protein Kinase (MAPK) signaling pathway is a critical cellular signaling pathway that transmits signals from the cell surface to the nucleus in response to various extracellular or internal stimuli, such as growth factors, cytokines, or DNA damage. This pathway regulates a wide range of cellular processes, including proliferation and apoptosis. The disruption of these regulations can lead to diseases, in particular various types of cancer.
 
@@ -745,7 +747,7 @@ We can also observe the influence of ERK, which was representing the phenotype i
 
 % Last but not least, we can observe that the model as proposed in~\cite{Grieco2013} exhibits oscillations in numerous combinations of phenotypes under relatively small perturbations. Specifically, there are decisions containing oscillation between apoptosis and other phenotype. Such a behavior is difficult to interpret since a real-world system would be expected to continue in proliferation after committing to conduct the apoptosis. 
 
-\subsection{Extended FGFR3 Pathway MAPK}
+\subsection{Extended FGFR3 pathway MAPK}
 
 \begin{table}[htb!]
   \label{tab:grieco_extension}

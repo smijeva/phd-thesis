@@ -174,6 +174,7 @@ Again, given the nature of semi-tensor products, the control is achieved using p
 Nonetheless, in this approach, the controllers do not need to be just static Boolean values, but can be also dynamic components that are gaining the value periodically. Moreover, this approach is able to quantify probability of reaching the target states as opposed to inevitably reach the state after applying the control.
 
 \section{Control of most-permissive Boolean networks}
+\label{sec:controlMostPermissive}
 
 The previously described variants of BNs are limited in their ability to capture certain biologically significant behaviors~\cite{Pauleve2020}. For example, none of the earlier models can accurately represent the incoherent feed-forward loop of type 3 (I3-FFL)~\cite{Mangan2003}, a well-known motif in gene regulatory networks.
 
@@ -189,13 +190,13 @@ Control within BoNesis is guided by specifying biological markers, which semanti
 
 BoNesis supports differentiated control strategies for steady states (fixed points), and all attractors, enabling optimization tailored to task complexity, since reprogramming steady states is typically less computationally intensive~\cite{Pauleve2023}. Another notable feature of BoNesis is its ability to control ensembles of Boolean networks, which is especially relevant since model inference usually produces a set of plausible models rather than a single one. When controlling BN ensembles, users can choose between existential and universal control strategies. Existential control identifies perturbations that succeed in at least one model in the ensemble, while universal control yields perturbations that are guaranteed to work across all models.
 
-\section{Leveraging control for model inference}
+\section{Leveraging control for model refinement}
 \label{sec:controlInference}
 \marginpar{
     \includegraphics[width=\marginparwidth]{Figures/topics_all.png}
 }
 
-Traditionally, the control of Boolean networks has been viewed primarily as a means to modify system's  behavior, most notably for applications such as cellular reprogramming. However, recent research has begun to explore control as a valuable asset in the model inference process. In this context, control can serve several important purposes:
+Traditionally, the control of Boolean networks has been viewed primarily as a means to modify system's  behavior, most notably for applications such as cellular reprogramming. However, recent research has begun to explore control as a valuable asset in the model refinement process. In this context, control can serve several important purposes:
 
 \begin{enumerate}
     \item Handling uncertainty: Model inference may produce many network models that all fit the data. A good control strategy should work across these variations. If control leads all plausible models to the same desired behavior, it increases our confidence in both the models and the control itself~\cite{Chevalier2025}.

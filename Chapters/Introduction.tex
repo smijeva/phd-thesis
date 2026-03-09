@@ -38,7 +38,7 @@ Secondly, the BN control problem is optimizing -- we are trying to minimize the 
 
 In our current research line, we decided to treat the interpretations solely as unknown knowledge and consider only the state perturbations that fix the value of variables. To cope with minimization criteria, the output of the control problem for \PBN{} is a complete \emph{mapping} from the domain of perturbations to the domain of relevant interpretations. This way, it is possible to manually explore the available perturbations and consider both the cost of perturbation and the \emph{robustness} of perturbation -- the proportion of interpretations for which the perturbation ensures \PBN{} stabilization in the given attractor with all considered interpretations.
 
-\section*{Contribution}
+\section{Contribution}
 
 \begin{figure}
     \centering
@@ -92,29 +92,20 @@ The aforementioned sections present algorithms, and simple (i.e., quantitative) 
 
 \noindent\PrimaryColor{\spacedlowsmallcaps{Goal 4 -- Applicability for biological systems.}}\hspace{3pt} Last, but not least, since the topic of Boolean network control is tightly tied to the cell reprogramming problem of regenerative medicine, it is very suitable to demonstrate that the developed methods are serving the original motivation goal. Moreover, such case studies can serve as a tutorial for the developed software tool. All case studies are presented in \autoref{chapter:applications}.
 
-\section*{Thesis structure}
+\section{Thesis structure}
 
-\textcolor{red}{TODO}
+As mentioned before, this thesis covers multiple interlaced themes. Thus, it is important for the reader to recognize what aspects are considered while reading this thesis, especially distinguishing where only fully specified Boolean networks are discussed and where their partial specification is assumed. To help with that, a switch from the context be indicated by accompanying figure in the margin of the text, similar to one in \autoref{fig:topics}. Also, we provide brief guidance on the structure of the thesis and what is covered in each chapter.
 
-% As mentioned before, this thesis covers multiple interlaced themes. Thus, it is important for the reader to recognize what aspects are considered while reading this thesis, especially distinguishing where only fully specified Boolean networks are discussed and where their partial specification is assumed. \autoref{fig:structure} provides a high-level overview of when each theme of the topics is discussed.
+\autoref{chap:prelim} describes all necessary preliminaries to understand the basic problematic of the fully specified Boolean networks. Regulatory networks, which are an essential basis for BNs and also \PBN{s} are described at first (\autoref{s:reg_net}). Then, all motivation and formal definitions related to fully specified BNs are introduced (\autoref{section:boolean-networks}). After that, the control problem for BNs, is described, including technical differences between all variants of the problem (\autoref{s:control_of_bns}). Finally, the notion of partially specified Boolean networks is introduced (\autoref{s:psbn}), including the motivation for this model and the technical details of it.
 
-% \begin{figure}
-%     \centering
-    
-%     \includegraphics[width=0.6\textwidth]{Figures/structure.png}
-%     \caption{
-%         Topics covered by the chapters of this thesis. 
-%     }
-%     \label{fig:structure}
-% \end{figure}
+\autoref{chap:sota} is about the state of the art in the field of control of Boolean networks. It covers the methods for control from the most general classes of the systems to the systems most similar to the \PBN{}s. First, it describes roots of the control theory in terms of discrete systems (\autoref{sec:controlDiscrete}) and incompletely specified systems (\autoref{sec:controlPartiallySpecified}). Then, it describes the methods for control of fully specified BNs from the simplest synchronous BNs (\autoref{sec:controlSynchronous}) to the more complex asynchronous (\autoref{sec:controlAsynchronous}) and most-permissive BNs (\autoref{sec:controlMostPermissive}). Finally, it describes how the control problem for BNs can aid the problem of model refinement (\autoref{sec:controlInference})and a comparison of the software tools for control of BNs is given (\autoref{sec:relatedTools}).
 
-% \autoref{chap:bns} describes all necessary preliminaries to understand the basic problematic of the fully specified Boolean networks. Regulatory networks, which are an essential basis for BNs and also \PBN{s} are described at first (\autoref{s:reg_net}). Then, all motivation and formal definitions related to fully specified BNs are introduced (\autoref{section:boolean-networks}). After that, the control aspect is combined with BNs, when state of the art in this field is presented (\autoref{s:control_of_bns}). Finally, the control of discrete systems is also briefly discussed since it has provided roots for the control of BNs (\autoref{sec:control-discrete-sys}).
+\autoref{chapter:source_target_control} provides the problem definition of source-target control problem for \PBN{} (\autoref{s:source_target_problem_definition}) and then it also shows two methods that solve this problem. The first one, semi-symbolic and parallel uses only the most trivial one-step perturbation (\autoref{sec:target_semisymbolic}). The later developed fully symbolic method is capable of one-step, temporary and permanent perturbations (\autoref{sec:ostp_symbolic}). Finally, these two methods are discussed and compared (\autoref{sec:control_evaluation}).
 
-% \autoref{chap:psbn} focuses on the partially specified Boolean networks and brings all previously introduced concepts for BNs into the partially specified context. Then it also briefly discusses control of partially specified systems other than BNs. The control of \PBN{s} is not yet discussed in this chapter, since it is covered in the next two chapters. 
+\autoref{chapter:phenotype_control_psbn} describes the problem of phenotype control for \PBN{} (\autoref{s:phenotype_problem_definition}) and a method to solve it (\autoref{sec:phen_control_method}). The method is based on the same symbolic state space exploration as the one for source-target control. Finally, the method is evaluated on several middle-sized \PBN{}s (\autoref{sec:phen_control_evaluation}) in terms of performance and the quality of the results. 
 
-% \autoref{chapter:source_target_control} gives the problem definition of source-target control problem for \PBN{} and then it also shows two methods that solve this problem. The first one, semi-symbolic and parallel uses only the most trivial one-step perturbation (\autoref{sec:target_semisymbolic}). On the other hand, the fully symbolic method which was later developed is capable of one-step, temporary and permanent perturbations (\autoref{sec:target_symbolic}). Finally, these methods are discussed and compared (\autoref{sec:comparison_source_target}).
+\autoref{chapter:software} describes the software implementation of the presented methods. First, the software architecture is described (\autoref{sec:software_architecture}), including the main libraries and their functionalities (\autoref{sec:core_packages}). Then, the web application for control of \PBN{} is presented (\autoref{sec:aeon_web_app}), followed by the description of the Python package (\autoref{sec:python_package}).
 
+\autoref{chapter:applications} is about the applications of the developed methods for control of \PBN{}. Firstly, it described the primary motivation for this work -- the problem of cell reprogramming in regenerative medicine (\autoref{sec:cell_reprogramming}). Then, it shows an example of \PBN{} control application for cell reprogramming on a specific example of a myeloid cell (\autoref{sec:myeloid_case_study}). After that, a more general workflow of how the control of \PBN{} can be used to design a therapy or to refine the model is described (\autoref{sec:control_workflow}). Finally, this workflow is shown on the second case study that is focused on the MAPK signalling pathway and demonstrates the control-guided model refinement (\autoref{sec:mapk_case_study}).
 
-% The more advanced type of control problem -- phenotype control is explored in \autoref{chapter:phenotype_control_psbn}. First, it is formally defined and then, the trade-offs compared to source-target control are described. Finally, the semi-symbolic method using permanent perturbations is described (Section X) and its quantitative results are demonstrated.
-
-% \autoref{chap:case_studies} is about case studies and \autoref{chapter:software} is about software tools...
+Finally, \autoref{chapter:conclusion} summarizes the main contributions of this thesis and discusses possible future directions for research in this area.
