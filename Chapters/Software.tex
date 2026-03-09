@@ -26,11 +26,29 @@ Since globally there was not a lot of tools supporting analysis of \PBN{} models
 
 In \autoref{fig:sw_arch}, we give an overview of the software architecture of the Aeon tools. The core components are implemented in Rust language because of its performance, memory safety and mature developer experience. Component lib-bdd is the low-level library for the symbolic representation of the state space using binary decision diagrams (BDDs). It is independent of Boolean networks and can be used for any application that requires symbolic representation of state spaces. 
 
-Component lib-pbn is the main library for the performant analysis of \PBN{} models, which contains the algorithms for computing attractors, reachability algorithms and bifurcation. On top of the two libraries, we implemented the control of \PBN{} models as a new component of the software. Since the control of \PBN{} requires custom encoding of the perturbations it also relies on the lib-bdd library for the symbolic representation of the state space. The control component also relies on the lib-pbn library for computing the attractors and their basins of attraction, which are used in the control algorithms.
+Component lib-param-bn is the main library for the performant analysis of \PBN{} models, which contains the algorithms for computing attractors, reachability algorithms and bifurcation. On top of the two libraries, we implemented the control of \PBN{} models as a new component of the software. Since the control of \PBN{} requires custom encoding of the perturbations it also relies on the lib-bdd library for the symbolic representation of the state space. The control component also relies on the lib-pbn library for computing the attractors and their basins of attraction, which are used in the control algorithms.
 
 Finally, we implemented a web application that is built on top of all the rust components. Aeon-server provides a server functionality such as validation of the uploaded models and progress reporting to interact with the software through a web interface. The web application (aeon-react) than uses just the server component of the software, which provides an API for the users to interact with the software through the web interface. Later, also a python package aeon-py was implemented to provide a convenient python interface for all low-level algorithms and data structures. 
 
-\section{Implementation details}
+\section{Core packages}
+
+\paragraph{lib-bdd} The lib-bdd library provides a symbolic representation of the state space using binary decision diagrams (BDDs). It provides basic operations for manipulating BDDs, such as conjunction, disjunction, negation, and quantification. 
+
+Compared to many other implementations, each Binary Decision Diagram (BDD) instance manages its own memory. This design simplifies serialization and enables safe sharing between threads, which is particularly beneficial for applications that process large numbers of BDDs concurrently. It also aligns well with the ownership and safety principles emphasized in the Rust programming language.
+
+The implementation provides support for a range of common operations on BDDs. These include standard logical operations, evaluation of Boolean expressions, and transformations between BDD representations and conjunctive or disjunctive normal forms. Additional functionality allows inspection of BDD structures, conversion back to Boolean expressions, and visualization through graph exports. The system also supports several relational-style operations commonly used in symbolic computation, such as projection and restriction. Note that these operations were used in~\textcolor{red}{TODO add ref to chapter 4 or 5} for the control of \PBN{} models.
+
+\paragraph{lib-param-bn} The lib-param-bn library is the main library for the performant analysis of \PBN{} models, which contains the algorithms for computing attractors, reachability algorithms and bifurcation. In particular, it implements fully \emph{symbolic} representation of the state space of \PBN{} models using BDDs, that can combine interpretations and states in a single BDD. 
+
+This library was used to provide all reachability, trap set and attractor computations for the control algorithms implemented in this thesis that are described in \textcolor{red}{TODO add ref to chapter 4 or 5}.
+
+Previously the library used semi-symbolic representation of the state space, where only interpretations were represented symbolically, while states were represented explicitly. This approach was used in the initial version of the control algorithms implemented in this thesis, which are described in \textcolor{red}{TODO add ref to chapter 4}.
+
+\paragraph{pbn-control} The pbn-control library provides the necessary functionality for the control of \PBN{} models, including the implementation of various control strategies and algorithms.
+
+In particular, it implements the encoding of perturbations as function symbols (parameters), that are added to the original \PBN{} model. This allows us to use the same symbolic representation of the state space for both the original model and the perturbations, which is crucial for the performance of the control algorithms. The library also implements the algorithms for computing the control and manipulating with the control map relations, which are used in the control algorithms described in \textcolor{red}{TODO add ref to chapter 4 or 5}.
+
+Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the control algorithms implemented in this thesis, which are described in \textcolor{red}{TODO add ref to chapter 4}, relied on the former semi-symbolic representation of the state space.
 
 \section{Aeon web application}
 

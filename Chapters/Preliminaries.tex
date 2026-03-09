@@ -192,54 +192,9 @@ If Boolean network $\bnMath$ is clear from the context, it can be omitted from t
     \label{fig:basins}
 \end{figure}
 
-
-% \intention{Bridge to characters, traits, phenotype} 
-It has been shown that attractors are closely tied to the notion of biological phenotypes~\cite{Klarner2018,Fontanals2022b}. Each attractor represents a possible stable \emph{outcome} achievable within a particular $\bnMath$. The combination of traits observable as part of this outcome then forms the actual phenotype. However, in many cases, there can be multiple attractors that exhibit the same set of traits, and thus the same biological phenotype. We formalize this concept as follows:
-
-\begin{definition}
-	A \emph{character} is a set of BN variables $\character \subseteq [1,n]$ which cover the observable real-world properties of the system. A \emph{trait} $T$ is then a valuation of these character variables: $T: \character \to \bools$.
-\end{definition}
-
-% Char and traits
-Such character variables $\character$ typically correspond to the network outputs, but this is not required. Each trait defines a subspace $\trait \in \bools_\unspecified^n$ s.t. $\trait_i \neq \unspecified$ for $i \in \character$, and $\trait_i = \unspecified$ otherwise. 
-
-\begin{definition}
-	A \emph{phenotype} is a set of states $\phenotype \subseteq \bools^n$ described by an arbitrary combination of the BN traits. An attractor $\attractor$ may have three types of relationships toward a given phenotype $\phenotype$: 
-  \begin{itemize}
-    \item $\attractor$ \emph{stabilizes} in $\phenotype$ iff $\attractor \cap \phenotype = \attractor$ (or equivalently $\attractor \subseteq \phenotype$).
-    \item $\attractor$ \emph{avoids} $\phenotype$ iff $\attractor \setminus \phenotype = \attractor$ (or equivalently $\attractor \cap \phenotype = \emptyset$).
-    \item $\attractor$ \emph{oscillates} through $\phenotype$ iff $ \attractor \cap \phenotype \neq \emptyset \land \attractor \setminus \phenotype \neq \emptyset$.
-  \end{itemize}
-  
-If \emph{all} attractors of a \BN{} have the same relationship with a phenotype, we can generalize the relationship to a whole \BN{}.
-\end{definition}
-
-% attractor vs. phenotype
-Note that while attractor is an \emph{intrinsic} property of a BN, a phenotype is a modeler's choice. The same BN can be studied with respect to different phenotypes, depending on the research question.
-
-% trait vs. phenotype
-While a \emph{trait} is always a subspace, a phenotype is an arbitrary combination of traits. For example, assuming $n=4$ and $\character = \{1,2\}$, $11\unspecified\unspecified$ and $00\unspecified\unspecified$ are two of the four admissible traits (or rather trait subspaces). Each of these traits can represent a single phenotype, but they can also represent a combined phenotype $00\unspecified\unspecified \cup 11\unspecified\unspecified$. We typically assume that if a network admits more than one phenotype, these are mutually disjoint. Finally, note that not all phenotypes can be manifested by a BN (e.g. if a trait is not biologically viable).
-
-\begin{table*}[htb]
-  \caption{\textbf{Phenotype related terms.} The table summarizes the notions of character, trait, and phenotype in the context of real-world concepts compared to Boolean network models. The considered example is a small excerpt of MAPK pathway.}
-  \footnotesize
-  \tabcolsep=0pt%%
-  \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lllll@{\extracolsep{\fill}}}
-  \midrule
-  \textbf{Concept} & \textbf{Real-world} & \textbf{Example} & \textbf{Network} & \textbf{Example} \\ 
-  \midrule
-  Character & \begin{tabular}[c]{@{}l@{}}Property of \\ an interest\end{tabular} &  \begin{tabular}[c]{@{}l@{}}A phosporolation on \\ \var{FRS2} tyrosine residue\end{tabular} & A set of variables $\mathcal{U}$ & \{\var{FRS2}\} \\
-  Trait & Observation & \begin{tabular}[c]{@{}l@{}}\var{FRS2} tyrosine residue \\ is not phosphorylated\end{tabular} & \begin{tabular}[c]{@{}l@{}}Valuation $T: \mathcal{U} \to \bools$, \\ a subspace generator\end{tabular} & \begin{tabular}[c]{@{}l@{}}\var{FRS2}=0, \\ *0* \end{tabular} \\
-  Phenotype & \begin{tabular}[c]{@{}l@{}}Observation \\ combination\end{tabular} & \begin{tabular}[c]{@{}l@{}} \var{FRS2} or \var{ERK} \\ is phosphorylated\end{tabular} & \begin{tabular}[c]{@{}l@{}}A combination of traits \phenotype \end{tabular} & *1* $\cup$ **1 \\ 
-  \midrule
-  \end{tabular*}
-  \label{tab:phenotype_concepts}
-  \end{table*}
-
-
 \subsection{Summary}
 
-In this section, we summarized the key concepts related to Boolean networks and their dynamics. We introduced the notions of states and updating schemas. We have introduced state space structures, such as trap sets and attractors, which are crucial for understanding the long-term behavior of Boolean networks. Finally, we discussed the relationship between attractors and biological phenotypes, highlighting how these concepts can be used to analyze and interpret the behavior of complex biological systems. Building on these concepts, we now turn our attention to the control of Boolean networks.
+In this section, we summarized the key concepts related to Boolean networks and their dynamics. We introduced the notions of states and updating schemas. We have introduced state space structures, such as trap sets and attractors, which are crucial for understanding the long-term behavior of Boolean networks Building on these concepts, we now turn our attention to the control of Boolean networks.
 
 \section{Control of Boolean networks}
 \label{s:control_of_bns}
@@ -264,7 +219,7 @@ We consider five different control objectives based on the previous lines of res
 \item \emph{Target control}: Given a \emph{target attractor} $T \in \allAttractors$, ensure that for \emph{any} initial state $s \in \bools^n$ the BN converges from $s$ to $T$ (see \autoref{subfig:st_b}).
 \item \emph{Full control}: Find a set of control strategies such that for all pairs of distinct attractors $S, T \in \allAttractors$, applying a strategy from this set guarantees that the BN converges from $S$ to $T$ (see \autoref{subfig:st_c}).
 \item \emph{All-pairs control}: Given a subset of source attractors $\mathcal{S} \subseteq \allAttractors$ and target attractors $\mathcal{T} \subseteq \allAttractors$, find a set of perturbations such that for every pair $S \in \mathcal{S}$ and $T \in \mathcal{T}$, applying a subset of the perturbations guarantees that the BN converges from $S$ to $T$ (similar to full control in~\autoref{subfig:st_c}).
-\item \emph{Phenotype control}: Given a phenotype $\phenotype \subseteq \bools^n$, ensure that from any initial state, the BN converges to an attractor $A \subseteq \allAttractors$ such that $A \subseteq \phenotype$ (\autoref{subfig:st_d}).
+\item \emph{Phenotype control}: Given a subset of states $X \subseteq \bools^n$, ensure that from any initial state, the BN converges to an attractor $A \subseteq \allAttractors$ such that $A \subseteq X$ (\autoref{subfig:st_d}).
 \end{enumerate}
 
 
@@ -484,7 +439,7 @@ To give meaning to a particular $\pbnMath$, we rely on the term \emph{interpreta
 
 Intuitively, an interpretation associates a specific Boolean function to every function symbol. Consequently, we can substitute all symbols $\funSymbol \in \allFunSymbols$ for functions $i \in \interpretation$ in a $\allFunSymbols = \{\funSymbol_1, \ldots, \funSymbol_n\}$ of a $\pbnMath$, and a result we obtain a collection of $n$ fully specified functions. The result is a \emph{Boolean network instance} which we denote as $\pbnMath(\interpretation)$ and which has the same semantics as a standard BN. The set of all possible interpretations of $\allFunSymbols$ is denoted as $\allInterpretations(\allFunSymbols)$ or $\allInterpretations$ for short (i.e., when the context is clear). Some subset of interpretations is then referred to as $\interpretationSet \subseteq \allInterpretations$. 
 
-\subsection{Normalization of partially specified Boolean networks}
+\subsection[Normalization of PSBN]{Normalization of partially specified Boolean networks}
 
 Function symbols are practical as a human-friendly specification language of unknown network behavior. However, it is not entirely clear how algorithms should represent such functions symbolically, as is our goal in this paper. To alleviate this issue, we note the following: Assuming that all $m$ function symbols in $\allFunSymbols$ have arity zero, possible interpretations $\allInterpretations$ of $\allFunSymbols$ correspond to the vectors $\bools^{m}$. This is because a nullary function symbol is necessarily a constant and can be thus interpreted as a Boolean value. We call such zero arity symbols \emph{zero-arity symbols} (we can also simply write $\funSymbol$ instead of $\allFunSymbols^{(0)}()$ when using such symbols). In some literature, these are also referred to as network inputs~\cite{Kobayashi2011}. 
 
@@ -547,9 +502,9 @@ The notions which are independent transitions such as character, trait and pheno
 
 Definitions of trap set, attractor, attractor's weak and strong basins for fully specified BNs are lifted to PSBNs per individual instances (interpretations). For example, we write that a set $\attractor \subseteq \vertices$ is an attractor for an instance $\pbnMath(\interpretation)$ (i.e. there are no attractors of $\pbnMath$, only attractors of its instance). 
 
-\subsection{Well-known problems on partially specified Boolean networks}
+\subsection[Well-known problems on PSBNs]{Well-known problems on partially specified Boolean networks}
 
-Now that we have defined PSBNs, we can also consider well-known problems solved for this type of models, in order to understand the challenges they present and give us a better understanding of the tools we can use to solve the control problems.
+Now that we have defined PSBNs, we can also consider well-known problems solved for this type of models, in order to understand the challenges they present and give us a better understanding of the tools we can use to solve the control problems. Or vice versa, we can also consider how the control problems can be used to solve the well-known problems on PSBNs.
 
 \subsubsection{Attractor search}
 
