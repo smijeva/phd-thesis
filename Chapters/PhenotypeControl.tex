@@ -27,9 +27,9 @@ Such character variables $\character$ typically correspond to the network output
 \begin{definition}
 	A \emph{phenotype} is a set of states $\phenotype \subseteq \bools^n$ described by an arbitrary combination of the BN traits. An attractor $\attractor$ may have three types of relationships toward a given phenotype $\phenotype$: 
   \begin{itemize}
-    \item $\attractor$ \emph{stabilizes} in $\phenotype$ iff $\attractor \cap \phenotype = \attractor$ (or equivalently $\attractor \subseteq \phenotype$).
+    \item $\attractor$ \emph{stabilizes} in $\phenotype$ iff $\attractor \subseteq \phenotype$ (or equivalently $\attractor \cap \phenotype = \attractor$).
     \item $\attractor$ \emph{avoids} $\phenotype$ iff $\attractor \setminus \phenotype = \attractor$ (or equivalently $\attractor \cap \phenotype = \emptyset$).
-    \item $\attractor$ \emph{oscillates} through $\phenotype$ iff $ \attractor \cap \phenotype \neq \emptyset \land \attractor \setminus \phenotype \neq \emptyset$.
+    \item $\attractor$ \emph{oscillates} through $\phenotype$ otherwise (equivalently $\emptyset \neq ( \attractor \cap \phenotype ) \neq \attractor $)
   \end{itemize}
   
 If \emph{all} attractors of a \BN{} have the same relationship with a phenotype, we can generalize the relationship to a whole \BN{}.

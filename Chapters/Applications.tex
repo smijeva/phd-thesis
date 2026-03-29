@@ -348,8 +348,8 @@ We employ our methodology to analyse two novel models. First, a smaller-scale ab
 
 Second, we consider a larger-scale model~\cite{Grieco2013} of general MAPK signalling affecting cell proliferation, apoptosis, and growth arrest. We first analyze the original model as presented in~\cite{Grieco2013}, and then we embed FGFR3-ERK mechanism into the model and the unknown details of the signalling logics is further explored with the control-guided framework.
 
-% Technical details (AEON.py and notebooks in the appendix)
-All our experiments were conducted using the AEON.py Python package~\cite{aeonpy}, which also contains the implementation of the algorithms described in the previous section. The full source code containing all JuPyter notebooks used for the experiments along with the raw results are available at Zenodo doi \url{10.5281/zenodo.16886814}.
+% % Technical details (AEON.py and notebooks in the appendix)
+% All our experiments were conducted using the AEON.py Python package~\cite{aeonpy}, which also contains the implementation of the algorithms described in the previous section. The full source code containing all JuPyter notebooks used for the experiments along with the raw results are available at Zenodo doi \url{10.5281/zenodo.16886814}.
 
 \subsection{Isolated FGFR3 pathway model}
 
@@ -368,20 +368,21 @@ All our experiments were conducted using the AEON.py Python package~\cite{aeonpy
 
 Based on our previous research we consider a minimalistic model representing an abstracted form of FGFR3-MAPK signaling pathway, focusing on the interactions among FGFR3, FRS2, SHIP2 and ERK proteins~\cite{Barnat2017}. The model is encoded as a PSBN consisting of 12 variables and 16 regulatory interactions. The model contains one input -- \var{FGFR3\_stimulus}, which is considered implicitly set to true to simulate constitutive activation of the pathway via suitable FGF ligands. This stimulus can be however disabled (perturbed to the value 0) with the phenotype control. The update logics of \var{FGFR3} and \var{FRS2} is partially specified reflecting the fact that the combined effect of variables regulating their activity as well as the presence of particular regulations is not well understood~\cite{Krejci2012,Santhana2023}.
 
-The dynamics of the final protein component ERK closing the isolated pathway forms the (model) phenotype. In particular, we consider three protein-level phenotypes targeting ERK activity: \var{ERK} stabilization, \var{ERK} avoidance, and \var{ERK} oscillation. Using the following observations found in literature we perform control-guided model refinement (as depicted in \autoref{fig:control_workflow}) to exclude biologically inconsistent interpretations of the \PBN{}. Our hypotheses are based on the experimental evidence established with \emph{chondrocyte} cells. 
+The dynamics of the final protein component ERK closing the isolated pathway forms the (model) phenotype. In particular, we consider three protein-level phenotypes targeting ERK activity: \var{ERK} stabilization, \var{ERK} avoidance, and \var{ERK} oscillation. 
 
-\begin{enumerate}
-  \item Oscillation of ERK activity can be observed in some settings \cite{Raina2022}.
-  \item FGF stimulus must be present for ERK activation -- the presence of FGF ligands bond to FGFR3 is \emph{de facto} necessary for FGFR3 activation which in case of the isolated mechanism implies the activation of ERK \cite{Krejci2012}.
-  \item SHIP2 knock-out causes ERK activity to be down-regulated but not suppressed completely \cite{Fafilek2018}.
-\end{enumerate}
+%Using the following observations found in literature we perform control-guided model refinement (as depicted in \autoref{fig:control_workflow}) to exclude biologically inconsistent interpretations of the \PBN{}. Our hypotheses are based on the experimental evidence established with \emph{chondrocyte} cells. 
 
-We use these observations as accepted prior knowledge to reduce the number of admissible interpretations of the \PBN{}.
+% \begin{enumerate}
+%   \item Oscillation of ERK activity can be observed in some settings \cite{Raina2022}.
+%   \item FGF stimulus must be present for ERK activation -- the presence of FGF ligands bond to FGFR3 is \emph{de facto} necessary for FGFR3 activation which in case of the isolated mechanism implies the activation of ERK \cite{Krejci2012}.
+%   \item SHIP2 knock-out causes ERK activity to be down-regulated but not suppressed completely \cite{Fafilek2018}.
+% \end{enumerate}
+
+% We use these observations as accepted prior knowledge to reduce the number of admissible interpretations of the \PBN{}.
 
 \begin{table}[]
 \caption{\textbf{FGFR3 pathway model update functions.} The table shows the update functions of the FGFR3 pathway model. The variables \var{FGFR3} and \var{FRS2} are partially specified, while the rest of the variables are fully specified. The function symbols $f$, $g$ and $h$ are unary function symbols, while $\land$ and $\lor$ are binary logical operators.}
 \centering
-\resizebox{\textwidth}{!}{
 \begin{tabular}{ll}
 \hline
 \textbf{Variable}   & \textbf{Function}                                         \\
@@ -398,7 +399,7 @@ We use these observations as accepted prior knowledge to reduce the number of ad
 \var{MAP3K1\_3}  & \var{RAF}                                              \\
 \var{MEK1\_2}    & \var{MAP3K1\_3}  \\
 \hline
-\end{tabular}}
+\end{tabular}
 
 \end{table}
 
@@ -431,11 +432,11 @@ We use these observations as accepted prior knowledge to reduce the number of ad
   \end{table}
 
 
-Due to the introduced uncertainty, the FGFR3 model has 888 possible interpretations. Due to unary function symbol design, there are only 114 semantically distinct interpretations, nonetheless, the for the computation framework we will consider all 888.
+ue to the introduced uncertainty, the FGFR3 model has 888 possible interpretations. Due to unary function symbol design, there are only 114 semantically distinct interpretations, nonetheless, the for the computation framework we will consider all 888.
 
-Let us we observe the non-perturbed behavior -- the ``natural'' phenotypes of the model. After running a simple algorithm for searching the attractors supported in AEON.py, we learn that the unperturbed model stabilizes in 2 types of attractors -- \var{ERK} stabilization (556 interpretations) and \var{ERxK} oscillation (332 interpretations). The \var{ERK} avoidance phenotype was not observed in the non-perturbed version of the model. This is due to the presence of the \var{FGFR3\_stimulus} which we have set to true for our experiments. The stimulus transitively activates \var{ERK} via \var{FGFR3}, \var{FRS2} and other transitive variables.
+Let us we observe the non-perturbed behavior -- the ``natural'' phenotypes of the model. After running a simple algorithm for searching the attractors supported in AEON.py, we learn that the unperturbed model stabilizes in 2 types of attractors -- \var{ERK} stabilisation (556 interpretations) and \var{ERK} oscillation (332 interpretations). The \var{ERK} avoidance phenotype was not observed in the non-perturbed version of the model. This is due to the presence of the \var{FGFR3\_stimulus} which we have set to true for our experiments. The stimulus transitively activates \var{ERK} via \var{FGFR3}, \var{FRS2} and other transitive variables.
 
-Next, we computed the phenotype control for all three considered phenotypes. The results are summarized in \autoref{tab:fgfr3_isolated}. Due to the small size of the model, we list only perturbations up to size one, since perturbations of bigger size did not achieve better results; not even in case of oscillation, where no perturbation has 100\% robustness. Even when perturbations of all sizes were computed, no perturbation achieved better robustness towards oscillation phenotype than \var{SHIP2}=0. This might be due to the incomplete model design, which we will discuss later.
+Next, we computed the phenotype control for all three considered phenotypes. The results are summarized in Table~\ref{tab:fgfr3_isolated}. Due to the small size of the model, we list only perturbations up to size one, since perturbations of bigger size did not achieve better results; not even in case of oscillation, where no perturbation has 100\% robustness. Even when perturbations of all sizes were computed, no perturbation achieved better robustness towards oscillation phenotype than \var{SHIP2}=0. This might be due to the incomplete model design, which we will discuss later.
 
 \begin{figure}[ht!]
 \captionsetup[subfigure]{justification=centering}
@@ -469,13 +470,13 @@ Next, we computed the phenotype control for all three considered phenotypes. The
 
 We can also notice, that perturbation of the same variable to both true and false may lead to the same phenotype (e.g. \var{SPRY} in case of oscillation). Similarly, the same perturbations can lead to multiple phenotypes (e.g. \var{SHIP2}=1). This is because in these cases the partially specified functions have a greater influence on the network dynamics, than the perturbation itself -- thus, another plausible explanation is, that the network behaves the same way as without any perturbations. In case, this is not expected behavior, this can be seen as a flaw introduced in some interpretations of the model which should be therefore refuted.
 
-To probe further all the unexpected model behavior we can use the framework of perturbation experiments (also known as knockout and over-expression experiments~\cite{UdDean2016}). First, we need to observe which perturbations yield the most differing results in terms of controlled interpretations. To do this, we can depict intersections of the interpretation sets controlled by various perturbations with a robustness lesser than 100\%. The results of such an analysis are displayed in \autoref{fig:fgfr3_isolated_exp}. We use Upset plots for the visualization~\cite{Lex2014}.
+To probe further all the unexpected model behavior we can use the framework of perturbation experiments (also known as knockout and over-expression experiments~\cite{UdDean2016}). First, we need to observe which perturbations yield the most differing results in terms of controlled interpretations. To do this, we can depict intersections of the interpretation sets controlled by various perturbations with a robustness lesser than 100\%. The results of such an analysis are displayed in Fig.~\ref{fig:fgfr3_isolated_exp}. We use Upset plots for the visualization~\cite{Lex2014}.
 
-We can see, that \var{ERK} avoidance case (\autoref{subfig:false_upset}) gives us very straightforward answer of which perturbations should be selected, since there are only two perturbations (\var{FGFR3\_stimulus}=0, \var{SPRY}=1) covering unique sets of interpretations (the same can be seen from \autoref{tab:fgfr3_isolated}). 
+We can see, that \var{ERK} avoidance case (Subfig.~\ref{subfig:false_upset}) gives us very straightforward answer of which perturbations should be selected, since there are only two perturbations (\var{FGFR3\_stimulus}=0 and \var{SPRY}=1) covering unique sets of interpretations (the same can be seen from Table~\ref{tab:fgfr3_isolated}). 
 
-The case of \var{ERK} stabilization (\autoref{subfig:true_upset}) is a bit more complicated, as there are multiple perturbations that could be selected. Nonetheless, we can notice, that \var{SPRY}=0 and \var{FGFR3}=1 should be selected, since they cover some unique set of interpretations. Similarly, \var{SHIP2}=0 should be selected, because it is missing some interpretations covered by all other perturbations (i.e, it is unique by interpretations which it is \emph{not} covering). Finally, as we can see in the \autoref{subfig:true_venn}, these three perturbations are sufficient to cover all subset cases of the \var{ERK} stabilization.
+The case of \var{ERK} stabilisation (Subfig.~\ref{subfig:true_upset}) is a bit more complicated, as there are multiple perturbations that could be selected. Nonetheless, we can notice, that \var{SPRY}=0 and \var{FGFR3}=1 should be selected, since they cover some unique set of interpretations. Similarly, \var{SHIP2}=0 should be selected, because it is missing some interpretations covered by all other perturbations (i.e, it is unique by interpretations which it is \emph{not} covering). Finally, as we can see in the Subfig.~\ref{subfig:true_venn}, these three perturbations are sufficient to cover all subset cases of the \var{ERK} stabilisation.
 
-Last but not least, we consider phenotype control to oscillating \var{ERK} (\autoref{subfig:oscillation_upset}). We can notice, that we have already selected all other perturbations to be in the perturbation experiments apart from an empty perturbation and \var{SHIP2}=1. However, these two perturbations have exactly the same behavior, and thus we can arbitrarily choose any of them -- we choose an empty perturbation (since it would be expected to be easier to implement). The results of the perturbation experiments are summarized in \autoref{tab:fgfr3_isolated_interpretations}.
+Last but not least, we consider phenotype control to oscillating \var{ERK} (Subfig.~\ref{subfig:oscillation_upset}). We can notice, that we have already selected all other perturbations to be in the perturbation experiments apart from an empty perturbation and \var{SHIP2}=1. However, these two perturbations have exactly the same behavior, and thus we can arbitrarily choose any of them -- we choose an empty perturbation (since it would be expected to be easier to implement). The results of the perturbation experiments are summarized in Table~\ref{tab:fgfr3_isolated_interpretations}.
 
 \begin{table}[htb!]
   \caption{\textbf{Information gain of interpretation features.} The table shows information gain of the three best performing features (four in case of exact match) per each labelling (assessment whether a perturbation is working). The features highlighted in blue were selected to be considered in the next experiment.}
@@ -518,50 +519,50 @@ Last but not least, we consider phenotype control to oscillating \var{ERK} (\aut
 
 Before diving into the results of the interpretation split and model behavior under differing perturbations we might first pose the question: ``Why a perturbation works for some particular set of interpretations and not for others?'' in order to better explain the observed model behavior. To inquire that, we can look into a set of common \emph{features} of the labelled interpretations, where \emph{label} is an assessment which phenotype (ERK avoidance, activation, or oscillation) is manifested by a given interpretation.
 
-\begin{table}[htpb!]
-\label{tab:fgfr3_isolated_interpretations}
+\begin{table}[b!]
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
 \checkoddpage
-  \edef\side{\ifoddpage l\else r\fi}
-  \makebox[\textwidth][\side]{% 
-	\begin{minipage}[t]{\fullwidth}
-  \caption{\textbf{Behavior of isolated FGFR3 pathway interpretations under perturbations.} Each row reflects interpretations sharing a particular behavior pattern (ERK exhibiting specific phenotypes under considered perturbation experiments). The first column displays a row index while the second column indicates how many interpretations exhibit the displayed behavior pattern. The second column describes ERK phenotypes achieved under the listed knockout/over-expression experiments, in particular: no perturbation (\O), \var{SPRY}=0 ($\perturbation_1$), \var{SHIP2}=0 ($\perturbation_2$), \var{FGFR3\_st.}=0 ($\perturbation_3$), \var{SPRY}=1 ($\perturbation_4$), and \var{FGFR3}=1 ($\perturbation_5$). The values denote the phenotypes: \var{ERK} stabilization (1), avoidance (0), or oscillation (\oscil). The last column represents relevant model features, i.e., the fact whether all corresponding interpretations fullfill them: \var{SPRY}$\rightarrow$\var{FRS2} ($F_1$), \var{GRB2}$\rightarrow$\var{FGFR3} ($F_2$) and \var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus} ($F_3$). Rows highlighted in \sethlcolor{lightgray}\hl{dark gray} violate observation (1) and rows in \sethlcolor{Gray}\hl{light gray} violate observation (2). The row highlighted in \sethlcolor{green!30}\hl{green} completely satisfies all given observations. White rows do not violate any of the observations, but we can not conclude if they satisfy observation (3). The last six columns are features selected from \autoref{tab:fgfr3_isolated_features}. The features are evaluated based on interpretations sets in the given rows.}
-  \vspace{5pt}
-    \resizebox{\textwidth}{!}{
+\edef\side{\ifoddpage l\else r\fi}
+\makebox[\textwidth][\side]{% 
+\begin{minipage}[t]{\fullwidth}
+  \caption{\textbf{Behavior of isolated FGFR3 pathway interpretations under perturbations.} Each row reflects interpretations sharing a particular behaviour pattern (ERK exhibiting specific phenotypes under considered perturbation experiments). The first column displays a row index while the second column indicates how many interpretations exhibit the displayed behavior pattern. The second column describes ERK phenotypes achieved under the listed knockout/over-expression experiments, in particular: no perturbation (\O), \var{SPRY}=0 ($\perturbation_1$), \var{SHIP2}=0 ($\perturbation_2$), \var{FGFR3\_stimulus}=0 ($\perturbation_3$), \var{SPRY}=1 ($\perturbation_4$), and \var{FGFR3}=1 ($\perturbation_5$). The values denote the phenotypes: \var{ERK} stabilisation (1), avoidance (0), or oscillation (\oscil). The last column represents relevant model features, i.e., the fact whether all corresponding interpretations fullfill them: $\exists$\var{SPRY}$\rightarrow$\var{FRS2} ($F_1$), $\forall$\var{SPRY}$\rightarrow$\var{FRS2} ($F_2$), $\exists\var{FGFR3} = \var{FGFR3\_stim.} \land \neg $\var{GRB2} ($F_3$), \var{GRB2}$\rightarrow$\var{FGFR3} ($F_4$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ \var{SHIP2} ($F_5$), $\forall$\var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus} ($F_6$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ $\neg$\var{SPRY} ($F_7$), and $\forall$\var{SHIP2}$\rightarrow$\var{FRS2} ($F_8$). Rows highlighted in \sethlcolor{lightgray}\hl{gray} allow non-trivial \var{ERK} activity even with \var{FGFR3\_stimulus=0}, violating our first assumption. The three \sethlcolor{green!30}\hl{green} rows are the rows which satisfy both of our control-guided assumptions.}
+    \centering
   \begin{tabular}{|r|l|cccccc|cccccccc|}
 \hline
      &    & \multicolumn{6}{c|}{ERK under perturbation}                 &  \multicolumn{8}{c|}{Features of $\interpretationSet$} \\ 
   \# & $\mid\interpretationSet\mid$ & \O & $\perturbation_1$ & $\perturbation_2$ & $\perturbation_3$ & $\perturbation_4$ & $\perturbation_5$ & $\feature_1$ & $\feature_2$ & $\feature_3$ & $\feature_4$ & $\feature_5$ & $\feature_6$ & $\feature_7$ & $\feature_8$\\[1ex] \hline 
   1  & 277 & \oscil & \oscil & \oscil & 0 & \oscil      & 1      & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 1 \\
-  \rowcolor{lightgray}
   2  & 259 & 1      & 1      & 1      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-  \rowcolor{Gray}
+  \rowcolor{lightgray}  
   3  & 259 & 1      & 1      & 1      & \oscil     & 1 & 1      & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0\\
   4  & 22  & \oscil & \oscil & \oscil & 0 & \oscil      & \oscil & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 \\
   \rowcolor{green!30}
   5  & 18  & 1      & 1      & \oscil      & 0 & 1      & 1      & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 \\
-  \rowcolor{Gray}
+  \rowcolor{lightgray}  
   6   & 18  & 1      & 1      & \oscil    & \oscil    & 1 & 1      & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
   7  & 9   & \oscil & \oscil & \oscil     & 0 & 0      & \oscil & 1 & 1 & 1 & 1 & 0 & 0 & 1 & 0 \\
-  \rowcolor{Gray}
+   \rowcolor{lightgray}  
   8  & 9   & \oscil & \oscil & \oscil & \oscil & \oscil & \oscil & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
   9  & 4   & \oscil & 1      & \oscil & 0 & \oscil     & \oscil  & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-  \rowcolor{Gray}
+   \rowcolor{lightgray}  
   10 & 4   & \oscil & 1      & \oscil & \oscil & \oscil & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
-  \rowcolor{Gray}
+   \rowcolor{lightgray}  
   11 & 4   & \oscil & \oscil & \oscil  & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
+    \rowcolor{green!30}
   12 & 1   & \oscil & \oscil  & 0  & 0 & \oscil     & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 \\
-  \rowcolor{Gray}
+  \rowcolor{lightgray}  
   13 & 1   & \oscil & 1      & \oscil      & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 \\
-  \rowcolor{lightgray}
+  \rowcolor{green!30}
   14 & 1   & 1      & 1      & 0      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1\\
-  \rowcolor{Gray}
+  \rowcolor{lightgray}  
   15 & 1   & 1  &  1 &  0      & \oscil      & 1        & 1      & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 \\
   16 & 1   & \oscil & 1 & \oscil & 0      & 0      & \oscil     & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 0 \\
   \hline
-  \end{tabular}}
-  \end{minipage}
-  }
-\end{table}
+  \end{tabular}
+  \label{tab:fgfr3_isolated_interpretations}
+  \end{minipage}}
+  \end{table}
 
 
 Having a derived set of features and labels, we can compute \emph{normalized mutual information score} (NMIS)~\cite{Kent83} to see which of the features are the most informative per each labelling. We use the following formulas to compute NMIS:
@@ -580,15 +581,41 @@ The best performing results of this analysis are shown in \autoref{tab:fgfr3_iso
 
 For each perturbation in \autoref{tab:grieco_phenotypes_perturbations}, we select two features with the biggest NMIS, unless we obtain complete information (1.0) from a single feature. Therefore, we obtain eight distinct features in total, as can be seen in \autoref{tab:fgfr3_isolated_features}. 
 
-Finally, we can analyze perturbation-phenotype table extended with most representative features in \autoref{tab:fgfr3_isolated_interpretations}. We can also demonstrate how analytical observations may easily narrow down sensible interpretations. For example, we may notice, that the rows \#2 and \#14 of the table never lead to the ERK oscillation which can happen only in the absence of cyclic regulations in the partially specified network. This is also reflected by absence of any regulation features for row \#2 as can be seen in detail in the full feature \autoref{tab:fgfr3_isolated_features}. Even though the row \#14 contains one cycle inducing regulations, it is not sufficient to expose the oscillation behavior for any interpretation, and thus we refute this interpretation as well.
+Next, we can analyse perturbation-phenotype table extended with most representative features in Table~\ref{tab:fgfr3_isolated_interpretations}. We can also demonstrate how analytical observations may easily narrow down sensible interpretations. For example, we may notice, that the rows \#2 and \#14 of the table never lead to the ERK oscillation which can happen only in the absence of cyclic regulations in the partially specified network. This is also reflected by absence of any regulation features for row \#2 as can be seen in detail in the full feature table~\ref{tab:fgfr3_isolated_features}. Even though the row \#14 contains one cycle inducing regulations, it is not sufficient to expose the oscillation behavior for any interpretation, and thus we refute this interpretation as well.
 
 Another types of interpretations which we refute are the ones where ERK oscillates under \var{FGFR3\_stimulus}=0 (rows \#3, 6, 8, 10, 11, 13, 15). The original intention of the model was, that \var{FGFR3\_stimulus} is required for any \var{ERK} activation. We can also see that exactly the oscillating rows are the ones which contain the feature \var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus}. This shows, that $\neg$\var{GRB2} is sufficient to activate \var{FGFR3} and consequently \var{ERK}, what is in conflict with the intended design.
 
-After refuting the interpretations of the conflicting rows, we end up with 332 accepted interpretations. In an ideal case, we could continue in the model refinement by observing the behavior on the real-world data. Thanks to the previous analytical ruling out of the interpretations, only four perturbation experiments might be sufficient to narrow down the sensible interpretations to a single row of the table (e.g. \var{SPRY}=0 ($\perturbation_1$), \var{SHIP2}=0 ($\perturbation_2$), \var{SPRY}=1 ($\perturbation_4$), and \var{FGFR3}=1 ($\perturbation_5$)). This is because we already discarded all interpretations which do not oscillate under \var{FGFR3\_stimulus}=0 ($\perturbation_3$) and in the remaining rows the behavior of no perturbation ($\emptyset$) is the same (oscillation) apart from row \#5. However, this row, has also unique behavior considering only the selected perturbations, so we can easily distinguish it from the rest even without this experiment.
+Finally, we conducted a literature review in order to identify experimental biology results testing perturbations \var{SHIP2}=0 ($\perturbation_2$) and \var{FGFR3\_stimulus}=0 ($\perturbation_3$), since these perturbations have most prominent efects based on the analytic observations. Studying the recent biological literature related to these signalling components have lead us to declare the following assumptions: 
+First, based on~\cite{Krejci2012}, we expect \var{FGFR3\_stimulus} 
+to be \emph{necessary} to achieve \var{ERK} stabilisation or oscillation in this isolated model. 
+Second, based on~\cite{Fafilek2018}, 
+we observe that \var{SHIP2=0} knock-out causes down-regulation of \var{ERK} activity.
 
-Finally, we can look again at \autoref{tab:fgfr3_isolated} and see how the accepted selection of interpretations sets perform in the robustness measure. These results are contained in column $\rho(R)$. We can see that results are significantly more divergent than before -- the robustness is either close to 1.0 or 0.0. Therefore, we can see, that we improved consistency (in the most of the cases) of the model interpretations using analytical approach only.
+To put the literature-based assumptions into context, we can easily identify that only 9 equivalence classes 
+(namely 1,2,4,5,7,9,12,14,16) adhere to our first assumption, completely eliminating \var{ERK} activity in response 
+to \var{FGFR3\_stimulus=0} ($Q_3$) perturbation. Out of these nine options, the second assumption allows to select rows 
+5, 12, and 14, as these are the only cases where the activity of \var{ERK} is plausibly down-regulated compared to 
+the unperturbed network in response to \var{SHIP2=0} knock-out ($Q_2$), resulting in 20/888 candidate networks. 
+
+To disambiguate between rows 5, 12, and 14, we would have to quantify the effects observed by~\cite{Fafilek2018}. 
+However, based on the fact that~\cite{Fafilek2018} do not report \var{ERK} to be completely inactive, 
+we can safely eliminate rows 12 and 14 (where \var{ERK} phenotype drops to 0). 
+Furthermore, considering the fact that \var{ERK} is known to oscillate~\cite{Raina2022}, 
+we prefer row 5 as the most likely option. 
 
 \subsection{Grieco MAPK}
+
+\begin{figure}[ht!]
+\checkoddpage
+  \edef\side{\ifoddpage l\else r\fi}
+  \makebox[\textwidth][\side]{% 
+	\begin{minipage}[t]{\fullwidth}
+  \centering
+  \includegraphics[width=\textwidth]{Figures/grieco_rg.png}
+  \caption{\textbf{Regulatory network of the MAPK signalling pathway model.} The model consists of 53 variables and 104 regulatory interactions. The model is directly taken from~\cite{Grieco2013}}
+  \label{fig:grieco_rn}
+  \end{minipage}
+}\end{figure}
 
 % - Model introduction
 % - Attractor (phenotype) classification
@@ -598,20 +625,9 @@ Finally, we can look again at \autoref{tab:fgfr3_isolated} and see how the accep
 
 Another model we consider is the Grieco et al. version of MAPK model as presented in~\cite{Grieco2013}. This model represents a bladder cancer behavior using a combination of three pathways (FGFR3, EFGR, and TGFBR). The model has four inputs (a stimulus for each pathway and a DNA damage). We consider these inputs set to a constant false with an exception to FGFR3 which set to true (as in the previous model).
 
-The regulatory network of the model can be found in \autoref{fig:grieco_rn}. The exact function definitions can be found in \textcolor{red}{TODO}
+The regulatory network of the model can be found in \autoref{fig:grieco_rn}. The exact function definitions can be found in \textcolor{red}{Digital appendix}.
 
-\begin{figure}[ht!]
-\label{fig:grieco_rn}
-\checkoddpage
-  \edef\side{\ifoddpage l\else r\fi}
-  \makebox[\textwidth][\side]{% 
-	\begin{minipage}[t]{\fullwidth}
-  \centering
-  \includegraphics[width=\textwidth]{Figures/grieco_rg.png}
-  \caption{\textbf{Regulatory network of the MAPK signalling pathway model.} The model consists of 53 variables and 104 regulatory interactions. The model is directly taken from~\cite{Grieco2013}}
-  \end{minipage}
-  }
-\end{figure}
+
 
 % \begin{table}[]
 % \checkoddpage
@@ -690,9 +706,13 @@ Moreover, the MAPK model contains three outputs variables (apoptosis, growth arr
 
 
 \begin{table}[ht!]
+  \checkoddpage
+  \edef\side{\ifoddpage l\else r\fi}
+  \makebox[\textwidth][\side]{% 
+	\begin{minipage}[t]{\fullwidth}
   \small
   \caption{\textbf{MAPK phenotypes.} The cardinal phenotypes of the Grieco MAPK model which will be used throughout the experiments. The first two columns represent the full name and abbreviation of the phenotype. The last three columns represent the model output values which are representing a given phenotype.} 
-  \resizebox{\textwidth}{!}{
+  \centering
   \begin{tabular}{lc|ccc}
   \hline 
   \textbf{Phenotype} & \textbf{Abbreviation} & \textbf{Apoptosis} & \textbf{Growth arrest} & \textbf{Proliferation} \\
@@ -702,14 +722,13 @@ Moreover, the MAPK model contains three outputs variables (apoptosis, growth arr
   Proliferation & P & 0         & 0             & 1             \\
   No decision   & ND & 0         & 0             & 0          \\
   \hline  \addlinespace
-  \end{tabular}}
+  \end{tabular}
   \label{tab:grieco_phenotypes}
+  \end{minipage}
+  }
 \end{table}
 
-In the study~\cite{Grieco2013}, the full model version with 53 variables was presented. However, the simulations of knockout and over-expression experiments were performed on a reduced variant of the model (having only 17 variables) to observe how they impact the model phenotypes. Our novel approach allows us to consider the full model and all possible perturbations of the model at once, which helps us to obtain more comprehensive results. \autoref{tab:grieco_phenotypes_perturbations} shows the exhaustive enumeration of one-size perturbations which lead to any phenotype (as in \autoref{tab:grieco_phenotypes}), including all observed combinations of phenotype oscillations.
-
 \begin{table}[!htbp]
-    \label{tab:grieco_phenotypes_perturbations}
   \checkoddpage
   \edef\side{\ifoddpage l\else r\fi}
   \makebox[\textwidth][\side]{% 
@@ -735,9 +754,12 @@ In the study~\cite{Grieco2013}, the full model version with 53 variables was pre
   \begin{tabular}[c]{@{}l@{}}\oscil $\forall$ \end{tabular} & $\emptyset$ & 1  \\ 
   \midrule
   \end{tabular}
+      \label{tab:grieco_phenotypes_perturbations}
   \end{minipage}
   }
 \end{table}
+
+In the study~\cite{Grieco2013}, the full model version with 53 variables was presented. However, the simulations of knockout and over-expression experiments were performed on a reduced variant of the model (having only 17 variables) to observe how they impact the model phenotypes. Our novel approach allows us to consider the full model and all possible perturbations of the model at once, which helps us to obtain more comprehensive results. \autoref{tab:grieco_phenotypes_perturbations} shows the exhaustive enumeration of one-size perturbations which lead to any phenotype (as in \autoref{tab:grieco_phenotypes}), including all observed combinations of phenotype oscillations.
 
 
 We can notice, that stabilization in all phenotypes apart from the growth arrest is possible with perturbations of size one. The unperturbed model behavior is an oscillation through all the phenotypes. We can also observe, that if the only input which we had set to true (\var{FGFR3\_stimulus}) is disabled, the model stabilizes in a no decision phenotype. 
@@ -750,14 +772,15 @@ We can also observe the influence of ERK, which was representing the phenotype i
 
 \subsection{Extended FGFR3 pathway MAPK}
 
-\begin{table}[htb!]
-  \label{tab:grieco_extension}
+To demonstrate our method on a larger-scale model, we extend the fully specified model~\cite{Grieco2013} that puts FGFR3-MAPK signalling into a broader context of protein interactions having the crucial impact on cell growth/division. The model has originally targeted bladder tissue cells. Our extension employs the PSBN framework allowing us to establish a partially specified model that incorporates mechanisms which are not yet understood well. In particular, based on Reactome~\cite{Milacic2023} and state-of-the-art knowledge~\cite{Fafilek2018,Fafilek2022} we compile an extended model bringing the updated FGFR3 activation mechanism to the Grieco model. 
+
+
+\begin{table}[htbp!]
 \checkoddpage
 \edef\side{\ifoddpage l\else r\fi}
 \makebox[\textwidth][\side]{% 
 \begin{minipage}[t]{\fullwidth}
 \caption{\textbf{Changes done to model MAPK model.} The table shows the changes done to the original model~\cite{Grieco2013} in order to obtain the extended model. The first column shows the variable and a type of the change. The second column shows the original list of regulations or functions. The third column shows the new list of regulations or functions with the changes highlighted in \textcolor{blue}{blue} font. The regulations marked with + are positives, - are negatives and ? denotes that regulation might not be present in an interpretation. Double ?? denotes that the regulation might be present in an interpretation as both positive and negative. Functions are denoted with $f$ and $g$ are the functions which are not specified in the model, but their instance must adhere to the listed regulations.}
-\resizebox{\textwidth}{!}{
 \begin{tabular}{lll}
 \hline
  &  \textbf{Original} & \textbf{New} \\
@@ -768,21 +791,17 @@ We can also observe the influence of ERK, which was representing the phenotype i
 \var{FRS2} def. & \var{FGFR3} $\land$ $\neg$(
 \var{GRB2} $\lor$ \var{SPRY}) & \textcolor{blue}{$g$(\var{FGFR3},\var{ERK},\var{GRB2},\var{SHIP2},\var{SPRY})} \\
 \hline
-\end{tabular}}
+\end{tabular}
+\label{tab:grieco_extension}
 \end{minipage}
 }
 \end{table}
 
-
-To demonstrate our method on a larger-scale model, we extend the fully specified model~\cite{Grieco2013} that puts FGFR3-MAPK signalling into a broader context of protein interactions having the crucial impact on cell growth/division. The model has originally targeted bladder tissue cells. Our extension employs the PSBN framework allowing us to establish a partially specified model that incorporates mechanisms which are not yet understood well. In particular, based on Reactome~\cite{Milacic2023} and state-of-the-art knowledge~\cite{Fafilek2018,Fafilek2022} we compile an extended model bringing the updated FGFR3 activation mechanism to the Grieco model. This is done by embedding the isolated FGFR3-MAPK pathway studied in previous section. At the level of regulations, the embedding brings in: (1) the addition of SHIP2 affecting the FRS2 adapter phoshorylation capabilities as discussed within the isolated model, 
-%\TODO{put more explanations at the place of the SHIP2 observation} 
-(2) addition of the direct negative feedback from ERK to FRS2 (experimentally studied mostly in the context of chondrocytes),
-%  -- \TODO{mention feedback in intro}, 
-(3) making all negative feedback regulations affecting FGFR3 and FRS2 non-essential.
-
-At the level of logical rules, the update functions of \var{FGFR3} and \var{FRS2} are made unspecified with the only constraint that \var{FGFR3\_stimulus} is left as a necessary precursor of \var{FGFR3} activation. The chosen level of abstraction reflects the fact that biochemical mechanisms specifying how the respective regulations affecting \var{FGFR3} and \var{FRS2} are combined are not currently known. Same as before, we consider the inputs to be fixed to 0, with an exception to FGFR3 stimulus. The resulting model contains 54 variables and four cardinal phenotypes as described in~\cite{Grieco2013} -- apoptosis (A), growth arrest (GA), no decision (ND), and proliferation (P). The exact overview of the model changes is available in the \autoref{tab:grieco_extension}.
-
-\begin{table}[]
+\begin{table}[htbp!]
+\checkoddpage
+\edef\side{\ifoddpage l\else r\fi}
+\makebox[\textwidth][\side]{% 
+\begin{minipage}[t]{\fullwidth}
 \centering
 \caption{\textbf{Extended MAPK model performance.} The table shows the performance of the extended MAPK model. The first column shows the phenotype, the second column shows the relation to the perturbation (standard, avoid, oscillation), and the third column shows the time of the computation. The computations were performed on a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory.}
 \begin{tabular}{llr}
@@ -803,16 +822,45 @@ P & oscillation & 13:09:52 \\
 \hline
 \end{tabular}
 \label{tab:fgfr3extended_perf}
+\end{minipage}
+}
 \end{table}
 
 
+
+
+This is done by embedding the isolated FGFR3-MAPK pathway studied in previous section. At the level of regulations, the embedding brings in: 
+
+\begin{enumerate}
+  \item Addition of SHIP2 affecting the FRS2 adapter phoshorylation capabilities as discussed within the isolated model
+  \item Addition of the positive feedback from ERK to FRS2 (experimentally studied mostly in the context of chondrocytes)
+  \item Addition of the positive feedback from ERK to GRB2 (experimentally studied mostly in the context of chondrocytes)
+\end{enumerate}
+
+At the level of logical rules, the update functions of \var{FGFR3} and \var{FRS2} are made unspecified with the only constraint that \var{FGFR3\_stimulus} is left as a necessary precursor of \var{FGFR3} activation. The chosen level of abstraction reflects the fact that biochemical mechanisms specifying how the respective regulations affecting \var{FGFR3} and \var{FRS2} are combined are not currently known. Same as before, we consider the inputs to be fixed to 0, with an exception to FGFR3 stimulus. The resulting model contains 54 variables and four cardinal phenotypes as described in~\cite{Grieco2013} -- apoptosis (A), growth arrest (GA), no decision (ND), and proliferation (P). The exact overview of the model changes is available in the \autoref{tab:grieco_extension}.
+
+
+\begin{figure}[htbp!]
+  \centering
+  \includegraphics[width=\textwidth]{Figures/upset_extended.png}
+  \caption{\textbf{Upset plot for the FGFR3 extended model.} The plot clearly shows, that each perturbation achieves a unique interpretation partitioning. Moreover, it is not possible to achieve two different phenotypes at once using the same perturbation. The perturbations are not unique, since we consider all phenotypes and perturbations at once.}
+  \label{fig:extended_upset}
+\end{figure}
+
+
+The goal of the analysis is to apply control-guided refinement to identify perturbations that can reduce the set of possible interpretations of the extended PSBN. We consider the hypotheses on the FGFR3 signalling mechanisms stated in previous section and the pior knowledge based on~\cite{Grieco2013,Vaque2014,Stanislaus2012}.
+
+
+
+First, we compute control for all phenotypes including oscillations among them. We restrict the results to perturbations of size up to 1. The performance results are shown in \autoref{tab:fgfr3extended_perf}. We can see, that our method was able to compute perturbations for all cardinal phenotypes in a reasonable time.
+
 \sethlcolor{green!30}
-\begin{table}[bh!]
+\begin{table}[btph!]
   \caption{\textbf{Phenotype control of extended MAPK model.} The first column shows the (stable) phenotype or multiple oscillating phenotypes manifested by the model under perturbations listed in the second column. Perturbations in \textcolor{blue}{blue} font are working in the original~\cite{Grieco2013} model. Perturbations highlighted in \hl{green} are the reference perturbations we used for the model refinement. The third column displays the long-term ERK activity, and the last column shows the robustness of respective perturbations. The symbol '*' denotes that we observe amiguous ERK behavior under the given perturbations.}
   \centering
   \small
   \begin{tabular}{rlccc}
-  \textbf{\phenotype} & \textbf{Perturbations} & ERK & $\robustness(\allInterpretations)$ & $\robustness(\interpretationSet)$ \\ \midrule
+  \textbf{\phenotype} & \textbf{Perturbations} & ERK & $\robustness$ for $\allInterpretations$ & $\robustness$ for $\interpretationSet$ \\ \midrule
   A & \begin{tabular}[c]{@{}l@{}}\textcolor{blue}{\var{ATM}=1,\var{CREB}=0,\var{DNA\_dmg}=1,\var{DUSP1}=0},\\ \textcolor{blue}{\var{TAK1}=1,\var{TAOK}=1,\var{TGFBR}=1,\var{TGFBR\_st.}=1}\end{tabular} & 0 & 1 & 1\\
   & \varhl{PLCG}\hl{=0} & 0 & 0.80 & 1\\ 
   & \textcolor{blue}{\var{FRS2}=1,\var{GRB2}=1} & 0 & 0.64 & 1\\
@@ -852,39 +900,11 @@ P & oscillation & 13:09:52 \\
   \label{tab:fgfr3extended}
 \end{table}
 
-
-The goal of the analysis is to apply control-guided refinement to identify perturbations that can reduce the set of possible interpretations of the extended PSBN. We consider the hypotheses on the FGFR3 signalling mechanisms stated in previous section and the pior knowledge based on~\cite{Grieco2013,Vaque2014,Stanislaus2012}. 
-
-First, we compute control for all phenotypes including oscillations among them. We restrict the results to perturbations of size up to 1. The performance results are shown in \autoref{tab:fgfr3extended_perf}. We can see, that our method was able to compute perturbations for all cardinal phenotypes in a reasonable time.
-
-The results are shown in \autoref{tab:fgfr3extended}. We can see, that perturbations can achieve all the four cardinal phenotypes as well as achiavable oscillations among them. We can also observe the correlation between the ERK activity and the proliferation phenotype -- in particular, the ERK stabilisation is required for the proliferation phenotype, while apoptosis phenotype drives ERK avoidance.
-
-The results highlighted in blue correspond with the perturbations computed on the original model~\cite{Grieco2013} (see \autoref{tab:grieco_phenotypes_perturbations}). Moreover, the results include several perturbation that have not been observed before. Notably, there is the perturbation \var{PLCG}=0 which leads to apoptosis stabilization. This perturbation is not present in the original model, however, it has been observed in~\cite{Vaque2014,Stanislaus2012} that PLCG is a driver for cell proliferation while its inhibition can lead to apoptosis. This is a strong evidence that this perturbation is indeed valid, and we can use it for our model refinement.
-
-Based on the discussion above, the perturbations \var{ERK}=1 (achieving proliferation) and \var{PLCG}=0 (leading to apoptosis) are strongly affecting the long-term behavior of the model. To that end, we use this knowledge to complete the first iteration of the control-guided refinement procedure.
-
-\begin{figure}[htb!]
-  \centering
-  \includegraphics[width=\textwidth]{Figures/upset_extended.png}
-  \caption{\textbf{Upset plot for the FGFR3 extended model.} The plot clearly shows, that each perturbation achieves a unique interpretation partitioning. Moreover, it is not possible to achieve two different phenotypes at once using the same perturbation. The perturbations are not unique, since we consider all phenotypes and perturbations at once.}
-  \label{fig:extended_upset}
-\end{figure}
-
-Analogously to the isolated model case study, we compute the new control results shown in the last column of \autoref{tab:fgfr3extended}. 
-
-
-Next, we select perturbations achieving partitioning to distinct behavior patterns. Due to a big number of viable perturbations with non-100\% robustness, we first cross-compared all combinations of perturbations and phenotypes they achieve, to obtain a set of perturbation equivalence classes. Such equivalence classes were 10 having 1-3 members. Then, we selected one perturbation from each equivalence class. To verify, that they are indeed unique, we show their intersections in \autoref{fig:extended_upset}. Since we consider all phenotypes and perturbations at once, the perturbations are not unique. With upset diagram, we confirmed that all perturbations help with the interpretation classes partitioning unique and, that no perturbation achieves two different phenotypes at once what is expected for the correctness of our method. 
-
-
 \begin{table}[htb!]
   \caption{\textbf{Behavior of interpretations under perturbations of extended MAPK model.} The first column denotes the size of the interpretation set, while the next five columns denote the behavior of the interpretations under the selected perturbations. The $\mid$ separates possible bi-stability outcome while $\oscil$ denotes oscillation between all model phenotypes.}
 \centering
-    \resizebox{\textwidth}{!}{
-
-  \begin{tabular}{|r|c|c|c|c|c|}
-  \hline
-  $\mid \interpretationSet \mid$ & \var{FGFR3}=0 & \var{FRS2}=0 & \var{PKC}=1 & \var{SHIP2}=0 & \var{SHIP2}=1 \\
-  \hline
+  \begin{tabular}{r|ccccc}
+  $\mid \interpretationSet \mid$ & \var{FGFR3}=0 & \var{FRS2}=0 & \var{PKC}=1 & \var{SHIP2}=0 & \var{SHIP2}=1 \\  \hline
   10752 & A        & $\oscil$         & A        & A             & $\oscil$         \\
   10612 & $\oscil$ & $\oscil$         & $\oscil$ & $\oscil$      & A                \\
   8192  & $\oscil$ & $\oscil$         & $\oscil$ & $\oscil$      & $\oscil$         \\
@@ -906,9 +926,28 @@ Next, we select perturbations achieving partitioning to distinct behavior patter
   43    & $\oscil$ & A$\mid$ND$\mid$P & $\oscil$ & A$\mid$ND$\mid$P & A            \\
   30    & $\oscil$ & A$\mid$ND$\mid$P & $\oscil$ & A$\mid$ND$\mid$P & $\oscil$     \\
   30    & ND       & A$\mid$ND$\mid$P & $\oscil$ & A$\mid$ND$\mid$P & $\oscil$     \\
-  \hline
-  \end{tabular}}
+  \end{tabular}
   \label{tab:fgfr3extended_phenotypes}
   \end{table}
 
-As a result we obtain only five distinct perturbations promising for the model refinement. The perturbations are shown in \autoref{tab:fgfr3extended_phenotypes}. The table displays the admissible perturbations that can be considered for \emph{in vitro} perturbation experiments design leading to potential exclusion of incomplient interpretations of the PSBN. The wet lab testing is necessary to complete the second iteration of the model refinement process, as illustrated in \autoref{fig:control_workflow}. 
+The results are shown in \autoref{tab:fgfr3extended}. We can see, that perturbations can achieve all the four cardinal phenotypes as well as achiavable oscillations among them. We can also observe the correlation between the ERK activity and the proliferation phenotype -- in particular, the ERK stabilisation is required for the proliferation phenotype, while apoptosis phenotype drives ERK avoidance.
+
+The results highlighted in blue correspond with the perturbations computed on the original model~\cite{Grieco2013} (see \autoref{tab:grieco_phenotypes_perturbations}). Moreover, the results include several perturbation that have not been observed before. Notably, there is the perturbation \var{PLCG}=0 which leads to apoptosis stabilization. This perturbation is not present in the original model, however, it has been observed in~\cite{Vaque2014,Stanislaus2012} that PLCG is a driver for cell proliferation while its inhibition can lead to apoptosis. This is a strong evidence that this perturbation is indeed valid, and we can use it for our model refinement.
+
+Based on the discussion above, the perturbations \var{ERK}=1 (achieving proliferation) and \var{PLCG}=0 (leading to apoptosis) are strongly affecting the long-term behavior of the model. To that end, we use this knowledge to complete the first iteration of the control-guided refinement procedure.
+
+
+
+Analogously to the isolated model case study, we compute the new control results shown in the last column of \autoref{tab:fgfr3extended}. 
+
+
+Next, we select perturbations achieving partitioning to distinct behavior patterns. Due to a big number of viable perturbations with non-100\% robustness, we first cross-compared all combinations of perturbations and phenotypes they achieve, to obtain a set of perturbation equivalence classes. Such equivalence classes were 10 having 1-3 members. Then, we selected one perturbation from each equivalence class. To verify, that they are indeed unique, we show their intersections in \autoref{fig:extended_upset}. Since we consider all phenotypes and perturbations at once, the perturbations are not unique. With upset diagram, we confirmed that all perturbations help with the interpretation classes partitioning unique and, that no perturbation achieves two different phenotypes at once what is expected for the correctness of our method. 
+
+
+As a result we obtain only five distinct perturbations promising for the model refinement. The perturbations are shown in \autoref{tab:fgfr3extended_phenotypes}. The table displays the admissible perturbations that can be considered for \emph{in vitro} perturbation experiments design leading to potential exclusion of non-complying interpretations of the PSBN. The wet lab testing is necessary to complete the second iteration of the model refinement process, as illustrated in \autoref{fig:control_workflow}. 
+
+\section{Summary}
+
+In this chapter, we have demonstrated the applicability of our method on two case studies. The primary application of control was to make cell reprogramming perturbations. This type of application is commonly used for therapy design, where the goal is to find perturbations that can drive the system from a diseased state to a healthy one. We have shown the application on a myeloid differentiation model, where we have found perturbations that can drive the system between different types of cell differentiations.
+
+Next, we have shown a framework for the model refinement using control. We have applied this framework on a MAPK model variants where we demonstrated how to use the control results to refine the model and reduce the set of possible interpretations either analytically or searching for perturbations that can be used for the wet lab experiments design.

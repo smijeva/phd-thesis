@@ -419,7 +419,7 @@ Our main algorithms rely on a collection of utility procedures defined in \autor
 \begin{figure}[htp]
 	\begin{centering}
 		\includegraphics[width=.8\textwidth]{Figures/trap_bwd.png}	
-		\caption{\textbf{$\bwd$ and $\fwdClosed$ procedures.} An intuitive example demonstrating the $\bwd$ and $\fwdClosed$ procedures from \autoref{algo:sb}. The highlighted green state is the target attractor state $T$. The shaded area represents the set of states $\bwd(\{T\})$ (weak basin of $T$). The blue area represents the set $\fwdClosed(\bwd(\{T\}))$ (strong basin of $T$).}
+		\caption{\textbf{$\bwd$ and $\fwdClosed$ procedures.} An intuitive example demonstrating the $\bwd$ and $\fwdClosed$ procedures from \autoref{algo:sb}. The highlighted dark green state is the target attractor state $T$. The shaded area represents the set of states $\bwd(\{T\})$ (weak basin of $T$). The solid green area represents the set $\fwdClosed(\bwd(\{T\}))$ (strong basin of $T$).}
 		\label{fig:bn_trap_bwd}
 	\end{centering}
 \end{figure}
@@ -513,7 +513,7 @@ To evaluate our methods, we have implemented algorithms from the previous sectio
 
 As our methods focus on the ability to handle systems with non-trivial unknown behaviour, we synthetically derive partially specified versions of the models listed above. We distinguish six model groups that differ in the number of interpretations (size of $\mid\allInterpretations\mid$). 
 
-The numbers of interpretations corresponding to the individual groups are $[2^0,2^5], [2^6,2^{10}], \dots, [2^{25},2^{30}]$. For every class, we then generate 20 samples of partially specified networks by randomly removing some fully-specified functions. The arity of removed functions is limited to 5 to prevent intractable parameter explosion. This methodology approximates a uniform distribution of samples across an exponential scale of benchmark model sizes while still covering models with varying numbers and arity of uninterpreted functions. %tazky odsek :(
+The numbers of interpretations corresponding to the individual groups are $[2^0,2^5], [2^6,2^{10}], \dots, [2^{26},2^{30}]$. For every class, we then generate 20 samples of partially specified networks by randomly removing some fully-specified functions. The arity of removed functions is limited to 5 to prevent intractable parameter explosion. This methodology approximates a uniform distribution of samples across an exponential scale of benchmark model sizes while still covering models with varying numbers and arity of uninterpreted functions. %tazky odsek :(
 
 We then also randomly select the target and source attractor for every sampled model. However, we always verify that the actual number of model interpretations admitting the target attractor belongs to the given range. That is, for a model in class $2^{25}-2^{30}$, we guarantee that the target attractor is actually admissible for at least $2^{25}$ interpretations, even though the total number of all possible interpretations for the model can be higher. That is because we optimize control methods by restricting them to the interpretations where the attractor is present. As discussed in \autoref{ss:control_types_and_goal}, one-step and temporary controls are unable to stabilize a system in a state which is not part of any attractor. Since we want the results to be consistent for all methods and phenotypic variation is not the focus of this work, we pose the same constraint to permanent control.
 
@@ -552,7 +552,7 @@ We then also randomly select the target and source attractor for every sampled m
 	}
 \end{figure}
 
-Our first experiment evaluates the performance and scalability of our method with respect to the model size (count of variables) and unknown knowledge (number of colors). We use the benchmark model set as described above. We list all results in \autoref{fig:otp_results}. All plots are showing the relation of method computation time to the number of considered attractor colors. The rows depict results for particular real-world models. In every column, there are results for different control methods (one-step, permanent, and temporary). The last column displays results from all methods in a single plot. To capture the scalability trends we use $\log y = \log x$ type of logistic regression (due to exponential scaling of colors as well as time). All computations had 24-hour time-out. Nonetheless, this case never occurred for one-step control and only in a MAPK model for permanent control (5 times). The temporary control yields more such cases, but only in the most demanding scenarios in ERBB (2 times), tumour (1 time) and MAPK (70 times) models. Note that as we disregard these results for compact logistic regression visualisation, the logistic regression might be slightly steeper in the reality.
+Our first experiment evaluates the performance and scalability of our method with respect to the model size (count of variables) and unknown knowledge (number of interpretations). We use the benchmark model set as described above. We list all results in \autoref{fig:otp_results}. All plots are showing the relation of method computation time to the number of considered attractor colors. The rows depict results for particular real-world models. In every column, there are results for different control methods (one-step, permanent, and temporary). The last column displays results from all methods in a single plot. To capture the scalability trends we use $\log y = \log x$ type of logistic regression (due to exponential scaling of colors as well as time). All computations had 24-hour time-out. Nonetheless, this case never occurred for one-step control and only in a MAPK model for permanent control (5 times). The temporary control yields more such cases, but only in the most demanding scenarios in ERBB (2 times), tumour (1 time) and MAPK (70 times) models. Note that as we disregard these results for compact logistic regression visualisation, the logistic regression might be slightly steeper in the reality.
 
 % Our first experiment measures the performance of methods on five biological models with varying state space size (induced by the number of variables), number of interpretations, and possible number of perturbations. All these three components influence the size of the labelled graph under consideration. Whereas the number of vertices is equal to the number of states, the number of all STG instances is equivalent to the product of interpretations and possible perturbations. 
 
@@ -568,7 +568,9 @@ However, the seed for the second computed trap space is a much bigger vertex set
 
 \subsubsection{Robustness} 
 
-Next, we conduct experiments evaluating the presented robustness metrics across different types of controls. In particular, we use maximal robustness $\rho_{max}$ and union robustness $\rho_{union}$ metrics which we measure on sets of fixed perturbation size. The results are shown in \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}. For demonstration purposes, we selected just one arbitrary partially specified model instance for every real-world biological network from our benchmark model set, as the perturbation robustness across different randomized models is not directly comparable. 
+Next, we conduct experiments evaluating the presented robustness metrics across different types of controls. In particular, we use maximal robustness $\rho_{max}$ and union robustness $\rho_{union}$ metrics which we measure on sets of fixed perturbation size. The results are shown in \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}. 
+
+%For demonstration purposes, we selected just one arbitrary partially specified model instance for every real-world biological network from our benchmark model set, as the perturbation robustness across different randomized models is not directly comparable. 
 
 \begin{figure}[htb!]
 \checkoddpage
@@ -642,7 +644,9 @@ Next, we conduct experiments evaluating the presented robustness metrics across 
 }
 \end{figure}
 
-Apart from the time-wise performance, we also compared the robustness of different types of control (see \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}). First, let us look at what particular types of robustness can tell us about the inspected systems. Under the assumption that the real biological system corresponds to one of the interpretations of our partially specified BN model, what the maximal robustness tells us is how high the chance that \emph{a particular perturbation} will work in the real model. Alternatively, we use union robustness to evaluate a chance that there is \emph{some perturbation} of the given size that will work. For example, in the ERBB model (\autoref{fig:maximal_robustness}b and \autoref{fig:total_robustness}b), we can notice that there is a 60\% chance that the most robust perturbation (temporary or permanent) of size two will work for the real, fully specified model. However, even if this particular perturbation fails, we know that 80\% of the interpretations can be influenced by a perturbation of this size. This means that out of the 40\% of interpretations that cannot be influenced by the perturbation with the maximal robustness, half is still controllable by perturbing only two variables. For all three models, it is thus highly likely that a temporary perturbation of size no bigger than 3 exists which controls the network. That is a very small portion of the total model variables which could be possibly perturbed.
+% Apart from the time-wise performance, we also compared the robustness of different types of control (see \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}). 
+
+First, let us look at what particular types of global robustness metrics can tell us about the inspected systems. Under the assumption that the real biological system corresponds to a single ``correct'' interpretations of our partially specified BN model, what the maximal robustness tells us is how high the chance that \emph{a particular perturbation} will work in the real model. Alternatively, we use union robustness to evaluate a chance that there is \emph{some perturbation} of the given size that will work. For example, in the ERBB model (\autoref{fig:maximal_robustness}b and \autoref{fig:total_robustness}b), we can notice that there is a 60\% chance that the most robust perturbation (temporary or permanent) of size two will work for the real, fully specified model. However, even if this particular perturbation fails, we know that 80\% of the interpretations can be influenced by a perturbation of this size. This means that out of the 40\% of interpretations that cannot be influenced by the perturbation with the maximal robustness, half is still controllable by perturbing only two variables. For all three models, it is thus highly likely that a temporary perturbation of size no bigger than 3 exists which controls the network. That is a very small portion of the total model variables which could be possibly perturbed.
 
 As the one-step control is subsumed by temporary control, it is expected that the temporary perturbations achieve the same or higher robustness than the one-step perturbations. This is also shown in the experiments, where we find no instance in which the one-step control could achieve higher maximal or union robustness. We can also observe that temporary and permanent controls mostly perform very similarly. 
 
@@ -656,12 +660,7 @@ The first may be a simple fact that the trap set computed for temporary control 
 \subsubsection{Comparison of source-target methods}
 \label{sec:comparison_source_target}
 
-We also compare the symbolic and the semi-symbolic approach \textcolor{red}{described in the previous section (from~\cite{Brim2021})} one-step controls. The results are captured in \autoref{fig:benchmarks_os}. We use the same benchmark model set as in the previous experiment. We also use a similar layout for plots in the figure. 
-
-However, there are fewer rows as the semi-symbolic method was not able to compute any instance of tumor or MAPK models due to out-of-memory (OOM) errors. Also, some instances of ERBB model were not processed due to OOM rather than time-outs. The first column shows the results of the fully symbolic one-step control method while the second column shows the results of the previous semi-symbolic method. The plots in the last column compactly compare these two methods using the same logistic regression as in the previous experiment.
-
-
-\begin{figure}[hb!]
+\begin{figure}[htbp!]
 	\checkoddpage
 	\edef\side{\ifoddpage l\else r\fi}
 	\makebox[\textwidth][\side]{% 
@@ -679,11 +678,16 @@ However, there are fewer rows as the semi-symbolic method was not able to comput
         \label{subfig:benchmarks_os_c}
 	\adjincludegraphics[trim={{0.66\width} 0 0 0},clip,width=0.33\textwidth]{Figures/erbb_os.pdf}
 	}
-    \caption{\textbf{Comparison with existing semi-symbolic method from~\cite{Brim2021}.} \textcolor{red}{Include not working ERBB?} Plots in every row show results for a different real-world model. The horizontal axis of all plots shows the number of attractor interpretations (given by model instances from our benchmark set) and the vertical axis is for the duration (in ms) of the given method computation. Both axes have logarithmic scaling. Plots in the first column show all measurements for the fully symbolic one-step method from this work. The second plot is showing results for the one-step control method from~\cite{Brim2021} using the colored markers. Plots display scalability trends of all methods by interpolating the results with the logistic regression slope of $\log y = \log x$ function.}
+    \caption{\textbf{Comparison with existing semi-symbolic method from~\cite{Brim2021}.} Plots in every row show results for a different real-world model. The horizontal axis of all plots shows the number of attractor interpretations (given by model instances from our benchmark set) and the vertical axis is for the duration (in ms) of the given method computation. Both axes have logarithmic scaling. Plots in the first column show all measurements for the fully symbolic one-step method from this work. The second plot is showing results for the one-step control method from~\cite{Brim2021} using the colored markers. Plots display scalability trends of all methods by interpolating the results with the logistic regression slope of $\log y = \log x$ function.}
     \label{fig:benchmarks_os}
 	\end{minipage}
 }
 \end{figure}
+
+We also compare the symbolic and the semi-symbolic approach \textcolor{red}{described in the previous section (from~\cite{Brim2021})} one-step controls. The results are captured in \autoref{fig:benchmarks_os}. We use the same benchmark model set as in the previous experiment. We also use a similar layout for plots in the figure. 
+
+However, there are fewer rows as the semi-symbolic method was not able to compute any instance of tumor or MAPK models due to out-of-memory (OOM) errors. Also, some instances of ERBB model were not processed due to OOM rather than time-outs. The first column shows the results of the fully symbolic one-step control method while the second column shows the results of the previous semi-symbolic method. The plots in the last column compactly compare these two methods using the same logistic regression as in the previous experiment.
+
 
 
 % Experiment 2 - A bridge to related work

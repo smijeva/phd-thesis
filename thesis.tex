@@ -131,7 +131,7 @@
 
 \include{FrontBackMatter/Titleback} % Back of the title page
 
-% \cleardoublepage\include{FrontBackMatter/Dedication} % Dedication page - uncomment and create a Dedication.tex to include a dedication -> moticko? :D
+\cleardoublepage\include{FrontBackMatter/Dedication} % Dedication page - uncomment and create a Dedication.tex to include a dedication -> moticko? :D
 
 \cleardoublepage\include{FrontBackMatter/Declaration} % Declaration page
 
@@ -185,7 +185,16 @@
 \addcontentsline{toc}{chapter}{\textsc{Conclusions}}
 \addtocontents{toc}{\protect\bigskip}
 
-Conclude here...
+In this thesis, we have investigated the problem of control of partially specified Boolean networks that was not explored prior to starting this work. We have defined the source-target and phenotype control problems in this setting. We have also developed methods for solving these control problems, which are based on symbolic state space exploration based on BDDs.
+
+We have implemented these methods in the AEON tool and demonstrated their applicability through a series of case studies on real-world models. Our results show that it is possible to effectively control partially specified Boolean networks, even in the presence of significant uncertainty about their structure and dynamics. We have also developed software tools to facilitate the application of our methods, and we have made these tools publicly available.
+
+Moreover, we explored the utilization of control-based method refinement as a means of guiding the refinement of partially specified Boolean networks. We have shown that this approach can be effective in identifying the most informative experiments to perform in order to refine the model and improve its alignment with real model behavior. We have also demonstrated the applicability of this approach through case studies on real-world models.
+
+There are several directions for future research in this area. One promising avenue is to explore the combination of control-based method refinement with model checking to further enhance the efficiency and scalability of control methods for \PBN{s}. Additionally, it would be interesting to other types of control problems, such as phenotype control with temporary perturbations.
+
+
+
 
 \cleardoublepage
 

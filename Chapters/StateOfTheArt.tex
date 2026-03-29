@@ -216,26 +216,36 @@ Another line of work concerned with perturbations experiment design uses a maxim
 \section{Related tools}
 \label{sec:relatedTools}
 
-The majority of previously introduced methods were encompassed as software tools in order to make them accessible to a wider audience. Given the numerous nuances between control problems it is not an easy task to exhaustively compare the tools between them. Moreover, some features combinations might not be available. 
+Many of the previously introduced methods were encompassed as software tools in order to make them accessible to a wider audience. Given the numerous nuances between control problems it is not an easy task to exhaustively compare the tools between them. Moreover, some features combinations might not be available. 
+
+The first factor which we can compare the tools is the type of dynamics they support. Asynchronous dynamics is more general and biologically relevant, but also more computationally challenging. The majority of the tools support asynchronous dynamics, or were extended to support it. Only CASPO tool does not support asynchronous dynamics. 
+
+Secondly, we compare the goal of the control. Note, that BoolNet does not support any specific control per se, but since it supports the identification of trap spaces, it can be easily used to design one-step control strategies based on trap spaces. The tool was also used for methods of phenotype control in~\cite{Fontanals2023}, however to the best of our knowledge, the control methods are not embedded to the tool directly. As for the KALI tool, it is focused on controlling a ``pathological'' BN based on an ``archetype'' BN, thus we categorized it as a special case of phenotype control.
+
+As for the partial specification, CASPO and BoNesis tools support Boolean network ensembles, although CASPO is based only on synchronous BNs. Regarding the perturbation types, most of the tools support only permanent perturbations. CABEAN on the other hand, supports the widest range of perturbation types, including one-step, temporary, and permanent perturbations and even sequential perturbations. AEON also supports a wide range of perturbation types, but it is limited to source-target control. Target and phenotype control can be done only using permanent perturbations in AEON. 
+
+Finally, we can also compare the tools based on their completeness and user-faced tools availability. Completeness is a crucial aspect of control methods, as it ensures that all viable control strategies are identified. In terms of user-faced availability, the presence of a graphical user interface (GUI) can significantly enhance accessibility for researchers who may not be familiar with command-line tools or programming languages. This capability is present only in AEON, which provides a user-friendly interface for designing and analyzing control strategies, making it more accessible to a broader audience.
 
 \begin{table}[]
     \label{tab:tools_compare}
     \centering
     \scalebox{0.8}{
-    \begin{tabular}{rccccccl}
-    \textbf{Tool} & \rot{\textbf{Source-targ.}} & \rot{\textbf{Target}} & \rot{\textbf{Phenotypes}} & \rot{\textbf{Partial spec.}} & \rot{\textbf{Pert. types}} & \rot{\textbf{Complete}} & \textbf{Main method} \\
-    CABEAN  & ? & x & X & X & X & X & Strong basin search, ASP \\
-    BoolNet & ? & x & X & X & X & X & X \\
-    KALI    & ? & x & X & X & X & X & X \\
-    CASPO   & ? & x & X & X & X & X & X \\
-    BoNesis & ? & x & X & X & X & X & ASP \\
-    AEON    & ? & x & X & X & X & X & BDDs, Symbolic 
+    \begin{tabular}{rccccccccl}
+    \textbf{Tool} & \rot{\textbf{Asynchronous}} & \rot{\textbf{Source-targ.}} & \rot{\textbf{Target}} & \rot{\textbf{Phenotypes}} & \rot{\textbf{Partial spec.}} & \rot{\textbf{Pert. types}} & \rot{\textbf{Completeness}} & \rot{\textbf{Graphical UI}} & \textbf{Main method}  \\
+    CABEAN & \checkmark & \checkmark & \checkmark &  &  & OTP & \checkmark & & Strong basin search, ASP \\
+    BoolNet & \checkmark & \checkmark* & \checkmark* & \checkmark &  & OP & \checkmark & & Trap spaces \\
+    KALI & \checkmark & &  & \checkmark** & & P &  &  & Simulations \\
+    CASPO   &  &  & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    BoNesis & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    AEON    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & OTP*** & \checkmark & \checkmark & symbolic BDDs
     \end{tabular}
-    }
+    } 
     \caption{Comparison of related software tools for Boolean network control.}
 \end{table}
 
 \section{Summary}
 \label{sec:sota_summary}
+
+In this chapter, we have provided an overview of the state-of-the-art in the control of Boolean networks, with a particular focus on asynchronous dynamics and partial specification. We have discussed various methods for identifying control strategies, including strong basin search, stable motif identification, trap space analysis, and model checking. Additionally, we have highlighted the importance of control in the context of model refinement and experiment design. Finally, we have compared several software tools that implement these methods, noting their capabilities and limitations. This survey sets the stage for our own contributions to the field, which will be detailed in the subsequent chapters.
 
 
