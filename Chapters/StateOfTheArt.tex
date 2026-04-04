@@ -48,7 +48,7 @@ The notion of \emph{partial specification} plays a central role in this thesis, 
 
 
 % Non-observability
-\emph{Non-observability} is considered to be one of the forms of the partial specification, since in such systems, the current state of the system cannot always be determined precisely~\cite{Kalman1960}. This challenge has long been recognized in control theory~\cite{Flokentin1962, Sorenson1968}, as we can not optimize control for the source state (because it is unknown). Non-observability is particularly common in biological systems where the full internal state is often hidden, or changing too rapidly to measure.~\cite{Liu2013,Villaverde2019} In the context of Boolean networks (BNs), we adopt a similar view: the internal dynamics are considered unobservable, and only attractors (i.e., stable, long-term behaviors) are assumed measurable. This abstraction is essential in biological modeling, where stable phenotypes correspond to observable steady states. Nonetheless, this thesis is concerned with an even broader and more complex notion of partial specification.
+\emph{Non-observability} is considered to be one of the forms of the partial specification, since in such systems, the current state of the system cannot always be determined precisely~\cite{Kalman1960}. This challenge has long been recognized in control theory~\cite{Flokentin1962, Sorenson1968}, as we can not optimize control for the source state (because it is unknown). Non-observability is particularly common in biological systems where the full internal state is often hidden, or changing too rapidly to measure.~\cite{Liu2013,Villaverde2019} In the context of Boolean networks (BNs), we adopt a similar view: the internal dynamics are considered unobservable, and only attractors (i.e., stable, long-term behaviors) are assumed measurable. This abstraction is essential in modeling of biological systems, where stable phenotypes correspond to observable steady states (or other attractors). Nonetheless, this thesis is concerned with an even broader and more complex notion of partial specification.
 
 
 % Non-determinism
@@ -62,7 +62,7 @@ Nondeterminism also inspired a game theoretic interpretation of control. In this
 % Multiple possible functions 
 A more structural form of partial specification arises in models such as \emph{probabilistic Boolean networks} (PBNs)~\cite{Shmulevich2002}, where uncertainty is introduced by allowing each variable to be governed by multiple update functions, each with an associated selection probability. In such models, not only is the update time of variables uncertain, but so is the logic guiding those updates. Thus, control must operate over a probability-weighted ensemble of behaviors, further complicating the synthesis of effective system perturbations.
 
-In contrast, the \PBN{} framework central to this thesis allows each variable to have multiple possible update functions, but crucially assumes that only one “true” function per variable governs the evolution throughout the system's runtime. That is, while the identity of the function is unknown (and remains hidden due to nonobservability), it is assumed fixed. The resulting dynamics are therefore equivalent do asynchronous BN under a hidden function instance, though unknown from the observer’s perspective. This hybrid interpretation combines partial structural knowledge, non-determinism, and limited observability, creating a novel challenging control problem that this thesis aims to address.
+In contrast, the \PBN{} framework central to this thesis allows each variable to have multiple possible update functions, but crucially assumes that only one “true” function per variable governs the evolution throughout the system's runtime. That is, while the identity of the function is unknown (and remains hidden due to non-observability), it is assumed fixed. The resulting dynamics are therefore equivalent do asynchronous BN under a hidden function instance, though unknown from the observer’s perspective. This hybrid interpretation combines partial structural knowledge, non-determinism, and limited observability, creating a novel challenging control problem that this thesis aims to address.
 
 % Partial functions?
 
@@ -154,6 +154,7 @@ The model-checking approach is using CTL to easily express the control problem. 
 
 Therefore, the control method itself is based on the idea of using a model checking as a ``backup'' approach if we are unable to assess whether a control strategy works using the trap-space-based method introduced previously. This way we obtain both, high performance for the majority of the cases and a complete solution for the rest.
 
+The approach based on model checking for the phenotype control was implemented based on the python interface of the BoolNet tool~\cite{Klarner2018}.
 
 \subsection{Other techniques}
 Finally, we describe other techniques to control asynchronous BN which do not fit into the previous categories, because they use less conventional or a combination of multiple methods.
@@ -176,7 +177,7 @@ Nonetheless, in this approach, the controllers do not need to be just static Boo
 \section{Control of most-permissive Boolean networks}
 \label{sec:controlMostPermissive}
 
-The previously described variants of BNs are limited in their ability to capture certain biologically significant behaviors~\cite{Pauleve2020}. For example, none of the earlier models can accurately represent the incoherent feed-forward loop of type 3 (I3-FFL)~\cite{Mangan2003}, a well-known motif in gene regulatory networks.
+The previously described variants of BN semantics are limited in their ability to capture certain biologically significant behaviors~\cite{Pauleve2020}. For example, none of the earlier models can accurately represent the incoherent feed-forward loop of type 3 (I3-FFL)~\cite{Mangan2003}, a well-known motif in gene regulatory networks.
 
 Most-permissive semantics enhances the expressiveness of BNs by allowing transient dynamics during state transitions from 0 to 1 and vice versa. This feature enables the representation of intermediate states, capturing subtleties in biological processes that are not strictly binary.
 
@@ -188,7 +189,7 @@ The tool BoNesis integrates various techniques for the analysis of most-permissi
 
 Control within BoNesis is guided by specifying biological markers, which semantically correspond to the phenotypes introduced in \autoref{ss:model_checking}. The perturbations computed by the tool are permanent, and the control is universal, meaning that the desired properties must hold across all possible runs of the Boolean network. To minimize the size of the required perturbation set, users can optionally specify an initial configuration, thereby avoiding over-optimization across all possible initial states.
 
-BoNesis supports differentiated control strategies for steady states (fixed points), and all attractors, enabling optimization tailored to task complexity, since reprogramming steady states is typically less computationally intensive~\cite{Pauleve2023}. Another notable feature of BoNesis is its ability to control ensembles of Boolean networks, which is especially relevant since model inference usually produces a set of plausible models rather than a single one. When controlling BN ensembles, users can choose between existential and universal control strategies. Existential control identifies perturbations that succeed in at least one model in the ensemble, while universal control yields perturbations that are guaranteed to work across all models.
+BoNesis supports differentiated control strategies for steady states (fixed points), and all attractors, enabling optimization tailored to task complexity, since reprogramming steady states is typically less computationally intensive~\cite{Pauleve2023}. Another notable feature of BoNesis is its ability to control ensembles of Boolean networks, which is especially relevant since model inference usually produces a set of plausible models rather than a single one. When controlling BN ensembles, users can choose between existential and universal control strategies. Existential control identifies perturbations that succeed in at least one model in the ensemble, while universal control yields perturbations that are guaranteed to work across all models. 
 
 \section{Leveraging control for model refinement}
 \label{sec:controlInference}
@@ -216,32 +217,34 @@ Another line of work concerned with perturbations experiment design uses a maxim
 \section{Related tools}
 \label{sec:relatedTools}
 
+\begin{table}[htbp!]
+    \label{tab:tools_compare}
+    \centering
+        \caption{\textbf{Comparison of related software tools for Boolean network control.} The columns indicate whether the tool supports asynchronous dynamics, the type of control problems it can solve (source-target, target, phenotype), whether it can handle partial specification (e.g., ensembles), the types of perturbations supported (one-step (O), temporary (T), permanent (P)), completeness of the method, availability of a graphical user interface, and the main computational method employed. The checkmarks in \textcolor{gray}{gray} mean, that features were implemented as part of this thesis. * indicates that control can be achieved indirectly through trap space analysis. ** indicates that control is focused on driving a pathological model towards an archetype model rather than specific phenotypes. *** indicates that for phenotype control, only permanent perturbations are supported.}
+    \scalebox{0.8}{
+    \begin{tabular}{rccccccccl}
+    \textbf{Tool} & \rot{\textbf{Asynchronous}} & \rot{\textbf{Source-targ.}} & \rot{\textbf{Target}} & \rot{\textbf{Phenotypes}} & \rot{\textbf{Partial spec.}} & \rot{\textbf{Pert. types}} & \rot{\textbf{Completeness}} & \rot{\textbf{Graphical UI}} & \textbf{Main method}  \\
+    CABEAN & \checkmark & \checkmark & \checkmark &  &  & OTP & \checkmark & & Strong basin search, ASP \\
+    BoolNet & \checkmark & \checkmark* & \checkmark* & \checkmark &  & OP & \checkmark & & Trap spaces, model checking \\
+    KALI & \checkmark & &  & \checkmark** & & P &  &  & Simulations \\
+    CASPO   &  &  & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    BoNesis & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    AEON    & \checkmark & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{OTP***} & \checkmark & \checkmark & Symbolic BDDs
+    \end{tabular}
+    } 
+\end{table}
+
 Many of the previously introduced methods were encompassed as software tools in order to make them accessible to a wider audience. Given the numerous nuances between control problems it is not an easy task to exhaustively compare the tools between them. Moreover, some features combinations might not be available. 
 
 The first factor which we can compare the tools is the type of dynamics they support. Asynchronous dynamics is more general and biologically relevant, but also more computationally challenging. The majority of the tools support asynchronous dynamics, or were extended to support it. Only CASPO tool does not support asynchronous dynamics. 
 
 Secondly, we compare the goal of the control. Note, that BoolNet does not support any specific control per se, but since it supports the identification of trap spaces, it can be easily used to design one-step control strategies based on trap spaces. The tool was also used for methods of phenotype control in~\cite{Fontanals2023}, however to the best of our knowledge, the control methods are not embedded to the tool directly. As for the KALI tool, it is focused on controlling a ``pathological'' BN based on an ``archetype'' BN, thus we categorized it as a special case of phenotype control.
 
-As for the partial specification, CASPO and BoNesis tools support Boolean network ensembles, although CASPO is based only on synchronous BNs. Regarding the perturbation types, most of the tools support only permanent perturbations. CABEAN on the other hand, supports the widest range of perturbation types, including one-step, temporary, and permanent perturbations and even sequential perturbations. AEON also supports a wide range of perturbation types, but it is limited to source-target control. Target and phenotype control can be done only using permanent perturbations in AEON. 
+As for the partial specification, CASPO and BoNesis tools support Boolean network ensembles, although CASPO is based only on synchronous BNs. Regarding the perturbation types, most of the tools support only permanent perturbations. CABEAN on the other hand, supports the widest range of perturbation types, including one-step, temporary, and permanent perturbations and even sequential perturbations.
 
-Finally, we can also compare the tools based on their completeness and user-faced tools availability. Completeness is a crucial aspect of control methods, as it ensures that all viable control strategies are identified. In terms of user-faced availability, the presence of a graphical user interface (GUI) can significantly enhance accessibility for researchers who may not be familiar with command-line tools or programming languages. This capability is present only in AEON, which provides a user-friendly interface for designing and analyzing control strategies, making it more accessible to a broader audience.
+Finally, we can also compare the tools based on their completeness and user-faced tools availability. Completeness is a crucial aspect of control methods, as it ensures that all viable control strategies are identified. The methods based on simulations from KALI tool can not guarantee this property.
 
-\begin{table}[]
-    \label{tab:tools_compare}
-    \centering
-    \scalebox{0.8}{
-    \begin{tabular}{rccccccccl}
-    \textbf{Tool} & \rot{\textbf{Asynchronous}} & \rot{\textbf{Source-targ.}} & \rot{\textbf{Target}} & \rot{\textbf{Phenotypes}} & \rot{\textbf{Partial spec.}} & \rot{\textbf{Pert. types}} & \rot{\textbf{Completeness}} & \rot{\textbf{Graphical UI}} & \textbf{Main method}  \\
-    CABEAN & \checkmark & \checkmark & \checkmark &  &  & OTP & \checkmark & & Strong basin search, ASP \\
-    BoolNet & \checkmark & \checkmark* & \checkmark* & \checkmark &  & OP & \checkmark & & Trap spaces \\
-    KALI & \checkmark & &  & \checkmark** & & P &  &  & Simulations \\
-    CASPO   &  &  & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
-    BoNesis & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
-    AEON    & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & OTP*** & \checkmark & \checkmark & Symbolic BDDs
-    \end{tabular}
-    } 
-    \caption{Comparison of related software tools for Boolean network control.}
-\end{table}
+In terms of user-faced availability, the presence of a graphical user interface (GUI) can significantly enhance accessibility for researchers who may not be familiar with command-line tools or programming languages. This capability is present only in AEON, which provides a user-friendly interface for designing partially specified Boolean networks and analyzing their bifurcation and attractor landscapes. Prior to this work, AEON did not support any control methods. Due to its good support of partially specified Boolean networks, we have decided to implement the control methods on top of this tool, thus making it the only tool supporting control of partially specified Boolean networks with a graphical user interface. The details of this implementation are described in \autoref{chapter:software}.
 
 \section{Summary}
 \label{sec:sota_summary}
