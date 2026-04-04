@@ -6,9 +6,9 @@ In this chapter, we describe the technical details of the software tools we deve
 \section{Software overview}
 \label{sec:software_architecture}
 
-The software for the control of \PBN{} networks was developed as part of the BioDivine tools\footnote{\url{https://sybila.fi.muni.cz/tools.html}} developed by the SyBiLa (Systems Biology Laboratory) research group at Masaryk University~\footnote{\url{https://sybila.fi.muni.cz/index.html}}. 
+The software for the control of \PBN{} networks was developed as part of the BioDivine tools\footnote{\url{https://sybila.fi.muni.cz/tools.html}} developed by the Sybila (Systems Biology Laboratory) research group at Masaryk University~\footnote{\url{https://sybila.fi.muni.cz/index.html}}. 
 
-The tools were initially oriented on a ``colored model checking'' of parametrized continuous models of biological systems~\cite{Brim2015}. The approach was also later extended to hybrid models~\cite{Smijakova2020}. The main idea behind colored model checking was encoding the continuous models as discrete color-labelled transition systems, and then applying SAT model checking techniques to analyze their behavior. This approach also enabled solving the parameter synthesis and attractor bifurcation problems for these models~\cite{Benes2016,Benes2017}.
+The tools were initially oriented on a ``colored model checking'' of parametrized continuous models of biological systems~\cite{Brim2015}. The approach was also later extended to hybrid models~\cite{Smijakova2020}. The main idea behind colored model checking was encoding the continuous models as discrete color-labelled transition systems, and then applying SMT model checking techniques to analyze their behavior. This approach also enabled solving the parameter synthesis and attractor bifurcation problems for these models~\cite{Benes2016,Benes2017}.
 
 Building on top of the previous work, the group shifted focus from discretized continuous models to Boolean networks, which are a more direct ``natively'' discrete modeling formalism. The former parameters of continuous models and their paramters synthesis was reoriented from continuous values of parameters to unknown functions of the network structure.
 
