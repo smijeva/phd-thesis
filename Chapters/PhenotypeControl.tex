@@ -1,11 +1,11 @@
 \chapter{Phenotype Control of Partially Specified Boolean Networks}
 \label{chapter:phenotype_control_psbn}
 
-In the previous chapter, we focused on the problem of source-target control for PSBNs. However, in many applications, the goal is not to reach a specific state but rather to achieve a certain \emph{phenotype} -- a set of states with shared properties. For example, in the context of gene regulatory networks, a phenotype may correspond to a particular cell type or cellular behavior.
+The previous chapter was focused on the problem of source-target control for PSBNs. However, in many applications, the goal is not to reach a specific state but rather to achieve a certain \emph{phenotype} -- a set of states with shared properties. For example, in the context of gene regulatory networks, a phenotype may correspond to a particular cell type or cellular behavior.
 
 Moreover, in the context of PSBNs, the target of the control is prone to change across different interpretations of the network. In the previous chapters, we tackled this problem by narrowing down the interpretation space to those where the target state was a part of some attractor. Nonetheless, this approach might discard interpretations where the network stabilizes in a \emph{similar} attractor although not exactly the same as the target state. That is why phenotype control is a more suitable framework for PSBNs: it allows us to consider a broader set of interpretations where the network stabilizes and describe the desired behavior in a more flexible way rather than focusing on a single state.
 
-In this chapter, we first formally define the problem of phenotype control for PSBNs and its variants. Then we present a symbolic algorithm to solve the posed problem. Finally, we demonstrate the applicability of our approach to middle sized PSBNs.
+In this chapter, we first formally define the problem of phenotype control for PSBNs and its variants. Then we present an algorithm with symbolic state space exploration to solve the posed problem. Finally, we demonstrate the applicability of our approach to middle-sized PSBNs.
 
 
 \section{Problem definition}
@@ -64,7 +64,7 @@ We say that a~permanent variable perturbation $\perturbation \in \bools_\unspeci
 This concept naturally applies to interpretations of PSBNs as well: given a $\pbnMath$, an interpretation $\interpretation$ and a perturbation $\perturbation$, the interpretation has a perturbed $\STG_\perturbation(\pbnMath(\interpretation))$. As such, a perturbation $\perturbation$ controls $\pbnMath$ under the interpretation $\interpretation$ if it ensures $\allAttractors(\pbnMath(\interpretation)_{\perturbation}) \subseteq \phenotype$. Formally:
 
 \begin{definition}
-	Assume a partially specified network $\pbnMath$, a phenotype $\phenotype \subseteq \bools^n$, a desired relationship $R \in \{$\emph{stabilization, oscillation, avoidance}$\}$ between network and phenotype, and a set of admissible perturbations $\allPerturbations \subseteq \bools_\unspecified^n$. The goal of the \emph{complete} phenotype control is to compute a relation $\controlRelation_{\phenotype}$ of all pairs $(\interpretation, \perturbation) \in \allInterpretations(\pbnMath) \times \allPerturbations$ such that $\perturbation$ controls $\pbnMath(\interpretation)$ towards the desired phenotype relationship $R$ with $\phenotype$.
+	Assume a partially specified network $\pbnMath$, a phenotype $\phenotype \subseteq \bools^n$, a desired relationship between the network and phenotype $R \in \{$\emph{stabilization, oscillation, avoidance}$\}$, and a set of admissible perturbations $\allPerturbations \subseteq \bools_\unspecified^n$. The goal of the \emph{complete} phenotype control is to compute a relation $\controlRelation_{\phenotype}$ of all pairs $(\interpretation, \perturbation) \in \allInterpretations(\pbnMath) \times \allPerturbations$ such that $\perturbation$ controls $\pbnMath(\interpretation)$ towards the desired phenotype relationship $R$ with $\phenotype$.
   \label{def:complete_phenotype_control}
 \end{definition}
 
@@ -74,11 +74,18 @@ $$
 \robustness(\perturbation) = \frac{|\{\interpretation \in \allInterpretations(\pbnMath) \mid \perturbation \text{ controls } \pbnMath(\interpretation)\}|}{|\allInterpretations(\pbnMath)|}
 $$
 
-The concepts of the union robustness would be adjusted in the same way.
+The concepts of the maximal and union robustness would be adjusted in the same way.
 
 \section{Methods}
 \label{sec:phen_control_method}
 
+For the phenotype control problem, we rely on the same symbolic computation model as for the source-target control from \autoref{sec:ostp_symbolic}. Again, the state-space, interpretation-space and perturbation-space are encoded as BDDs, composed of three components: 
+
+$$\mathbb{X} = \vertices \times \allInterpretations \times \mathbb{L}$$
+
+Where $\vertices$ encodes the state-space $\bools^n$, $\allInterpretations$ encodes the interpretation-space $\bools^m$ of a normalized \PBN{} and $\mathbb{L}$ of size ($\bools^n$) encodes the perturbation-space without an actual value of the perturbation (i.e. which variables are perturbed, but not how they are perturbed).
+
+As opposed to source-target control however, we do not know the source state beforehand, and we want to control the system globally regardless of the source state. As we will see later, that renders the problem more complex and requires explicit manipulation with control map for each query of working perturbations. This makes our method not fully symbolic and requires some enumeration of perturbations. However, we still rely on symbolic state space exploration to compute the control map for a large set of perturbations at once, which significantly speeds up the process compared to naive enumeration. Moreover, the typical size of admissible perturbations is small (e.g. up to 3 perturbed variables), which further mitigates the need for enumeration. We also use this fact to optimize the size of the BDD encoding of the perturbation space $\mathbb{L}$ --- since we are usually interested in perturbations of size up to $k$, we can restrict the set of admissible perturbations.
 
 % Partially specified Boolean networks suffer from both state and parameter space explosion, which in practice makes them hard to analyse exhaustively. In the context of control, this problem is further complicated by perturbation space explosion. To mitigate this, we employ symbolic state space exploration which allows us to analyse the full set of possible perturbed STGs within a single algorithm pass. This technique exploits similarities between the STGs of various network interpretations (and perturbations) to significantly speed up the exploration process compared to the naive enumeration~\cite{aeonpy,Brim2021}.
 
@@ -96,14 +103,17 @@ The concepts of the union robustness would be adjusted in the same way.
 
 % When the goal is to symbolically represent a subset of perturbations $\mathcal{Q} \subseteq \bools_\unspecified^n$, we do this through a relation $S_{\mathcal{Q}} \subseteq \mathcal{V} \times \mathcal{L}$ where $S_{\mathcal{Q}}$ contains exactly \emph{all} states compliant with every $Q \in S$. Finally, in some cases, we may need to directly reference the Boolean BDD variables used in our encoding. We then use the notation $\mathcal{V}_i$, $\mathcal{C}_i$, resp. $\mathcal{L}_i$ to denote the $i$-th BDD variable that encodes the state, colour or perturbation component of $\mathcal{S}$.
 
-% \paragraph{Symbolic operations} Set operations ($\cap, \cup, \setminus$, etc.) on symbolic sets (or relations) are implemented through Boolean logical operators ($\land, \lor, \neg$, etc.) as is customary for BDDs. Furthermore, the following standard BDD operations are used:
-% \begin{align*}
-% 	\textsc{Project}_{\mathcal{X}}(X \subseteq \mathbb{B}^k)&= \{ x \in \mathbb{B}^k \mid \exists b \in \bools.~x[\mathcal{X} \mapsto b] \in X \}\\
-% 	\textsc{Select}_{\mathcal{X}=b}(X \subseteq \mathbb{B}^k)&= \{ x \in \mathbb{B}^k \mid x \in X \land x[\mathcal{X}] = b \}\\	
-% 	\textsc{Restrict}_{\mathcal{X}=b}(X \subseteq \mathbb{B}^k)&=\textsc{Project}_{\mathcal{X}}(\textsc{Select}_{\mathcal{X}=b}(X))
-% \end{align*}
+\paragraph{Symbolic operations} Recall from the \autoref{subsec:symbolic_ops}, that set operations ($\cap, \cup, \setminus$, etc.) on symbolic sets (or relations) are implemented through Boolean logical operators ($\land, \lor, \neg$, etc.) as is customary for BDDs. By the same token, we also use standard methods of reachability, namely functions $\pre$, $\post$, $\bwd$ and $\fwdClosed$ as defined in \autoref{subsec:supporting_algos}. Furthermore, the following standard BDD operations are used:
+\begin{align*}
+	\textsc{Project}_{\mathcal{V}}(X \subseteq \mathbb{B}^k)&= \{ x \in \mathbb{B}^k \mid \exists b \in \bools.~x[\mathcal{V} \mapsto b] \in X \}\\
+	\textsc{Select}_{\mathcal{V}=b}(X \subseteq \mathbb{B}^k)&= \{ x \in \mathbb{B}^k \mid x \in X \land x[\mathcal{V}] = b \}\\	
+	\textsc{Restrict}_{\mathcal{V}=b}(X \subseteq \mathbb{B}^k)&=\textsc{Project}_{\mathcal{V}}(\textsc{Select}_{\mathcal{V}=b}(X))
+\end{align*}
 
-% Here, $\mathcal{X}$ denotes a variable of the BDD encoding (e.g. $\mathcal{V}_3$). We can also use a list of conditions in the subscript of the method as a shorthand for multiple nested calls to the same method. Intuitively, $\textsc{Project}$ is equivalent to existential quantification, $\textsc{Select}$ is implemented through conjunction, and $\textsc{Restrict}$ is a combination of both. To explore the perturbed STGs, we use:
+Here, $\mathcal{V}$ denotes a variable of the BDD encoding (e.g. $\mathcal{V}_3$). We can also use a list of conditions in the subscript of the method as a shorthand for multiple nested calls to the same method. Intuitively, $\textsc{Project}$ is equivalent to existential quantification, $\textsc{Select}$ is implemented using conjunction, and $\textsc{Restrict}$ is a combination of both. 
+
+
+% To explore the perturbed STGs, we use:
 % \begin{align*}
 %       \pre(X \subseteq \mathcal{S}) &= \{~(s, c, l) \mid \exists (t, c, l) \in X.~s \to_{c,Q}^{} t \text{ for } Q \equiv (s, l)~\}\\
 %       \post(X \subseteq \mathcal{S}) &= \{~(t, c, l) \mid \exists (s, c, l) \in X.~s \to_{c,Q}^{} t \text{ for } Q \equiv (s, l)~\}
@@ -112,11 +122,14 @@ The concepts of the union robustness would be adjusted in the same way.
 
 % We then rely on a method $\textsc{Trap}(X \subseteq \mathcal{S})$ which computes the \emph{maximal trap set} within the given set $X$. Naively, this method can be implemented as the greatest fixed point of $\textsc{Trap}(X) = X \cap \textsc{Trap}(X \setminus \textsc{Pre}(\textsc{Post}(X)))$. However, we use a more efficient implementation based on the technique called \emph{saturation}~\cite{benevs2022bdd}.
 
-% Finally, we use $\mathbb{VAL}_k^n$ to denote a BDD which encodes a function of $n$ inputs that is $\mathit{true}$ iff exactly $k$ inputs are $\mathit{true}$. To construct such BDD efficiently, we observe that $\mathbb{VAL}_0^n = \bigwedge_{i \in [1,n]} \neg x_i$, and that $\mathbb{VAL}_k^n = \bigvee_{i \in [1,n]} (\mathbb{VAL}_{k-1}^n \lor x_i)$.
+Finally, we use $\mathbb{VAL}_k^n$ to denote a BDD which encodes a function of $n$ inputs that is $\mathit{true}$ iff exactly $k$ inputs are $\mathit{true}$. This construct is useful for restricting the set of admissible perturbations. To construct such BDD efficiently, we observe the following: 
+
+\begin{align*}
+\mathbb{VAL}_0^n &= \bigwedge_{i \in [1,n]} \neg x_i \\
+\mathbb{VAL}_k^n &= \bigvee_{i \in [1,n]} (\mathbb{VAL}_{k-1}^n \lor x_i) 
+\end{align*}
 
 \subsection{Control algorithm}
-
-
 
 Our control approach is based on \autoref{algo:phenotype_control} where we describe:
 
@@ -173,7 +186,7 @@ Our control approach is based on \autoref{algo:phenotype_control} where we descr
 
 Therefore, we compute a non-phenotype trap set that is guaranteed to contain all non-phenotype attractor states in it. First, we compute a similar trap subset of the phenotype $\phenotype$ which is guaranteed to contain all phenotype attractors. Then, we invert this set and repeat the operation to obtain a trap which is a superset of all non-phenotype attractors. Note that simply computing the largest trap set within $\vertices \setminus \phenotype$ would only cover attractors that are completely within $\vertices \setminus \phenotype$. The above-described process is necessary to also cover attractors that intersect $\phenotype$ but are not subsets of $\phenotype$.
 
-The algorithm then iterates over all network variables and performs projection in cases where the variable is \emph{not perturbed}. Initially, the \var{cannot\_control} set contains at least one state of the perturbed STG of each $Q \in \allPerturbations$ that admits a non-phenotype attractor. After this operation, \var{cannot\_control} contains \emph{all} states of such perturbed STG. In other words: the resulting set can depend on variable $\mathcal{V}_i$ only if $\mathcal{L}_i = 1$ (i.e. the variable is perturbed). In such cases, the role of $\mathcal{V}_i$ is to encode the actual perturbed value of the $i$-th network variable. 
+The algorithm then iterates over all network variables and performs projection in cases where the variable is \emph{not perturbed}. Initially, the \var{cannot\_control} set contains at least one state of the perturbed STG of each $Q \in \allPerturbations$ that admits a non-phenotype attractor. After this operation, \var{cannot\_control} contains \emph{all} states of such perturbed STG. In other words: the resulting set can depend on variable $\mathcal{V}_i$ only for $\{ l \in \mathbb{L} \mid l_i = 1 \}$ (i.e. the variable is perturbed). In such cases, the role of $\mathcal{V}_i$ is to encode the actual perturbed value of the $i$-th network variable. 
 
 Finally, we invert the \var{cannot\_control} set to only retain perturbations where no non-phenotype attractor state exists.
 
@@ -181,41 +194,69 @@ Finally, we invert the \var{cannot\_control} set to only retain perturbations wh
 
 To extend this algorithm to robust control, we test the perturbations of increasing size (using the $\mathbb{VAL}_{k}^{n}$ BDD) and use a recursive $\textsc{Enumerate}$ method to find perturbations with maximal robustness. Notice that the necessity of this step makes our algorithm \emph{semi-symbolic}. 
 
-Instead of iterating through all possible control strategies of size $k$, procedure $\textsc{Enumerate}$ recursively branches into three cases for each variable $i$: $i$ is not perturbed, $i$ is perturbed to $\mathit{true}$, and $i$ is perturbed to $\mathit{false}$. Note that each call completely eliminates both $\mathcal{L}_i$ and $\mathcal{V}_i$ from \var{control\_map} (for the case of $\mathcal{L}_i = 0$, $\mathcal{V}_i$ was already eliminated by the core algorithm). As such, once $i > n$, the resulting \var{control\_map} only depends on variables $\mathcal{C}_i$ and we can use it to compute the robustness.
+Instead of iterating through all possible control strategies of size $k$, procedure $\textsc{Enumerate}$ recursively branches into three cases for each variable $i$: $i$ is not perturbed, $i$ is perturbed to $\mathit{true}$, and $i$ is perturbed to $\mathit{false}$. Note that each call completely eliminates both $\mathbb{L}_i$ and $\mathbb{V}_i$ from \var{control\_map} (for the case of $l_i = 0$, $\mathbb{V}_i$ was already eliminated by the core algorithm). As such, once $i > n$, the resulting \var{control\_map} only depends on BDD components of $\mathbb{I}$ and we can use it to compute the robustness.
 
-Note that for simplicity, we do not store the actual perturbations with maximal robustness explicitly in the algorithm. However, these can be easily reconstructed from the recursion path in the \textsc{Enumerate} algorithm. Furthermore, note that the recursion in the \textsc{Enumerate} algorithm can be replaced using \emph{projected iteration}, where we first project the \var{control\_map} to the admissible $l \in \mathcal{L}$, and then project only to the state variables perturbed within each such $l$. This approach can be faster as it uses fewer symbolic steps. However, it is also highly specific to each BDD library. As such, we chose to present the more widely applicable algorithm.
+Note that for simplicity, we do not store the actual perturbations with maximal robustness explicitly in the algorithm. However, these can be easily reconstructed from the recursion path in the \textsc{Enumerate} algorithm. Furthermore, note that the recursion in the \textsc{Enumerate} algorithm can be replaced using \emph{projected iteration}, where we first project the \var{control\_map} to the admissible $l \in \mathbb{L}$, and then project only to the state variables perturbed within each such $l$. This approach can be faster as it uses fewer symbolic steps. However, it is also highly specific to each BDD library. As such, we chose to present the more widely applicable algorithm.
 
 
+
+
+
+% \begin{algorithm}[ht!]
+% 	\SetKwProg{Fn}{Fn}{}{}
+% 	  \Fn{\upshape \textsc{IsPhenotypeControlAux}$(\phenotype \subseteq \vertices, \var{osc\_allowed} \in \bools, \var{init\_states} \subseteq \vertices$}{
+% 	  $\var{phenotype\_space} \gets$ \leIf{\upshape $\var{osc\_allowed}$}{$ \textsc{Bwd}(\phenotype)$}{\phenotype}
+% 	  $\var{phenotype\_trap} \gets \textsc{Trap}(\phenotype)$\;
+% 	  $\var{reachable} \gets \textsc{Fwd}(\var{init\_states})$\;
+% 		  $\var{non\_phenotype} \gets \, \var{reachable} \setminus \var{phenotype\_trap}$\;
+% 	  $\var{non\_phenotype\_trap} \gets \textsc{Trap}(\var{non\_phenotype})$\;
+% 		  \Return{\upshape \leIf{$\var{non\_phenotype\_trap} = \emptyset$}{true}{false}}
+% 	  }
+% 	  \Fn{\upshape \textsc{IsPhenotypeControl}$(\phenotype \subseteq \vertices, \var{phen\_type} \in \{ stabilize, avoid, oscillate\}, \var{init\_states} \subseteq \vertices)$}{
+% 	  \uIf{\upshape $\var{phen\_type} = stabilize$}{
+% 		\Return{\textsc{IsPhenotypeControlAux}($\phenotype, false, \var{init\_states}$)}\;
+% 	  }
+% 	  \uElseIf{\upshape $\var{phen\_type} = avoid$}{
+% 		$\phenotype' \gets \vertices \setminus \phenotype$\;
+% 		\Return{\textsc{PhenotypeControlAux}($\phenotype', false, \var{init\_states}$)}\;
+% 	  }
+% 	  \uElseIf{\upshape $\var{phen\_type} = oscillate$}{
+% 		$\phenotype' \gets \vertices \setminus \phenotype$\;
+% 		$\var{in\_phen} \gets \textsc{PhenotypeControlAux}(\phenotype, true, \var{init\_states})$\;
+% 		$\var{out\_phen} \gets \textsc{PhenotypeControlAux}(\phenotype', true, \var{init\_states})$\;
+% 		\Return{\upshape$\var{in\_phen} \land \var{out\_phen}$}\;
+% 	  }
+% 	}
+% 	  \caption{Phenotype verification algorithms}
+% 	  \label{algo:control}
+%   \end{algorithm}
+  
 \begin{algorithm}[ht!]
 	\SetKwProg{Fn}{Fn}{}{}
-	  \Fn{\upshape \textsc{IsPhenotypeControlAux}$(\phenotype \subseteq \vertices, \var{osc\_allowed} \in \bools, \var{init\_states} \subseteq \vertices$}{
-	  $\var{phenotype\_space} \gets$ \leIf{\upshape $\var{osc\_allowed}$}{$ \textsc{Bwd}(\phenotype)$}{\phenotype}
-	  $\var{phenotype\_trap} \gets \textsc{Trap}(\phenotype)$\;
-	  $\var{reachable} \gets \textsc{Fwd}(\var{init\_states})$\;
-		  $\var{non\_phenotype} \gets \, \var{reachable} \setminus \var{phenotype\_trap}$\;
-	  $\var{non\_phenotype\_trap} \gets \textsc{Trap}(\var{non\_phenotype})$\;
-		  \Return{\upshape \leIf{$\var{non\_phenotype\_trap} = \emptyset$}{true}{false}}
-	  }
-	  \Fn{\upshape \textsc{IsPhenotypeControl}$(\phenotype \subseteq \vertices, \var{phen\_type} \in \{ stabilize, avoid, oscillate\}, \var{init\_states} \subseteq \vertices)$}{
-	  \uIf{\upshape $\var{phen\_type} = stabilize$}{
-		\Return{\textsc{IsPhenotypeControlAux}($\phenotype, false, \var{init\_states}$)}\;
-	  }
-	  \uElseIf{\upshape $\var{phen\_type} = avoid$}{
-		$\phenotype' \gets \vertices \setminus \phenotype$\;
-		\Return{\textsc{PhenotypeControlAux}($\phenotype', false, \var{init\_states}$)}\;
-	  }
-	  \uElseIf{\upshape $\var{phen\_type} = oscillate$}{
-		$\phenotype' \gets \vertices \setminus \phenotype$\;
-		$\var{in\_phen} \gets \textsc{PhenotypeControlAux}(\phenotype, true, \var{init\_states})$\;
-		$\var{out\_phen} \gets \textsc{PhenotypeControlAux}(\phenotype', true, \var{init\_states})$\;
-		\Return{\upshape$\var{in\_phen} \land \var{out\_phen}$}\;
-	  }
+	\Fn{\upshape \textsc{IsControlled}$(\phenotype \subseteq \vertices, \var{osc} \in \bools)$}{
+		$\var{phenotype\_space} \gets$ \leIf{\upshape $\var{osc}$}{$\textsc{Bwd}(\phenotype)$}{\phenotype}
+		$\var{phenotype\_trap} \gets \textsc{Trap}(\var{phenotype\_space})$\;
+		$\var{non\_phenotype\_trap} \gets \textsc{Trap}(\bools^n \setminus \var{phenotype\_trap})$\;
+		\Return{$\var{non\_phenotype\_trap} = \emptyset$}\;
 	}
-	  \caption{Phenotype verification algorithms}
-	  \label{algo:control}
-  \end{algorithm}
-  
-  Since we encode all network instances and perturbation variants into a single graph, our algorithm aims to verify whether the given network is fulfilling the control objective (i.e. the whole network has the given relationship toward the phenotype) or not. The main method for that is shown in \autoref{algo:control}. 
+	\Fn{\upshape \textsc{IsPhenotypeControl}$(\phenotype \subseteq \vertices, \var{type} \in \{ \var{S}, \var{A}, \var{O} \})$}{
+		\uIf{\upshape $\var{type} = \var{S}$}{
+			\Return{\textsc{IsControlled}($\phenotype, false$)}\;
+		}
+		\uElseIf{\upshape $\var{type} = \var{A}$}{
+			\Return{\textsc{IsControlled}($\vertices \setminus \phenotype', false$)}\;
+		}
+		\uElseIf{\upshape $\var{type} = \var{O}$}{
+			$\var{in\_phen} \gets \textsc{IsControlled}(\phenotype, true)$\;
+			$\var{out\_phen} \gets \textsc{IsControlled}(\vertices \setminus \phenotype, true)$\;
+			\Return{\upshape $\var{in\_phen} \land \var{out\_phen}$}\;
+		}
+	}
+	\caption{Phenotype Control Algorithms}
+	\label{algo:phenotype_control_osc}
+\end{algorithm}
+
+ Since we encode all network instances and perturbation variants into a single graph, our algorithm aims to verify whether the given network is fulfilling the control objective (i.e. the whole network has the given relationship toward the phenotype) or not. The main method for that is shown in \autoref{algo:control}. 
   
   Even though there are three types of relationships between a network and a phenotype, the core of our algorithm \textsc{IsPhenotypeControlAux} relies on two different relationships -- we see the oscillation as either allowed or forbidden. 
   
@@ -267,7 +308,9 @@ Note that for simplicity, we do not store the actual perturbations with maximal 
 \label{sec:phen_control_evaluation}
 %TODO: Ak bude miesto, tak sa vymedzit voci Fontalnas - my riesime inputy inak
 
-In this section, we evaluate our proposed semi-symbolic method. For the implementation, we use the Rust language and libraries of the AEON tool~\cite{aeon}. This prototype implementation is available as an open-source GitHub repository\footnote{\url{https://github.com/sybila/biodivine-pbn-control/}}. The repository also includes auxiliary scripts we used for the measurements and the raw results. All experiments were performed using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory.
+In this section, we evaluate our proposed semi-symbolic method. 
+% For the implementation, we use the Rust language and libraries of the AEON tool~\cite{aeon}. This prototype implementation is available as an open-source GitHub repository\footnote{\url{https://github.com/sybila/biodivine-pbn-control/}}. The repository also includes auxiliary scripts we used for the measurements and the raw results. 
+As previously, all experiments were performed using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory.
 
 \subsection{Performance}
 
@@ -280,6 +323,7 @@ In this section, we evaluate our proposed semi-symbolic method. For the implemen
 	%\small
 	\vspace{10pt}
     \centering
+	\footnotesize
     \begin{tabular}{|l|c|c|c|c|c|p{3.9cm}|}
     \hline
         \textbf{Model} & \textbf{Ins} & \textbf{Vars} & \textbf{Per.} & $\mathcal{Q}_{\leq3}$ & \textbf{Ref.} & \textbf{Uncontrollable vars} \\ \hline
@@ -343,7 +387,7 @@ The first model illustrates cardiac progenitor cells differentiation into the fi
 
 
 
-\paragraph{Performance evaluation on real-world models} In \autoref{tab:performance}, we show results of computing phenotype control on all our benchmark models from \autoref{tab:models}. We use real-world phenotypes as described in the source literature. These are typically subspaces obtained by fixing network outputs to the desired values. The details of exact phenotypes can be found in the git repository. 
+\paragraph{Performance evaluation on real-world models} In \autoref{tab:performance}, we show results of computing phenotype control on all our benchmark models from \autoref{tab:models}. We use real-world phenotypes as described in the source literature. These are typically subspaces obtained by fixing network outputs to the desired values. The details of exact phenotypes can be found in the \textcolor{red}{Digital appendix}. 
 
 For each model and its phenotype, we computed all working perturbations of size up to three. We then show the times needed for individual computations (including enumeration and robustness calculation), the highest robustness achieved for each case, and the number of minimal perturbations with 100\% robustness.
 
@@ -375,7 +419,7 @@ $\neg$No decis. & $\var{DNA\_dmg}{\shorteq}1,$ $\var{TGFBR\_st}{\shorteq}1$ $\va
 
 Now we demonstrate how phenotype control can be used to replicate observations conducted in~\cite{Grieco2013} and even strengthen these results with a more robust assessment of the model. In~\cite{Grieco2013}, various perturbations of a reduced MAPK model are simulated and their effect on phenotypes is observed. Specifically, networks with all inputs set to 0 and with \var{EGFR} or \var{FGFR3} over-expressed (gain-of-function) are exposed to a set of further perturbations. The model has three outputs (\var{Apoptosis}, \var{Growth\_Arrest}, and \var{Proliferation}) and three attractors are observed: apoptosis (\var{Apoptosis}$=$\var{Growth\_Arrest}$=1$), proliferation (\var{Proliferation}$=1$) and no decision (all outputs set to false).
 
-We first compute phenotype control on the fully specified but reduced model. We list discovered minimal perturbations for network variants of interest in~\autoref{tab:red_mapk}. Here, the perturbations which were also discovered in~\cite{Grieco2013} are shown as green. In the enumeration, where appropriate, we only considered perturbations with over-expressed \var{EGFR} or \var{FGFR3}, as in the original paper. We also list the minimal perturbations working for the unperturbed network. This way we can compare such perturbations with the \var{EGFR} and \var{FGFR3} over-expressed variants. We can see that with our method we were able to not only replicate all solutions from~\cite{Grieco2013}, but also conveniently obtain more perturbation options, including the truly minimal controls (if we consider over-expressions of \var{EGFR} or \var{FGFR3} as perturbations, the further perturbations to these networks lead to a non-minimal perturbations in most of the cases).
+We first compute phenotype control on the fully specified but reduced model. We list discovered minimal perturbations for network variants of interest in~\autoref{tab:red_mapk}. Here, the perturbations which were also discovered in~\cite{Grieco2013} are shown as green. In the enumeration, where appropriate, we only considered perturbations that contain over-expressed \var{EGFR} or \var{FGFR3}, as in the original paper. We also list the minimal perturbations working for the unperturbed network. This way we can compare such perturbations with the \var{EGFR} and \var{FGFR3} over-expressed variants. We can see that with our method we were able to not only replicate all solutions from~\cite{Grieco2013}, but also conveniently obtain more perturbation options, including the truly minimal controls (if we consider over-expressions of \var{EGFR} or \var{FGFR3} as perturbations, the further perturbations to these networks lead to a non-minimal perturbations in most of the cases).
 
 The interest of the original MAPK study~\cite{Grieco2013} is also to observe the impact on phenotypes caused by various gain- or loss-of-function mutations. Here, authors replace such functions with constants to simulate these effects. Nonetheless, such an approach could be too restrictive: a mutation could alter the function in unpredictable ways instead of knocking-out (resp. over-expressing) the variable permanently. To model such mutations, we employ the uninterpreted functions of the PSBN framework. This application is demonstrated in Table 4. Here, we selected apoptosis phenotype as the phenotype of interest (the “healthy” phenotype preserving non-cancerous cell behaviour). We then replace the dynamics of variables studied in~\cite{Grieco2013} with uninterpreted functions in the full MAPK model.
 
