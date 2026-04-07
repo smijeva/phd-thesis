@@ -6,7 +6,7 @@ In this chapter, we describe the technical details of the software tools we deve
 \section{Software overview}
 \label{sec:software_architecture}
 
-The software for the control of \PBN{} networks was developed as part of the BioDivine tools\footnote{\url{https://sybila.fi.muni.cz/tools.html}} developed by the Sybila (Systems Biology Laboratory) research group at Masaryk University~\footnote{\url{https://sybila.fi.muni.cz/index.html}}. 
+The software for the control of \PBN{} networks was developed as part of the BioDivine tools\footnote{\url{https://sybila.fi.muni.cz/tools.html}} developed by the Sybila~\footnote{\url{https://sybila.fi.muni.cz/index.html}} (Systems Biology Laboratory) research group at Masaryk University. 
 
 The tools were initially oriented on a ``colored model checking'' of parametrized continuous models of biological systems~\cite{Brim2015}. The approach was also later extended to hybrid models~\cite{Smijakova2020}. The main idea behind colored model checking was encoding the continuous models as discrete color-labelled transition systems, and then applying SMT model checking techniques to analyze their behavior. This approach also enabled solving the parameter synthesis and attractor bifurcation problems for these models~\cite{Benes2016,Benes2017}.
 
@@ -14,7 +14,9 @@ Building on top of the previous work, the group shifted focus from discretized c
 
 At first, the tools were mostly focused on the bifurcation analysis of \PBN{}~\cite{Benes2019}. To nurture the adoption of the tool, a web application was developed to make the tool accessible to a wider audience~\cite{aeon}. The web application allowed users to upload their own partially specified Boolean network models, adjust them and run the bifurcation analysis. 
 
-Since globally there was not a lot of tools supporting analysis of \PBN{} models, the Aeon tools were extended to support also other types of analysis. In particular, we implemented the control of \PBN{} models, which is the main topic of this thesis. The control of \PBN{} models was implemented as a new component of the software, and it was integrated into the web application as well. Later, to make the control of \PBN{} models more accessible to users who prefer working with code, we also implemented a python package that provides an interface to the control algorithms implemented in the software~\cite{aeonpy}. The tool also provides all underlying algorithms and data structures such as the symbolic representation of the state space, and the algorithms for computing the attractors and their basins of attraction. The tool is also being extended by higher-level algorithms for the analysis of \PBN{} models, such model checking of temporal properties, and the analysis of the structure of the state space~\cite{Benes2023,Benes2024bnclassifier}.
+Since globally there was not a lot of tools supporting analysis of \PBN{} models, the Aeon tools were extended to support also other types of analysis. In particular, we implemented the control of \PBN{} models, which is the main topic of this thesis. The control of \PBN{} models was implemented as a new component of the software, and it was integrated into the web application as well. 
+
+Later, to make the control of \PBN{} models more accessible to users who prefer working with code, we also implemented a python package that provides an interface to the control algorithms implemented in the software~\cite{aeonpy}. The tool also provides all underlying algorithms and data structures such as the symbolic representation of the state space, and the algorithms for computing the attractors and their basins of attraction. The tool is also being extended by higher-level algorithms for the analysis of \PBN{} models, such model checking of temporal properties, and the analysis of the structure of the state space~\cite{Benes2023,Benes2024bnclassifier}.
 
 \begin{figure}[htbp]
     \centering
@@ -38,19 +40,19 @@ Finally, we implemented a web application that is built on top of all the rust c
 
 Compared to many other implementations, each Binary Decision Diagram (BDD) instance manages its own memory. This design simplifies serialization and enables safe sharing between threads, which is particularly beneficial for applications that process large numbers of BDDs concurrently. It also aligns well with the ownership and safety principles emphasized in the Rust programming language.
 
-The implementation provides support for a range of common operations on BDDs. These include standard logical operations, evaluation of Boolean expressions, and transformations between BDD representations and conjunctive or disjunctive normal forms. Additional functionality allows inspection of BDD structures, conversion back to Boolean expressions, and visualization through graph exports. The system also supports several relational-style operations commonly used in symbolic computation, such as projection and restriction. Note that these operations were used in~\textcolor{red}{TODO add ref to chapter 4 or 5} for the control of \PBN{} models.
+The implementation provides support for a range of common operations on BDDs. These include standard logical operations, evaluation of Boolean expressions, and transformations between BDD representations and conjunctive or disjunctive normal forms. Additional functionality allows inspection of BDD structures, conversion back to Boolean expressions, and visualization through graph exports. The system also supports several relational-style operations commonly used in symbolic computation, such as projection and restriction. Note that these operations were used in \autoref{subsec:symbolic_ops} and \autoref{sec:phen_control_method} for the control of \PBN{} models.
 
 \paragraph{lib-param-bn} The lib-param-bn library is the main library for the performant analysis of \PBN{} models, which contains the algorithms for computing attractors, reachability algorithms and bifurcation. In particular, it implements fully \emph{symbolic} representation of the state space of \PBN{} models using BDDs, that can combine interpretations and states in a single BDD. 
 
-This library was used to provide all reachability, trap set and attractor computations for the control algorithms implemented in this thesis that are described in \textcolor{red}{TODO add ref to chapter 4 or 5}.
+This library was used to provide all reachability, trap set and attractor computations for the control algorithms implemented in this thesis that are described in \autoref{subsec:supporting_algos} and \autoref{sec:phen_ctrl_algo}.
 
-Previously the library used semi-symbolic representation of the state space, where only interpretations were represented symbolically, while states were represented explicitly. This approach was used in the initial version of the control algorithms implemented in this thesis, which are described in \textcolor{red}{TODO add ref to chapter 4}.
+Previously the library used semi-symbolic representation of the state space, where only interpretations were represented symbolically, while states were represented explicitly. This approach was used in the initial version of the control algorithms implemented in this thesis, which are described in \autoref{ss:semi_symbolic_sb}.
 
 \paragraph{pbn-control} The pbn-control library provides the necessary functionality for the control of \PBN{} models, including the implementation of various control strategies and algorithms.
 
-In particular, it implements the encoding of perturbations as function symbols (parameters), that are added to the original \PBN{} model. This allows us to use the same symbolic representation of the state space for both the original model and the perturbations, which is crucial for the performance of the control algorithms. The library also implements the algorithms for computing the control and manipulating with the control map relations, which are used in the control algorithms described in \textcolor{red}{TODO add ref to chapter 4 or 5}.
+In particular, it implements the encoding of perturbations as function symbols (parameters), that are added to the original \PBN{} model. This allows us to use the same symbolic representation of the state space for both the original model and the perturbations, which is crucial for the performance of the control algorithms. The library also implements the algorithms for computing the control and manipulating with the control map relations, which are used in the control algorithms described in \autoref{ss:control_algos_st_otp} and \autoref{sec:phen_ctrl_algo}.
 
-Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the control algorithms implemented in this thesis, which are described in \textcolor{red}{TODO add ref to chapter 4}, relied on the former semi-symbolic representation of the state space.
+Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the control algorithms implemented in this thesis, which are described in \autoref{ss:semi_symbolic_sb}, relied on the former semi-symbolic representation of the state space.
 
 \section{Aeon web application}
 \label{sec:aeon_web_app}
@@ -60,12 +62,12 @@ Aeon web application is a web-based interface for the analysis of \PBN{} models.
 In version 0.5.0 of the web application, we integrated the control of \PBN{} models as a new component of the software~\cite{Vesely2025}. During implementation of the new control module, it was discovered, that technical debt in the codebase of the web application was making it difficult to implement the new control module. Therefore, it was decided to refactor the web application to make it more modular and maintainable. This has led to a major refactor of the web application, which was released in version 0.6.0 and which is also briefly presented here.
 
 \begin{figure}[htbp]
+    \label{fig:sw_load_model}
     \centering
     \includegraphics[width=\textwidth]{Figures/aeon_load_model.png}
     \caption{
         \textbf{Biodivine Aeon web application interface.} From~\cite{Vesely2026}. The figure shows the main interface of the Aeon web application, where users can upload and load their own \PBN{}.
     }
-    \label{fig:sw_load_model}
 \end{figure}
 
 AEON tool is available at \url{https://biodivine.fi.muni.cz/aeon/} as an online tool. Due to the potential high computational complexity of the analyses, SyBiLa group does not provide a public instance of the web application server, but instead provides a downloadable version of the server that users can run on their own machines.

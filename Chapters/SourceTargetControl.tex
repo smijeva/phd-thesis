@@ -157,6 +157,7 @@ To summarize, in this section we defined the source-target control problem for p
 Now we describe our computational framework for solving the one-step state perturbation control of \PBN{}. We start by introducing our approach for finding strong basins in a \PBN{}. Then we explain the framework for exploring \PBN{} STG and for manipulation with \PBN{} interpretations. Next, a concise workflow for \PBN{} control that employs the proposed algorithms is demonstrated. Finally, we present an evaluation of the method on a collection of \PBN{} models. 
 
 \subsection{Semi-symbolic labelled strong basin search}
+\label{ss:semi_symbolic_sb}
 
 The foundation of our method is based on binary decision diagram (BDD~\cite{Bryant86}) representation of interpretation sets of a \PBN{}. The decision variables of the BDD are the nullary function symbols of the network meaning that every path from the root to a leaf in such a BDD represent a set of interpretations of the \PBN{} while states are represented explicitly.
 
@@ -352,7 +353,9 @@ We evaluate the scalability of our approach on a fully unspecified myeloid model
 
 Now let us have a look at an example of how the results might be interpreted and a suitable control selected. Suppose that we want to reprogram an erythrocyte cell (attractor having factors \var{EKLF}=1 and \var{GATA-2}=0) into a monocyte cell (attractor having factors \var{cJun}=1 and \var{EgrNab}=1) of the myeloid model. First, we obtain a strong basin of the monocyte attractor having 1472 states yielding us 1472 possible control sets. We can observe that trivial, i.e., the most robust control strategy (setting variables so that we reach the attractor right after applying the control), has size 8. We can discard all controls with size 8 and larger as they are less optimal in all aspects than the trivial control. In our case, there are 1259 controls with a smaller size than the trivial one. 
 
-Resulting smallest control sets have the size 1. However, the~best robustness among these controls is 46\%. Therefore, it is quite likely that it will not work in practice. If we allow the control to have size 2, we can use the control with 76.8\% robustness. Increasing the size further provides control with the size 3 and the robustness 92\% and so is highly likely to reprogram the cell's phenotype. To achieve only slightly more robustness (93.8\%), we may use a control of size 5. In this highly unspecified model, there is no control with 100\% robustness being smaller than the trivial one. It is not a rule of the thumb that with bigger size of control we obtain better robustness, for example, the control with the size 11 (the only one, with all variables, reversed compared to the original one) has the robustness of only 50\%. 
+Resulting smallest control sets have the size 1. However, the~best robustness among these controls is 46\%. Therefore, it is quite likely that it will not work in practice. If we allow the control to have size 2, we can use the control with 76.8\% robustness. Increasing the size further provides control with the size 3 and the robustness 92\% and so is highly likely to reprogram the cell's phenotype. 
+
+To achieve only slightly more robustness (93.8\%), we may use a control of size 5. In this highly unspecified model, there is no control with 100\% robustness being smaller than the trivial one. It is not a rule of the thumb that with bigger size of control we obtain better robustness, for example, the control with the size 11 (the only one, with all variables, reversed compared to the original one) has the robustness of only 50\%. 
 
 It can be seen that the unknown properties of \PBN{} make selection of one particular ``best`` control complicated. The smallest control has low chance to work in reality and while control of size 3 works has significantly better chance to work, the success of the control is not guaranteed and might be difficult to implement. This is why a careful in vitro experimentation is needed to verify the correctness of the control in reality. Nonetheless, the obtained control set still can help and highly reduce the exponential number of potential transcription factor combinations that could be theoretically tested in vitro.
 
@@ -463,6 +466,7 @@ Observe that while all procedures introduced so far \emph{respect} existing pert
 To compute $\textsc{CanPerturb}(s, X)$, need we respect the following: Let $(s', \interpretation, l) \in X$ be a triple such that $s'_i \not= s_i$ and $l_i = 0$ for some $i \in [1,n]$. That is, source $s$ and $s'$ differ in the value of the $i$-th variable, but the variable is marked as unperturbed in $l$. Then, and only then we have that $\pertApply(s, \perturbation) \not= s'$ for $\perturbation \equiv (s, l)$. In other words, every $(s, c, l)$ for which such variable exists must be removed from $X$ when computing $\textsc{CanPerturb}$. \autoref{algo:sb} thus iterates through all network variables, constructing a symbolic representation of the set of triplets which violate the aforementioned condition, and subtracting this set from the original $X$. The result is a subset of the $X'$ relation where every member is reachable from source $s$ via its respective perturbation.
 
 \subsection{Control algorithms}
+\label{ss:control_algos_st_otp}
 
 In \autoref{algo:permanent},  we describe the bottom-up procedures which compute the relations $\controlRelation_O$, $\controlRelation_P$, and $\controlRelation_T$. Each algorithm relies on the procedures from \autoref{algo:sb}, but incorporates specific adjustments to accommodate the temporal aspects of a specific control approach.
 
@@ -637,7 +641,7 @@ Next, we conduct experiments evaluating the presented robustness metrics across 
 	\legend{One-step,Permanent,Temporary}
 	\end{axis}
 	\end{tikzpicture}
-	\caption{Union robustness $\rho_{union}$ per set of perturbations with a given size -- a comparison between different types of controls. The horizontal axis shows the size of perturbations in the set and the vertical axis displays the union robustness. Each chart is showing robustness for a different model.}
+	\caption{Union robustness $\rho_{\cup}$ per set of perturbations with a given size -- a comparison between different types of controls. The horizontal axis shows the size of perturbations in the set and the vertical axis displays the union robustness. Each chart is showing robustness for a different model.}
 	\label{fig:total_robustness}
 	\end{minipage}
 }

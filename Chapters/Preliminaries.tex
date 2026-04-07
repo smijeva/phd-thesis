@@ -98,7 +98,7 @@ A running example of a Boolean network based on the RN from \autoref{fig:regulat
 In the context of a specific Boolean network, the set $\bools^n$ is the network's \emph{state space}, and the vectors $x \in \bools^n$ are its \emph{states}. Note that although the input of each $f_i$ is a full state $x \in \bools^n$, the output of $f_i$ does not typically depend on all network variables, but rather on a smaller subset of variables which we say \emph{regulate} the $i$-th variable. These regulations are typically given by a corresponding regulation network. For a BN to respect the regulations defined by its regulation network, the function should comply with the regulation type in following ways:
 
 \begin{itemize}
-    \item If a variable $j$ is \emph{essential} for a variable $i$, denoted as $\essential(j,i)$ then: \\ $\exists x \in \bools^n . f_i(x[j \mapsto 1]) \neq f_i(x[j \mapsto 0])$
+    \item If a variable $j$ is \emph{essential} (observable) for a variable $i$, denoted as $\essential(j,i)$ then: \\ $\exists x \in \bools^n . f_i(x[j \mapsto 1]) \neq f_i(x[j \mapsto 0])$. We sometimes denote this simply as $\var{j} \to \var{i}$.
     \item If variable $j$ \emph{upregulates} (activates) variable $i$, denoted as $\activates(j,i)$: \\
     $ \forall x \in \bools^n . f_i(x[j \mapsto 0]) \Rightarrow f_i(x[j \mapsto 1])$
     \item If variable $j$ \emph{downregulates} (inhibits) variable $i$, or $\inhibits(j,i)$: \\ $\forall x \in \bools^n . f_i(x[j \mapsto 1]) \Rightarrow f_i(x[j \mapsto 0])$
