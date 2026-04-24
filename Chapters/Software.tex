@@ -44,15 +44,42 @@ The implementation provides support for a range of common operations on BDDs. Th
 
 \paragraph{lib-param-bn} The lib-param-bn library is the main library for the performant analysis of \PBN{} models, which contains the algorithms for computing attractors, reachability algorithms and bifurcation. In particular, it implements fully \emph{symbolic} representation of the state space of \PBN{} models using BDDs, that can combine interpretations and states in a single BDD. 
 
-This library was used to provide all reachability, trap set and attractor computations for the control algorithms implemented in this thesis that are described in \autoref{subsec:supporting_algos} and \autoref{sec:phen_ctrl_algo}.
-
 Previously the library used semi-symbolic representation of the state space, where only interpretations were represented symbolically, while states were represented explicitly. This approach was used in the initial version of the control algorithms implemented in this thesis, which are described in \autoref{ss:semi_symbolic_sb}.
 
-\paragraph{pbn-control} The pbn-control library provides the necessary functionality for the control of \PBN{} models, including the implementation of various control strategies and algorithms.
+You can also note, that the terminology of library is slightly different from the one used in this thesis. Formerly, we called partially specified Boolean networks as ``parametrized Boolean networks'', and the library was named accordingly. However, since the parameters of the model are not just parameters in the traditional sense, but rather unknown functions of the network structure, we decided to change the terminology to ``partially specified Boolean networks'' in later versions of the presentation of our work. The library name was not changed to avoid confusion with the previous versions of the software and to maintain consistency with the existing codebase.
 
-In particular, it implements the encoding of perturbations as function symbols (parameters), that are added to the original \PBN{} model. This allows us to use the same symbolic representation of the state space for both the original model and the perturbations, which is crucial for the performance of the control algorithms. The library also implements the algorithms for computing the control and manipulating with the control map relations, which are used in the control algorithms described in \autoref{ss:control_algos_st_otp} and \autoref{sec:phen_ctrl_algo}.
+Also, interpretations were formerly called ``colors''. This is due to the fact that the original approach of colored model checking was based on encoding the continuous models as discrete color-labelled transition systems. The term ``color'' was used to refer to the different interpretations of the model, which were represented as different colors in the transition system. However, since the term ``color'' can be confusing in the context of Boolean networks, we decided to change the terminology to ``interpretations'' in later line of work.
 
-Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the control algorithms implemented in this thesis, which are described in \autoref{ss:semi_symbolic_sb}, relied on the former semi-symbolic representation of the state space.
+\paragraph{pbn-control} The pbn-control library provides all of the necessary functionality for the control of \PBN{} models, including the implementation of various control strategies and algorithms.
+
+The core structure of the \texttt{biodivine-pbn-control} repository follows the standard layout of a Rust library project managed using Cargo. The main components of the repository are illustrated below:
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{Figures/file_structure.png}
+    \caption{
+        \textbf{Biodivine pbn-control library file structure overview.} The figure depicts the main files and directories of the \texttt{biodivine-pbn-control} library, which implements the control algorithms for partially specified Boolean networks. The file structure follows the standard layout of a Rust library project managed using Cargo.
+    }
+    \label{fig:file_structure}
+\end{figure}
+
+The file \texttt{Cargo.toml} defines package metadata and dependencies, while
+\texttt{Cargo.lock} ensures reproducible builds by fixing exact dependency
+versions. The main library implementation resides in the \texttt{src/} directory,
+with \texttt{lib.rs} serving as the crate entry point and additional modules
+organized according to functionality. 
+
+The package can be compiled locally by running the cargo command \texttt{cargo build} in the project root directory. During this step, Cargo automatically resolves all dependencies, downloads any missing external crates, and compiles both the dependencies and the library source files located in the \texttt{src/} directory. The resulting build artifacts are stored in the \texttt{target/} directory, typically under \texttt{target/debug/} for development builds or \texttt{target/release/} when compiled using the optimized command \texttt{cargo build --release}.
+
+The folder \texttt{auxiliary\_scripts/} contains various Python scripts for preparation and analysis of the control results, such as generation of \PBN{s} from BNs or data analysis. Folders \texttt{models/} and \texttt{results/} contain the models and results of the experiments described in this thesis.
+
+Finally, the folder \texttt{src/} contains the main implementation of the control algorithms. The file \texttt{lib.rs} serves as the entry point of the library, where the main public API of the library is defined. The file \texttt{main.rs} is the main executable entry point for running the control algorithms demonstration from a command line. Alternative entry points for running experiments from a command line are defined in the \texttt{src/bin/} directory. The entry points can be run using command \texttt{cargo run} (or \texttt{cargo run --release} for optimized version) optionally followed by the name of the entry point (e.g. \texttt{cargo run --bin <bin\_name>}).
+
+The folder \texttt{src/aeon/} contains the implementation of the high level algorithms taken over from aeon-server package. Since aeon-server implements the algorithms with a focus on the web application, the codebase of the server was not designed to be easily reusable for other purposes. Therefore, we decided to impldmdng a ligh-weight version of the algorithms for reachability, attractor computation and trap set computation here in the pbn-control library. These algorithms are described in \autoref{subsec:supporting_algos} and \autoref{sec:phen_ctrl_algo}.
+
+In \texttt{src/perturbations/} we implemented the encoding of perturbations as function symbols, that are added to the original \PBN{} model. This allows us to use the same symbolic representation of the state space for both the original model and the perturbations, which is crucial for the performance of the control algorithms. We use the same encoding for both source-target control and phenotype control. For encoding perturbations, we use only a single function symbol per variable, which is used when computing control with temporary and permanent perturbations. The concept of this encoding is described in \autoref{ss:symbolic_computation_model}.
+
+Finally, \texttt{src/control/} and \texttt{src/phenotype\_control/} folders contain the implementation of the algorithms described in \autoref{ss:control_algos_st_otp} and \autoref{sec:phen_ctrl_algo}, respectively. Since we have shown, that symbolic one-step control is superior to semi-symbolic one-step control, the current version of the control algorithms implemented in the software relies on the fully symbolic representation of the state space provided by the lib-param-bn library. However, the initial version of the source-target one-step control algorithm implemented in this thesis, which are described in \autoref{ss:semi_symbolic_sb}, relied on the former semi-symbolic representation of the state space.
 
 \section{Aeon web application}
 \label{sec:aeon_web_app}
@@ -62,12 +89,12 @@ Aeon web application is a web-based interface for the analysis of \PBN{} models.
 In version 0.5.0 of the web application, we integrated the control of \PBN{} models as a new component of the software~\cite{Vesely2025}. During implementation of the new control module, it was discovered, that technical debt in the codebase of the web application was making it difficult to implement the new control module. Therefore, it was decided to refactor the web application to make it more modular and maintainable. This has led to a major refactor of the web application, which was released in version 0.6.0 and which is also briefly presented here.
 
 \begin{figure}[htbp]
-    \label{fig:sw_load_model}
     \centering
     \includegraphics[width=\textwidth]{Figures/aeon_load_model.png}
     \caption{
         \textbf{Biodivine Aeon web application interface.} From~\cite{Vesely2026}. The figure shows the main interface of the Aeon web application, where users can upload and load their own \PBN{}.
     }
+    \label{fig:sw_load_model}
 \end{figure}
 
 AEON tool is available at \url{https://biodivine.fi.muni.cz/aeon/} as an online tool. Due to the potential high computational complexity of the analyses, SyBiLa group does not provide a public instance of the web application server, but instead provides a downloadable version of the server that users can run on their own machines.
@@ -92,12 +119,19 @@ After the control algorithm is run, the results are displayed in the web applica
 \section{Aeon.py}
 \label{sec:python_package}
 
-Since it can be difficult to develop a web application that covers all the functionality of the a very technical software, we also implemented a python package that provides an interface to the control algorithms implemented in the software~\cite{aeonpy}. The python package is available on PyPI and as part of the CoLoMoTo docker image~\cite{Naldi2015}. 
+Since it can be difficult to develop a web application that covers all the functionality of the a very technical software, we also implemented a python package that provides an interface to the control algorithms implemented in the software~\cite{aeonpy}. The python package is available on PyPI\footnote{\url{https://pypi.org/project/biodivine-aeon/}} and is also a part of the CoLoMoTo docker image~\cite{Naldi2015}.
 
 The CoLoMoTo toolset provides a robust and reproducible computational framework for the analysis of Boolean networks, enabling both qualitative and formal investigation of complex biological regulatory systems. Its Jupyter environment based on Docker ensures interoperability and reproducibility while facilitating scalable exploration of state-space dynamics under different updating schemes. Since it is widely used in the community of Boolean network modeling, we decided to make the Aeon control algorithms available as part of the CoLoMoTo docker image. This allows users who are already using the CoLoMoTo toolset to easily integrate the control algorithms into their existing workflows.
 
-The python package provides a convenient interface for users who prefer working with code rather than a web application. It allows users to load their own \PBN{} models, adjust them and run the control algorithms directly from their python and run a large scale experiments programmatically.
+The python package provides a convenient interface for users who prefer working with code rather than a web application. It allows users to load their own \PBN{} models, adjust them and run the control algorithms directly from a python environment and run a large scale experiments programmatically. 
+
+To implement the python package, we used the maturin\footnote{\url{https://www.maturin.rs/}} library, which provides bindings between Rust and Python. The maturin library allowed us to expose the functionality of the Rust libraries to Python in a seamless way, while also providing good performance and memory safety. 
+
+The most convenient way to use the python package is through a Jupyter notebook, which provides an interactive environment for users to explore the control of \PBN{} models. The Jupyter notebook allows users to load their own models, adjust them and run the control algorithms, while also providing a convenient way to visualize the results and share them with others.
+
 
 
 \section{Summary}
-In this chapter, we described the software tools we developed for the control of Boolean networks. We gave an overview of the software architecture and the main components of the software, including the core libraries for symbolic representation of state spaces and the control algorithms. We also described the web application that we developed to make the software accessible to a wider audience, and the python package that provides a convenient interface for users who prefer working with code. The software is available online and can be used by researchers interested in analyzing and controlling Boolean network models. In the next chapter, we will demonstrate the use of the software on a case studies with real-world applications.
+In this chapter, we described the software tools we developed for the control of Boolean networks. We gave an overview of the software architecture and the main components of the software, including the core libraries for symbolic representation of state spaces and the control algorithms. 
+
+We also described the web application that we developed to make the software accessible to a wider audience, and the python package that provides a convenient interface for users who prefer working with code. The software is available online and can be used by researchers interested in analyzing and controlling Boolean network models. In the next chapter, we will demonstrate the use of the software on a case studies with real-world applications.

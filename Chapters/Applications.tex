@@ -15,7 +15,7 @@ In nature, the most common process by which a cell acquires a different phenotyp
   \label{fig:transdifferentiation}
 \end{figure}
 
-The organism's need for cell differentiation is communicated via \emph{signalling pathways}~\cite{bradshaw2010}. These signals are transmitted via cascades of biochemical reactions, predominantly through protein phosphorylation catalzed by protein kinases. Such signalling dynamics can be modelled using Boolean networks (BNs). If we can identify the signals that promote dedifferentiation or transdifferentiation, we may be able to emulate them and artificially induce the corresponding cellular transition. This procedure is known as \emph{cell reprogramming}. In this context, finding efficient perturbations for controlling BNs provides an abstract formulation of the signal-identification problem.
+The organism's need for cell differentiation is communicated via \emph{signalling pathways}~\cite{bradshaw2010}. These signals are transmitted via cascades of biochemical reactions, predominantly through protein phosphorylation catalyzed by protein kinases. Such signalling dynamics can be modelled using Boolean networks. If we can identify the signals that promote dedifferentiation or transdifferentiation, we may be able to emulate them and artificially induce the corresponding cellular transition. This procedure is known as \emph{cell reprogramming}. In this context, finding efficient perturbations for controlling BNs provides an abstract formulation of the signal-identification problem.
 
 \emph{T cells} are a central component of the human immune system. They must differentiate rapidly to mount an effective immune response. However, diseases affecting the  immune or haematopoietic system (e.g., leukaemia) can disrupt the signalling pathways that regulate T-cell differentiation, making treatment difficult. Cell reprogramming approaches may help identify dysregulated signals and support the development of therapeutic interventions~\cite{Miskov-Zivanovra97, Saadatpour2011, Zanudo2015}.
 
@@ -410,7 +410,7 @@ The dynamics of the final protein component ERK closing the isolated pathway for
   \resizebox{\textwidth}{!}{
   \begin{tabular}{lll}
     \hline
-    \textbf{Phenotype}                 & \textbf{Perturbation}                                                                                            & $\robustness(\allInterpretations)$  \\ \hline
+    \textbf{Phenotype}                 & \textbf{Perturbation}                                                                                            & $\robustness$  \\ \hline
     \multirow{6}{*}{ERK stabilization} & \begin{tabular}[c]{@{}l@{}}\var{FRS2}=1, \var{GRB2}=1, \var{MAPK3K1\_3}=1, \var{MEK1\_2}=1, \\ \var{RAF}=1, \var{RAS}=1, \var{SOS}=1\end{tabular}          & 1                 \\[2.1ex]
                                       & \var{FGFR3}=1                                                                                                          & 0.94                \\[1ex]
 
