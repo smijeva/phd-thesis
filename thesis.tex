@@ -185,19 +185,113 @@
 \addcontentsline{toc}{chapter}{\textsc{Conclusions}}
 \addtocontents{toc}{\protect\bigskip}
 
-In this thesis, we have investigated the problem of control of partially specified Boolean networks that was not explored prior to starting this work. We mapped the state of the art in this area and made an exhaustive overview of the existing methods for control of asynchronous Boolean networks. Based on our investigation, we have proposed a novel problem formulation that captures the challenges of controlling partially specified Boolean networks. 
+In this thesis, we investigated control of partially specified Boolean
+networks, a problem that had not been systematically explored before this
+work. Existing control methods for Boolean networks mostly assume fully
+specified update functions. This thesis closes part of this gap by
+bringing control to the partially specified setting and by formulating control
+objectives that explicitly account for uncertainty in the Boolean update
+functions.
 
-We have developed a suite of algorithms for solving this problem that are based on the previous methods for source-target control with modifications to handle the uncertainty in the model. We have seen that temporary and permanent perturbations are outperforming simpler one-shot interventions in terms of the size of the control sets and the robustness of the control strategy.
+The first contribution of this work is formalization of source-target control
+for partially specified Boolean networks. In contrast to classical Boolean
+network control, where the result is typically a minimal perturbation set, the
+partially specified setting requires a different view of optimality. Since a
+perturbation may succeed only for some interpretations of the unknown
+functions, the methods developed in this thesis compute not only candidate
+perturbations, but also their robustness with respect to model uncertainty.
+This provides a more informative output: instead of a single optimal
+intervention, the user obtains a set of possible interventions together with
+the subset of interpretations for which they are guaranteed to
+work.
 
-While exploring the source-target control, we noticed, that a specification of an attractor as a target state is not suitable for the control of biological systems, since partially specified models are prone to attractor shift, where different model interpretations have slightly different attractors. Therefore, we proposed a novel control problem formulation called phenotype control, where the target is defined as a set of states that share a common property, such as the activation of a specific gene or the presence of a specific phenotype. We have developed algorithms for solving this problem and demonstrated their applicability through case studies on real-world models.
+The second contribution is a suite of algorithms solving this problem.
+The initial semi-symbolic method addressed one-step source-target control,
+while the latter fully symbolic method generalized the approach to one-step,
+temporary, and permanent perturbations. These methods improve the state
+of the art by avoiding the explicit enumeration of all Boolean network
+instances, whose number can be very large in partially specified models.
+Instead, they exploit symbolic state-space representations to reason about
+states, interpretations, and perturbations together. The experiments presented in this thesis
+show that temporary and permanent perturbations can provide smaller and
+more robust control strategies than one-step interventions, demonstrating
+that the richer perturbation models are not only theoretically more general
+but also practically useful.
 
-We have implemented both source-target and phenotype control methods in the AEON tool. We provided a convenient Python interface for them and an un iteractive web-based user interface for the phenotype control.
+While developing source-target control, we identified an important limitation
+of attractor-based objectives in the partially specified setting. Different
+interpretations of the same partially specified model may exhibit shifted or
+slightly different attractors. As a consequence, requiring convergence to one
+predefined target attractor can be too restrictive for biological applications,
+where the exact attractor may be less important than the biological traits it
+represents. To address this limitation, we introduced phenotype control, in
+which the target is specified by a set of marker conditions rather than by an
+explicit attractor. This formulation improves the usability of control in
+biological case studies, because it allows the user to specify the desired
+phenotype through characteristic traits, such as the activation or inhibition
+of selected genes, without having to know the precise target attractor in
+advance.
 
-Moreover, we explored the utilization of control-based method refinement as a means of guiding the refinement of partially specified Boolean networks. We have shown that this approach can be effective in identifying the most informative experiments to perform in order to refine the model and improve its alignment with real model behavior. We have also demonstrated the applicability of this approach through case studies on real-world models.
+The third contribution is the implementation of the developed algorithms in
+the AEON ecosystem. This part involves the symbolic manipulation of both the state space and the
+space of interpretations, as well as a compact encoding of perturbations. The
+implementation builds on BDD-based symbolic representations and extends
+the existing AEON infrastructure with control-specific components. In
+particular, perturbations are encoded in a way that allows them to be handled
+within the same symbolic framework as the original partially specified model.
+The methods were implemented in performant Rust libraries, exposed
+through a Python interface for programmatic use, and integrated into a
+web-based interface for interactive phenotype control. As a result, the thesis
+does not only provide theoretical algorithms, but also makes them available
+to users through practical software.
 
-There are several directions for future research in this area. One promising avenue is to explore the combination of control-based method refinement with model checking to further enhance the efficiency and scalability of control methods for \PBN{s}. Additionally, it would be interesting to other types of control problems, such as phenotype control with temporary perturbations.
+The fourth contribution is the application of the methods to biological
+systems. We demonstrated the applicability of the developed control
+algorithms on real-world models, including case studies related to cell
+differentiation and MAPK/RTK signalling. These examples show how control
+can be used not only as a tool for proposing reprogramming interventions,
+but also as a tool for model refinement. In particular, control results can
+identify perturbations whose experimental validation would be informative
+for distinguishing between alternative interpretations of a partially specified
+model. This connects the control problem back to the broader modelling
+workflow: rather than treating model construction, analysis, control, and
+experimental refinement as separate steps, the proposed framework uses
+control to guide the refinement of the model itself.
 
+At the same time, the work has several limitations. First, the methods focus
+on variable perturbations, corresponding to fixing some variables to
+constant values. Other forms of interventions, such as edge,
+function, or sequential perturbations, remain outside the
+scope of this thesis. Second, phenotype control is currently developed only
+for permanent perturbations, while temporary phenotype control remains an
+open direction. Third, although symbolic methods avoid explicit enumeration
+of all interpretations, scalability is still limited by the size and structure of
+the symbolic representation. Large models or models with many unknown
+functions may still become computationally challenging. Fourth, the
+biological interpretation of computed perturbations requires care: a
+perturbation that is valid in the formal model may not always correspond to
+a feasible, safe, or experimentally realizable biological intervention. Finally,
+the proposed refinement workflow depends on the availability of suitable
+experimental readouts that can discriminate between relevant model
+interpretations.
 
+Several directions for future research follow from these limitations. A direct
+extension is phenotype control with temporary perturbations, which would
+combine the biological flexibility of phenotype-based targets with less
+intrusive intervention strategies. Another promising direction is the
+combination of control-guided refinement with model checking, so that
+control objectives and temporal specifications can be used together to select
+the most informative experiments. Future work could also investigate richer
+classes of perturbations, including edge- or function-level interventions, and
+their relationship to biological mechanisms such as mutations, pathway
+inhibition, or context-dependent regulation.
+
+Overall, this thesis lays the foundation for control of partially specified Boolean networks
+as a formal and computational framework for reasoning about interventions
+under model uncertainty. By combining new problem formulations, symbolic
+algorithms, practical software support, and biological case studies, it provides
+a basis for using control not only to guide system behavior, but also to support
+the iterative refinement of uncertain biological models.
 
 
 \cleardoublepage
