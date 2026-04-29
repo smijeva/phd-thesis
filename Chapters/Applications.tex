@@ -245,7 +245,44 @@ Nonetheless, since the model is imprecise to some extent, the designed therapy m
 
 In more complex cases, it is also possible, that the treatment is not replicated in vitro even for a perturbation with 100\% robustness. As a result, we might need to rework the model significantly, e.g., by introducing new model parts (regulations and variables) or by changing the existing components. Typically, these model adjustments significantly expand unknown parts of the model, since they are based on hypotheses and uncertainty. Then, a typical next step is verification of the hypotheses we posed as well as efforts to lower the introduced uncertainty. 
 
-As shown on the right side of the diagram in \autoref{fig:control_workflow}, we use phenotype control to guide an experimental design of knockout or over-expression experiments for the model refinement~\cite{UdDean2016}. As opposed to the therapy design, in this case, we typically focus on perturbations which are the most informative, i.e., the ones which will help us to distinguish between the interpretations the most. More specifically, a perturbation which works for exactly same interpretations is not very informative, since we expect, that it works for all interpretations and thus would not help us lower the model uncertainty (number of interpretations). 
+As shown on the right side of the diagram in \autoref{fig:control_workflow}, we use phenotype control to guide an experimental design of knockout or over-expression experiments for the model refinement~\cite{UdDean2016}. Let us zoom in to the details of this process.
+
+\paragraph{Initial \PBN{} model}
+We start with an initial \PBN{} model (Step 1; Fig. \autoref{fig:control_workflow}) and its phenotypes. Such \PBN{} can be constructed directly from prior knowledge and known assumptions about biological behavior, or it can be an extension of some existing model relying on new information (e.g., newly discovered regulations or pathways).
+
+\paragraph{Screening admissible perturbations}
+We analyze the feasible perturbations w.r.t. known phenotypes of the \PBN{} (Step 2; \autoref{fig:control_workflow}). In therapy design, we would seek perturbations of high robustness achieving our phenotype of interest. For refinement, perfect robustness (i.e., $\rho(Q) = 1.0$) is \emph{not} desirable as it means the perturbed interpretations are indistinguishable through phenotype observations. Similarly, if two perturbations achieve equivalent phenotypes across all interpretations, only one needs to be considered further.
+
+\paragraph{Selection of perturbations using information-gain}
+
+While the initial screening can significantly reduce the space of admissible perturbations, it likely still remains too large to explore \emph{in vitro}. We therefore prioritize perturbations using a \emph{normalized mutual information score} (NMIS; \cite{Kent83}), quantifying how well is the outcome of a perturbation explained by a specific unknown \emph{feature} of the \PBN{} (Step 3;  \autoref{fig:control_workflow}). We use the following formulas to compute the NMIS:
+
+$$
+IS(X; Y) = \sum_{x, y} P(x, y) \log \frac{P(x, y)}{P(x) P(y)}
+$$
+$$
+H(X) = -\sum_{x} P(x) \log P(x)
+$$
+$$ 
+NMIS(X; Y) = \frac{2 IS(X; Y)}{H(X) H(Y)} 
+$$
+
+To compute NMIS, we observe that interpretations $\allInterpretations$ can be partitioned into equivalence classes $\interpretationSet_1, \ldots, \interpretationSet_k$ based on their outcomes, with each class consisting of interpretations that are indistinguishable by any admissible perturbation. Each class is assigned a set of \emph{behavior labels} and \emph{feature values}. 
+
+Here, behavior labels correspond to the phenotypes observed when subject to individual perturbations (collectively, we call these the \emph{behavior pattern} of $\interpretationSet_i$). Similarly, \emph{feature values} are based on selected properties of the underlying class of networks~$\interpretationSet_i$. These features are derived from the unknown elements of the \PBN{}, such as the uninterpreted update functions or properties of regulations (essentiality, monotonicity, canalization, etc.).
+
+We use NMIS to express the mutual information between the behavior labels achieved by a perturbation $Q$ and the values given by a particular network feature, quantifying how well the network feature predicts the outcome of perturbation $Q$.
+
+High NMIS for a feature-perturbation pair indicates that observing the perturbed phenotypes should (with high likelihood) either confirm or refute that network feature. The perturbation with the highest NMIS (for some network feature) is selected for \emph{in vitro} testing (Step 4A; Fig.~\ref{fig:control_workflow}). Alternatively, prior knowledge can be introduced to assert the expected phenotypes of the model under perturbation (Step 4B; Fig.~\ref{fig:control_workflow}).
+
+Finally, model instances that do not conform to the expected behavior are excluded (Step 5; Fig.~\ref{fig:control_workflow}), allowing us to restart the workflow with an updated \PBN{}.
+
+
+% As opposed to the therapy design, in this case, we typically focus on perturbations which are the most informative, i.e., the ones which will help us to distinguish between the interpretations the most. More specifically, a perturbation which works for exactly same interpretations is not very informative, since we expect, that it works for all interpretations and thus would not help us lower the model uncertainty (number of interpretations). 
+
+\paragraph{Example of perturbation selection}
+
+For example, let us suppose, that we consider some \PBN{} $\pbnMath$ \emph{similar} to the one from example in \autoref{fig:psbn} (i.e., a \PBN{} with multiple variables and functional symbols). The \PBN{} has 2820 interpretations. and that we compute stabilization in prolifertion (P) phenotype. The result of the control could be perturbations $\perturbation_A, \perturbation_B, \perturbation_C$, while the union of the interpretations for which they work is exactly $\allInterpretations(\pbnMath)$. The cardinality and intersection of the interpretations they cover are shown in \autoref{subfig:set_example}. 
 
 \begin{figure}[ht!]
   \checkoddpage
@@ -292,8 +329,6 @@ As shown on the right side of the diagram in \autoref{fig:control_workflow}, we 
   }
 \end{figure}
 
-For example, let us suppose, that we consider some \PBN{} $\pbnMath$ \emph{similar} to the one from example in \autoref{fig:psbn} (i.e., a \PBN{} with multiple variables and functional symbols). The \PBN{} has 2820 interpretations. and that we compute stabilization in prolifertion (P) phenotype. The result of the control could be perturbations $\perturbation_A, \perturbation_B, \perturbation_C$, while the union of the interpretations for which they work is exactly $\allInterpretations(\pbnMath)$. The cardinality and intersection of the interpretations they cover are shown in \autoref{subfig:set_example}. 
-
 We can notice, that despite the perturbations $\perturbation_A$ and $\perturbation_C$ are working for exactly the same amount of interpretations, they might control very different sets of particular interpretations. If there would be multiple perturbations which work for exactly same interpretations as the perturbation $\perturbation_A$, it is not expected to be informative to use them all in the real-world experiments. Finally, we can see, that the perturbation $\perturbation_B$ is also covering distinct sets of perturbations, although their size is much smaller. 
 
 If we were in the situation, when we would need to select only two perturbations for the real-world experiments (e.g, due to the high experiment price) we can consider the reduced interpretation sets in \emph{perturbation-phenotype tables} depicted in \autoref{subfig:select_a_b} and \autoref{subfig:select_a_c}. The rows of these tables represent non-overlapping interpretation \emph{classes} with distinct \emph{behavior patterns}, while column values show differing phenotype outcomes of these interpretations under the selected perturbations.
@@ -303,8 +338,6 @@ When deciding which two perturbations out of three should be kept, we would be p
 Notice, that in phenotype-perturbation matrix we may not just represent whether the perturbation works or not, but also which phenotype in particular it exhibits. This is particularly useful for the model refinement, since we can then distinguish behavior classes depending on the exhibited phenotype.
 
 Therefore, this table can be then directly used for design of knock-out and over-expression experiments in the real world. Since rows of a table always contain a distinct combination of phenotypes, we expect to be able to match the results from the phenotypes observed in the real-world to one particular row of the phenotype-perturbation table and thus significantly reduce the model uncertainty.
-
-\subsection{Analytical approach to model refinement}
 
 Performing the designed experiments in vitro is an ideal approach to refine the model. However, the experiments are usually costly and might not always be possible to implement. In such cases, we can still observe which model mechanics allow or prevent a perturbation working for some interpretations. For this, purpose, we can infer \emph{features} of an interpretation sets split obtained in the previous step. 
 
@@ -367,7 +400,7 @@ Second, we consider a larger-scale model~\cite{Grieco2013} of general MAPK signa
   }
 \end{figure}
 
-Based on our previous research we consider a minimalistic model representing an abstracted form of FGFR3-MAPK signaling pathway, focusing on the interactions among FGFR3, FRS2, SHIP2 and ERK proteins~\cite{Barnat2017}. The model is encoded as a PSBN consisting of 12 variables and 16 regulatory interactions. The model contains one input -- \var{FGFR3\_stimulus}, which is considered implicitly set to true to simulate constitutive activation of the pathway via suitable FGF ligands. This stimulus can be however disabled (perturbed to the value 0) with the phenotype control. The update logics of \var{FGFR3} and \var{FRS2} is partially specified reflecting the fact that the combined effect of variables regulating their activity as well as the presence of particular regulations is not well understood~\cite{Krejci2012,Santhana2023}. The exact model definition is shown in \autoref{tab:small_mapk_funs}.
+Based on our previous research\cite{HSB}, we consider a minimalistic model representing an abstracted form of FGFR3-MAPK signaling pathway, focusing on the interactions among FGFR3, FRS2, SHIP2 and ERK proteins~\cite{Barnat2017}. The model is encoded as a PSBN consisting of 12 variables and 16 regulatory interactions. The model contains one input -- \var{FGFR3\_stimulus}, which is considered implicitly set to true to simulate constitutive activation of the pathway via suitable FGF ligands. This stimulus can be however disabled (perturbed to the value 0) with the phenotype control. The update logics of \var{FGFR3} and \var{FRS2} is partially specified reflecting the fact that the combined effect of variables regulating their activity as well as the presence of particular regulations is not well understood~\cite{Krejci2012,Santhana2023}. 
 
 The dynamics of the final protein component ERK closing the isolated pathway forms the (model) phenotype. In particular, we consider three protein-level phenotypes targeting ERK activity: \var{ERK} stabilization, \var{ERK} avoidance, and \var{ERK} oscillation. Due to the introduced uncertainty, the FGFR3 model has 888 possible interpretations. 
 
@@ -436,6 +469,8 @@ The dynamics of the final protein component ERK closing the isolated pathway for
 
 Let us we observe the non-perturbed behavior -- the ``natural'' phenotypes of the model. After running a simple algorithm for searching the attractors supported in AEON.py, we learn that the unperturbed model stabilizes in 2 types of attractors -- \var{ERK} stabilization (556 interpretations) and \var{ERK} oscillation (332 interpretations). The \var{ERK} avoidance phenotype was not observed in the non-perturbed version of the model. This is due to the presence of the \var{FGFR3\_stimulus} which we have set to true for our experiments. The stimulus transitively activates \var{ERK} via \var{FGFR3}, \var{FRS2} and other transitive variables.
 
+\paragraph{Initial perturbation screening}
+
 Next, we computed the phenotype control for all three considered phenotypes. The results are summarized in Table~\ref{tab:fgfr3_isolated}. Due to the small size of the model, we list only perturbations up to size one, since perturbations of bigger size did not achieve better results; not even in case of oscillation, where no perturbation has 100\% robustness. Even when perturbations of all sizes were computed, no perturbation achieved better robustness towards oscillation phenotype than \var{SHIP2}=0. This might be due to the incomplete model design, which we will discuss later.
 
 \begin{figure}[ht!]
@@ -470,7 +505,7 @@ Next, we computed the phenotype control for all three considered phenotypes. The
 
 We can also notice, that perturbation of the same variable to both true and false may lead to the same phenotype (e.g. \var{SPRY} in case of oscillation). Similarly, the same perturbations can lead to multiple phenotypes (e.g. \var{SHIP2}=1). This is because in these cases the partially specified functions have a greater influence on the network dynamics, than the perturbation itself -- thus, another plausible explanation is, that the network behaves the same way as without any perturbations. In case, this is not expected behavior, this can be seen as a flaw introduced in some interpretations of the model which should be therefore refuted.
 
-To probe further all the unexpected model behavior we can use the framework of perturbation experiments (also known as knockout and over-expression experiments~\cite{UdDean2016}). First, we need to observe which perturbations yield the most differing results in terms of controlled interpretations. To do this, we can depict intersections of the interpretation sets controlled by various perturbations with a robustness lesser than 100\%. The results of such an analysis are displayed in Fig.~\ref{fig:fgfr3_isolated_exp}. We use Upset plots for the visualization~\cite{Lex2014}.
+To probe further all the unexpected model behavior we use the framework of perturbation experiments. First, we need to observe which perturbations yield the most differing results in terms of controlled interpretations. To do this, we can depict intersections of the interpretation sets controlled by various perturbations with a robustness lesser than 100\%. The results of such an analysis are displayed in Fig.~\ref{fig:fgfr3_isolated_exp}. We use Upset plots for the visualization~\cite{Lex2014}.
 
 We can see, that \var{ERK} avoidance case (Subfig.~\ref{subfig:false_upset}) gives us very straightforward answer of which perturbations should be selected, since there are only two perturbations (\var{FGFR3\_stimulus}=0 and \var{SPRY}=1) covering unique sets of interpretations (the same can be seen from Table~\ref{tab:fgfr3_isolated}). 
 
@@ -519,80 +554,177 @@ Last but not least, we consider phenotype control to oscillating \var{ERK} (Subf
 
 Before diving into the results of the interpretation split and model behavior under differing perturbations we might first pose the question: ``Why a perturbation works for some particular set of interpretations and not for others?'' in order to better explain the observed model behavior. To inquire that, we can look into a set of common \emph{features} of the labelled interpretations, where \emph{label} is an assessment which phenotype (ERK avoidance, activation, or oscillation) is manifested by a given interpretation.
 
-\begin{table}[b!]
-  \footnotesize
-  \setlength{\tabcolsep}{4pt}
-\checkoddpage
-\edef\side{\ifoddpage l\else r\fi}
-\makebox[\textwidth][\side]{% 
-\begin{minipage}[t]{\fullwidth}
-  \caption{\textbf{Behavior of isolated FGFR3 pathway interpretations under perturbations.} Each row reflects interpretations sharing a particular behaviour pattern (ERK exhibiting specific phenotypes under considered perturbation experiments). The first column displays a row index while the second column indicates how many interpretations exhibit the displayed behavior pattern. The second column describes ERK phenotypes achieved under the listed knockout/over-expression experiments, in particular: no perturbation (\O), \var{SPRY}=0 ($\perturbation_1$), \var{SHIP2}=0 ($\perturbation_2$), \var{FGFR3\_stimulus}=0 ($\perturbation_3$), \var{SPRY}=1 ($\perturbation_4$), and \var{FGFR3}=1 ($\perturbation_5$). The values denote the phenotypes: \var{ERK} stabilization (1), avoidance (0), or oscillation (\oscil). The last column represents relevant model features, i.e., the fact whether all corresponding interpretations fullfill them: $\exists$\var{SPRY}$\rightarrow$\var{FRS2} ($F_1$), $\forall$\var{SPRY}$\rightarrow$\var{FRS2} ($F_2$), $\exists\var{FGFR3} = \var{FGFR3\_stim.} \land \neg $\var{GRB2} ($F_3$), \var{GRB2}$\rightarrow$\var{FGFR3} ($F_4$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ \var{SHIP2} ($F_5$), $\forall$\var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus} ($F_6$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ $\neg$\var{SPRY} ($F_7$), and $\forall$\var{SHIP2}$\rightarrow$\var{FRS2} ($F_8$). Rows highlighted in \sethlcolor{lightgray}\hl{gray} allow non-trivial \var{ERK} activity even with \var{FGFR3\_stimulus=0}, violating our first assumption. The three \sethlcolor{green!30}\hl{green} rows are the rows which satisfy both of our control-guided assumptions.}
-    \centering
-  \begin{tabular}{|r|l|cccccc|cccccccc|}
-\hline
-     &    & \multicolumn{6}{c|}{ERK under perturbation}                 &  \multicolumn{8}{c|}{Features of $\interpretationSet$} \\ 
-  \# & $\mid\interpretationSet\mid$ & \O & $\perturbation_1$ & $\perturbation_2$ & $\perturbation_3$ & $\perturbation_4$ & $\perturbation_5$ & $\feature_1$ & $\feature_2$ & $\feature_3$ & $\feature_4$ & $\feature_5$ & $\feature_6$ & $\feature_7$ & $\feature_8$\\[1ex] \hline 
-  1  & 277 & \oscil & \oscil & \oscil & 0 & \oscil      & 1      & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 1 \\
-  2  & 259 & 1      & 1      & 1      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
-  \rowcolor{lightgray}  
-  3  & 259 & 1      & 1      & 1      & \oscil     & 1 & 1      & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0\\
-  4  & 22  & \oscil & \oscil & \oscil & 0 & \oscil      & \oscil & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 \\
-  \rowcolor{green!30}
-  5  & 18  & 1      & 1      & \oscil      & 0 & 1      & 1      & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 \\
-  \rowcolor{lightgray}  
-  6   & 18  & 1      & 1      & \oscil    & \oscil    & 1 & 1      & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
-  7  & 9   & \oscil & \oscil & \oscil     & 0 & 0      & \oscil & 1 & 1 & 1 & 1 & 0 & 0 & 1 & 0 \\
-   \rowcolor{lightgray}  
-  8  & 9   & \oscil & \oscil & \oscil & \oscil & \oscil & \oscil & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
-  9  & 4   & \oscil & 1      & \oscil & 0 & \oscil     & \oscil  & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
-   \rowcolor{lightgray}  
-  10 & 4   & \oscil & 1      & \oscil & \oscil & \oscil & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
-   \rowcolor{lightgray}  
-  11 & 4   & \oscil & \oscil & \oscil  & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
-    \rowcolor{green!30}
-  12 & 1   & \oscil & \oscil  & 0  & 0 & \oscil     & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 \\
-  \rowcolor{lightgray}  
-  13 & 1   & \oscil & 1      & \oscil      & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 \\
-  \rowcolor{green!30}
-  14 & 1   & 1      & 1      & 0      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1\\
-  \rowcolor{lightgray}  
-  15 & 1   & 1  &  1 &  0      & \oscil      & 1        & 1      & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 \\
-  16 & 1   & \oscil & 1 & \oscil & 0      & 0      & \oscil     & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 0 \\
-  \hline
-  \end{tabular}
-  \label{tab:fgfr3_isolated_interpretations}
-  \end{minipage}}
-  \end{table}
+% \begin{table}[b!]
+%   \footnotesize
+%   \setlength{\tabcolsep}{4pt}
+% \checkoddpage
+% \edef\side{\ifoddpage l\else r\fi}
+% \makebox[\textwidth][\side]{% 
+% \begin{minipage}[t]{\fullwidth}
+%   \caption{\textbf{Behavior of isolated FGFR3 pathway interpretations under perturbations.} Each row reflects interpretations sharing a particular behaviour pattern (ERK exhibiting specific phenotypes under considered perturbation experiments). The first column displays a row index while the second column indicates how many interpretations exhibit the displayed behavior pattern. The second column describes ERK phenotypes achieved under the listed knockout/over-expression experiments, in particular: no perturbation (\O), \var{SPRY}=0 ($\perturbation_1$), \var{SHIP2}=0 ($\perturbation_2$), \var{FGFR3\_stimulus}=0 ($\perturbation_3$), \var{SPRY}=1 ($\perturbation_4$), and \var{FGFR3}=1 ($\perturbation_5$). The values denote the phenotypes: \var{ERK} stabilization (1), avoidance (0), or oscillation (\oscil). The last column represents relevant model features, i.e., the fact whether all corresponding interpretations fullfill them: $\exists$\var{SPRY}$\rightarrow$\var{FRS2} ($F_1$), $\forall$\var{SPRY}$\rightarrow$\var{FRS2} ($F_2$), $\exists\var{FGFR3} = \var{FGFR3\_stim.} \land \neg $\var{GRB2} ($F_3$), \var{GRB2}$\rightarrow$\var{FGFR3} ($F_4$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ \var{SHIP2} ($F_5$), $\forall$\var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus} ($F_6$), $\forall$\var{FRS2} = \var{FGFR3} $\land$ $\neg$\var{SPRY} ($F_7$), and $\forall$\var{SHIP2}$\rightarrow$\var{FRS2} ($F_8$). Rows highlighted in \sethlcolor{lightgray}\hl{gray} allow non-trivial \var{ERK} activity even with \var{FGFR3\_stimulus=0}, violating our first assumption. The three \sethlcolor{green!30}\hl{green} rows are the rows which satisfy both of our control-guided assumptions.}
+%     \centering
+%   \begin{tabular}{|r|l|cccccc|cccccccc|}
+% \hline
+%      &    & \multicolumn{6}{c|}{ERK under perturbation}                 &  \multicolumn{8}{c|}{Features of $\interpretationSet$} \\ 
+%   \# & $\mid\interpretationSet\mid$ & \O & $\perturbation_1$ & $\perturbation_2$ & $\perturbation_3$ & $\perturbation_4$ & $\perturbation_5$ & $\feature_1$ & $\feature_2$ & $\feature_3$ & $\feature_4$ & $\feature_5$ & $\feature_6$ & $\feature_7$ & $\feature_8$\\[1ex] \hline 
+%   1  & 277 & \oscil & \oscil & \oscil & 0 & \oscil      & 1      & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 1 \\
+%   2  & 259 & 1      & 1      & 1      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+%   \rowcolor{lightgray}  
+%   3  & 259 & 1      & 1      & 1      & \oscil     & 1 & 1      & 0 & 0 & 0 & 1 & 0 & 1 & 0 & 0\\
+%   4  & 22  & \oscil & \oscil & \oscil & 0 & \oscil      & \oscil & 0 & 1 & 1 & 1 & 0 & 0 & 0 & 0 \\
+%   \rowcolor{green!30}
+%   5  & 18  & 1      & 1      & \oscil      & 0 & 1      & 1      & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 1 \\
+%   \rowcolor{lightgray}  
+%   6   & 18  & 1      & 1      & \oscil    & \oscil    & 1 & 1      & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 1 \\
+%   7  & 9   & \oscil & \oscil & \oscil     & 0 & 0      & \oscil & 1 & 1 & 1 & 1 & 0 & 0 & 1 & 0 \\
+%    \rowcolor{lightgray}  
+%   8  & 9   & \oscil & \oscil & \oscil & \oscil & \oscil & \oscil & 0 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
+%   9  & 4   & \oscil & 1      & \oscil & 0 & \oscil     & \oscil  & 1 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+%    \rowcolor{lightgray}  
+%   10 & 4   & \oscil & 1      & \oscil & \oscil & \oscil & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
+%    \rowcolor{lightgray}  
+%   11 & 4   & \oscil & \oscil & \oscil  & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 0 & 0 \\
+%     \rowcolor{green!30}
+%   12 & 1   & \oscil & \oscil  & 0  & 0 & \oscil     & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 0 & 1 \\
+%   \rowcolor{lightgray}  
+%   13 & 1   & \oscil & 1      & \oscil      & \oscil & 0 & \oscil & 1 & 1 & 0 & 1 & 0 & 1 & 1 & 0 \\
+%   \rowcolor{green!30}
+%   14 & 1   & 1      & 1      & 0      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1\\
+%   \rowcolor{lightgray}  
+%   15 & 1   & 1  &  1 &  0      & \oscil      & 1        & 1      & 0 & 0 & 0 & 1 & 1 & 1 & 0 & 1 \\
+%   16 & 1   & \oscil & 1 & \oscil & 0      & 0      & \oscil     & 1 & 1 & 0 & 0 & 0 & 0 & 1 & 0 \\
+%   \hline
+%   \end{tabular}
+%   \label{tab:fgfr3_isolated_interpretations}
+%   \end{minipage}}
+%   \end{table}
 
+\paragraph{Feature-based perturbation selection}
 
-Having a derived set of features and labels, we can compute \emph{normalized mutual information score} (NMIS)~\cite{Kent83} to see which of the features are the most informative per each labelling. We use the following formulas to compute NMIS:
+\begin{table}
+	\caption{\textbf{Mutual information score of interpretation features.} NMIS of the three best performing features (four in case of equal scores) per each labeling (assessment of phenotypes under perturbation). We then consider only non-redundant features (e.g., an existential feature is redundant if its universal variant has an equal or higher NMIS); these are assigned names $\feature_1, \ldots, \feature_8$.}
+	\centering
+	\vspace{4pt}
+	\begin{tabular}{rlrlc}
+		\hline
+		&\textbf{Pert.} & & \textbf{Feature} & \textbf{NMIS} \\ \hline
+		&\multirow{3}{*}{\O} & $\feature_1$ & $\forall$\var{SPRY}$\rightarrow$\var{FRS2} & 0.364 \\
+		&& $\feature_2$ & $\exists$\var{SPRY}$\rightarrow$\var{FRS2} & 0.279 \\
+		&& & $\forall$\var{SPRY}$\rightarrow$\var{SHIP2} & 0.279 \\
+		\midrule
+		
+		\multirow{3}{*}{$Q_1$} & \multirow{3}{*}{\texttt{SPRY=0}} & $\feature_3$ & $\exists$\var{FGFR3} = \var{FGFR3\_st.} $\land$ $\neg$\var{GRB2} & 0.529 \\
+		&& $\feature_4$ & $\exists$\var{GRB2}$\rightarrow$\var{FGFR3} & 0.293 \\
+		&& & $\exists$\var{FRS2} = \var{FGFR3\_st.} & 0.293 \\
+		\midrule
+		
+		\multirow{3}{*}{$Q_2$} &\multirow{3}{*}{\texttt{SHIP2=0}} & $\feature_2$ & $\exists$\var{SPRY}$\rightarrow$\var{FRS2} & 0.855 \\
+		&& $\feature_5$ & $\forall$\var{FRS2} = \var{FGFR3} $\land$ \var{SHIP2} & 0.735 \\ 
+		&& & $\exists$\var{FRS2} = \var{FGFR3} $\land$ \var{SHIP2} & 0.735 \\ 
+		\midrule
+		
+		\multirow{2}{*}{$Q_3$} &\multirow{2}{*}{\texttt{FGFR3\_st.=0}} & $\feature_6$ & $\forall$\var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_st.} & 1.000 \\ 
+		&&& $\exists$\var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_st.} & 1.000 \\  
+		\midrule
+		
+		\multirow{2}{*}{$Q_4$} &\multirow{2}{*}{\texttt{SPRY=1}} & $\feature_1$ & $\forall$\var{SPRY}$\rightarrow$\var{FRS2} & 0.485 \\
+		&& $\feature_7$ & $\exists$\var{FRS2} = \var{FGFR3} $\land$ $\neg$\var{SPRY} & 0.437 \\ 
+		\midrule
+		
+		\multirow{4}{*}{$Q_5$} &\multirow{4}{*}{\texttt{FGFR3=1}} & $\feature_8$& $\exists$\var{SHIP2}$\rightarrow$\var{FRS2} & 0.562 \\
+		&& $\feature_1$ & $\forall$\var{SPRY}$\rightarrow$\var{FRS2} & 0.562 \\
+		&& $\feature_2$ & $\exists$\var{SPRY}$\rightarrow$\var{FRS2} & 0.442 \\ 
+		&&& $\forall$\var{SHIP2}$\rightarrow$\var{FRS2} & 0.442 \\ \midrule
+	\end{tabular}
+	\label{tab:fgfr3_isolated_features}
+	\vspace{-8pt}
+\end{table}
 
-$$
-IS(X; Y) = \sum_{x, y} P(x, y) \log \frac{P(x, y)}{P(x) P(y)}
-$$
-$$
-H(X) = -\sum_{x} P(x) \log P(x)
-$$
-$$ 
-NMIS(X; Y) = \frac{2 IS(X; Y)}{H(X) H(Y)} 
-$$
+To select the most relevant perturbations out of the 5 remaining, 
+we consider which features of the PSBN best explain the perturbation outcomes. 
+First, the candidate perturbations classify the 888 PSBN interpretations into 
+16 equivalence classes based on the phenotypes of the perturbed model 
+(i.e., \var{ERK} stabilisation, avoidance, or oscillation). 
+We then assign each class a collection of feature values, 
+corresponding to concrete properties of the candidate BNs. 
+Each such feature can be either held universally by \emph{all} 
+members of the class (denoted $\forall$), or existentially (denoted $\exists$) 
+by \emph{some} members of the class (naturally, if a feature is universally held in a class, 
+it is by definition also held existentially). 
+Here, the specific set of features consists of (a) essentiality of the five uncertain regulations; 
+(b) individual interpretations of the network's partially unknown update functions.
 
-The best performing results of this analysis are shown in \autoref{tab:fgfr3_isolated_features}.
-% The full results can be found in \autoref{appendix:digi_attach}.
- 
-For each perturbation in \autoref{tab:grieco_phenotypes_perturbations}, we select two features with the biggest NMIS, unless we obtain complete information (1.0) from a single feature. Therefore, we obtain eight distinct features in total, as can be seen in \autoref{tab:fgfr3_isolated_features}. 
+For every perturbation-feature pair, 
+we compute the NMIS between the perturbation outcome and the feature. 
+This score indicates which features correctly predict phenotypes of the perturbed model. 
+The results of this analysis are presented in Table~\ref{tab:fgfr3_isolated_features}. 
+Here, the most prominent perturbation is \var{FGFR3\_stimulus=0}, where the phenotypes are
+ perfectly predicted by the choice of update function in \var{FGFR3} (NMIS is $1.0$). 
+The second most prominent feature is the regulation 
+ $\var{SPRY} \to \var{FRS2}$ when subject to perturbation \var{SHIP2=0} (NMIS is $0.855$). 
+ Both \var{SHIP2} and \var{SPRY} are considered uncertain regulators of \var{FRS2} in our PSBN, 
+ which is the second variable with a partially specified update function in our model. 
+ Consequently, this indicates that the interplay of these two regulators is the most 
+ important for determining the update function of \var{FRS2}.
 
-Next, we can analyse perturbation-phenotype table extended with most representative features in Table~\ref{tab:fgfr3_isolated_interpretations}. We can also demonstrate how analytical observations may easily narrow down sensible interpretations. For example, we may notice, that the rows \#2 and \#14 of the table never lead to the ERK oscillation which can happen only in the absence of cyclic regulations in the partially specified network. This is also reflected by absence of any regulation features for row \#2 as can be seen in detail in the full feature table~\ref{tab:fgfr3_isolated_features}. Even though the row \#14 contains one cycle inducing regulations, it is not sufficient to expose the oscillation behavior for any interpretation, and thus we refute this interpretation as well.
+\sethlcolor{lightgray}
 
-Another types of interpretations which we refute are the ones where ERK oscillates under \var{FGFR3\_stimulus}=0 (rows \#3, 6, 8, 10, 11, 13, 15). The original intention of the model was, that \var{FGFR3\_stimulus} is required for any \var{ERK} activation. We can also see that exactly the oscillating rows are the ones which contain the feature \var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus}. This shows, that $\neg$\var{GRB2} is sufficient to activate \var{FGFR3} and consequently \var{ERK}, what is in conflict with the intended design.
+\begin{table}
+	\caption{\textbf{Behavior of the isolated FGFR3 pathway under perturbations.} Each row corresponds to a class of interpretations characterized by their perturbation response. Here, \# is the row index and $|\interpretationSet|$ is size of the interpretations class. Then, we describe \var{ERK} phenotypes achieved under specific perturbations, as listed in Table~\ref{tab:fgfr3_isolated_features} (phenotypes represent \var{ERK} stabilisation (1), avoidance (0), or oscillation (\oscil)). The last two columns represent selected model features (also listed in Table~\ref{tab:fgfr3_isolated_features}) representing guaranteed presence of regulations, and guaranteed update function specification. Rows highlighted in \sethlcolor{lightgray}\hl{gray} allow non-trivial \var{ERK} activity even with \var{FGFR3\_st.=0}, violating our first assumption. The three \sethlcolor{green!30}\hl{green} rows are the rows which satisfy both of our control-guided assumptions.}
+	\centering
+	\vspace{4pt}
+	\scalebox{0.9}{\footnotesize
+		\begin{tabular}{|r|l|cccccc|ccc|cc|}
+			\hline
+			&    & \multicolumn{6}{c|}{\var{ERK} under perturbation}                 &  \multicolumn{3}{c|}{$\exists\var{A} \rightarrow \var{B}$} & \multicolumn{2}{c|}{$\forall\var{A} = \var{ex.}$} \\ 
+			\# & $\mid\interpretationSet\mid$ & \O & $\perturbation_1$ & $\perturbation_2$ & $\perturbation_3$ & $\perturbation_4$ & $\perturbation_5$ & $\feature_2$ & $\feature_4$ & $\feature_8$ & $\feature_5$ & $\feature_6$ \\ \hline 
+			1  & 277 & \oscil & \oscil & \oscil & 0 & \oscil      & 1      & 1 & 1 & 1 & 0 & 0\\
+			2  & 259 & 1      & 1      & 1      & 0      & 1      & 1      & 0 & 0 & 0 & 0 & 0 \\
+			\rowcolor{lightgray}
+			3  & 259 & 1      & 1      & 1      & \oscil     & 1 & 1      & 0 & 1 & 0 & 0 & 1 \\
+			4  & 22  & \oscil & \oscil & \oscil & 0 & \oscil      & \oscil & 1 & 1 & 0 & 0 & 0 \\
+			\rowcolor{green!30}
+			5  & 18  & 1      & 1      & \oscil      & 0 & 1      & 1      & 1  & 0 & 1 & 0 & 0 \\
+			\rowcolor{lightgray}
+			6   & 18  & 1      & 1      & \oscil    & \oscil    & 1 & 1      & 1  & 1 & 1 & 0 & 1 \\
+			7  & 9   & \oscil & \oscil & \oscil     & 0 & 0      & \oscil & 1 & 1 & 0 & 0 & 0\\
+			\rowcolor{lightgray}
+			8  & 9   & \oscil & \oscil & \oscil & \oscil & \oscil & \oscil & 1 & 1 & 0 & 0 & 1 \\
+			9  & 4   & \oscil & 1      & \oscil & 0 & \oscil     & \oscil  & 1 & 0 & 0 & 0 & 0\\
+			\rowcolor{lightgray}
+			10 & 4   & \oscil & 1      & \oscil & \oscil & \oscil & \oscil & 1 & 1 & 0 & 0 & 1\\
+			\rowcolor{lightgray}
+			11 & 4   & \oscil & \oscil & \oscil  & \oscil & 0 & \oscil & 1 & 1 & 0 & 0 & 1\\
+			\rowcolor{green!30}
+			12 & 1   & \oscil & \oscil  & 0  & 0 & \oscil     & 1 & 0 & 1 & 1 & 1 & 0\\
+			\rowcolor{lightgray}
+			13 & 1   & \oscil & 1      & \oscil      & \oscil & 0 & \oscil & 1 & 1 & 0 & 0 & 1\\
+			\rowcolor{green!30}
+			14 & 1   & 1      & 1      & 0      & 0      & 1      & 1      & 0 & 0 & 1 & 1 & 0 \\
+			\rowcolor{lightgray}
+			15 & 1   & 1  &  1 &  0      & \oscil      & 1        & 1      & 0 & 1 & 1 & 1 & 1 \\
+			16 & 1   & \oscil & 1 & \oscil & 0      & 0      & \oscil     & 1 & 0 & 0 & 0 & 0 \\
+			\hline
+	\end{tabular}}
+	\label{tab:fgfr3_isolated_interpretations}
+	\vspace{-8pt}
+\end{table}
 
-Finally, we conducted a literature review in order to identify experimental biology results testing perturbations \var{SHIP2}=0 ($\perturbation_2$) and \var{FGFR3\_stimulus}=0 ($\perturbation_3$), since these perturbations have most prominent efects based on the analytic observations. Studying the recent biological literature related to these signalling components have lead us to declare the following assumptions: 
-First, based on~\cite{Krejci2012}, we expect \var{FGFR3\_stimulus} 
-to be \emph{necessary} to achieve \var{ERK} stabilization or oscillation in this isolated model. 
+\paragraph{Model refinement}
+
+Based on our results in Table~\ref{tab:fgfr3_isolated_features}, 
+we consider \texttt{FGFR3\_stimulus=0} ($Q_3$) and \texttt{SHIP2=0} ($Q_2$) 
+to be the most relevant for the identification of a concrete model refinement. 
+We performed a literature search to identify plausible experimental results for these 
+two most relevant perturbations, leading to the following assumptions: 
+First, based on~\cite{KrejciReview2012}, we expect \var{FGFR3\_stimulus} 
+to be \emph{necessary} to achieve \var{ERK} stabilisation or oscillation in this isolated model. 
 Second, based on~\cite{Fafilek2018}, 
 we observe that \var{SHIP2=0} knock-out causes down-regulation of \var{ERK} activity.
 
-To put the literature-based assumptions into context, we can easily identify that only 9 equivalence classes 
+To put these assumptions into context, we prepared Table~\ref{tab:fgfr3_isolated_interpretations}, 
+which partitions the PSBN interpretations into equivalence classes based on the effects of our five 
+chosen perturbations on its phenotypes. Within this table, we can easily identify that only 9 equivalence classes 
 (namely 1,2,4,5,7,9,12,14,16) adhere to our first assumption, completely eliminating \var{ERK} activity in response 
 to \var{FGFR3\_stimulus=0} ($Q_3$) perturbation. Out of these nine options, the second assumption allows to select rows 
 5, 12, and 14, as these are the only cases where the activity of \var{ERK} is plausibly down-regulated compared to 
@@ -601,8 +733,52 @@ the unperturbed network in response to \var{SHIP2=0} knock-out ($Q_2$), resultin
 To disambiguate between rows 5, 12, and 14, we would have to quantify the effects observed by~\cite{Fafilek2018}. 
 However, based on the fact that~\cite{Fafilek2018} do not report \var{ERK} to be completely inactive, 
 we can safely eliminate rows 12 and 14 (where \var{ERK} phenotype drops to 0). 
-Furthermore, considering the fact that \var{ERK} is known to oscillate~\cite{Raina2022}, 
+Furthermore, considering the fact that \var{ERK} is known to oscillate~\citep{Raina2022}, 
 we prefer row 5 as the most likely option. 
+
+Interestingly, the 18 networks left in the class at row~5 are completely indistinguishable both in terms of their 
+unperturbed phenotypes and their phenotype response to single-variable perturbations. 
+More importantly, in these 18 networks, it universally holds that \var{GRB2} does \emph{not} regulate
+\var{FGFR3}, but \var{SHIP2} always regulates \var{FRS2} (other regulations remain undetermined). 
+
+% Having a derived set of features and labels, we can compute \emph{normalized mutual information score} (NMIS)~\cite{Kent83} to see which of the features are the most informative per each labelling. We use the following formulas to compute NMIS:
+
+% $$
+% IS(X; Y) = \sum_{x, y} P(x, y) \log \frac{P(x, y)}{P(x) P(y)}
+% $$
+% $$
+% H(X) = -\sum_{x} P(x) \log P(x)
+% $$
+% $$ 
+% NMIS(X; Y) = \frac{2 IS(X; Y)}{H(X) H(Y)} 
+% $$
+
+% The best performing results of this analysis are shown in \autoref{tab:fgfr3_isolated_features}.
+% % The full results can be found in \autoref{appendix:digi_attach}.
+ 
+% For each perturbation in \autoref{tab:grieco_phenotypes_perturbations}, we select two features with the biggest NMIS, unless we obtain complete information (1.0) from a single feature. Therefore, we obtain eight distinct features in total, as can be seen in \autoref{tab:fgfr3_isolated_features}. 
+
+% Next, we can analyse perturbation-phenotype table extended with most representative features in Table~\ref{tab:fgfr3_isolated_interpretations}. We can also demonstrate how analytical observations may easily narrow down sensible interpretations. For example, we may notice, that the rows \#2 and \#14 of the table never lead to the ERK oscillation which can happen only in the absence of cyclic regulations in the partially specified network. This is also reflected by absence of any regulation features for row \#2 as can be seen in detail in the full feature table~\ref{tab:fgfr3_isolated_features}. Even though the row \#14 contains one cycle inducing regulations, it is not sufficient to expose the oscillation behavior for any interpretation, and thus we refute this interpretation as well.
+
+% Another types of interpretations which we refute are the ones where ERK oscillates under \var{FGFR3\_stimulus}=0 (rows \#3, 6, 8, 10, 11, 13, 15). The original intention of the model was, that \var{FGFR3\_stimulus} is required for any \var{ERK} activation. We can also see that exactly the oscillating rows are the ones which contain the feature \var{FGFR3} = $\neg$\var{GRB2} $\lor$ \var{FGFR3\_stimulus}. This shows, that $\neg$\var{GRB2} is sufficient to activate \var{FGFR3} and consequently \var{ERK}, what is in conflict with the intended design.
+
+% Finally, we conducted a literature review in order to identify experimental biology results testing perturbations \var{SHIP2}=0 ($\perturbation_2$) and \var{FGFR3\_stimulus}=0 ($\perturbation_3$), since these perturbations have most prominent efects based on the analytic observations. Studying the recent biological literature related to these signalling components have lead us to declare the following assumptions: 
+% First, based on~\cite{Krejci2012}, we expect \var{FGFR3\_stimulus} 
+% to be \emph{necessary} to achieve \var{ERK} stabilization or oscillation in this isolated model. 
+% Second, based on~\cite{Fafilek2018}, 
+% we observe that \var{SHIP2=0} knock-out causes down-regulation of \var{ERK} activity.
+
+% To put the literature-based assumptions into context, we can easily identify that only 9 equivalence classes 
+% (namely 1,2,4,5,7,9,12,14,16) adhere to our first assumption, completely eliminating \var{ERK} activity in response 
+% to \var{FGFR3\_stimulus=0} ($Q_3$) perturbation. Out of these nine options, the second assumption allows to select rows 
+% 5, 12, and 14, as these are the only cases where the activity of \var{ERK} is plausibly down-regulated compared to 
+% the unperturbed network in response to \var{SHIP2=0} knock-out ($Q_2$), resulting in 20/888 candidate networks. 
+
+% To disambiguate between rows 5, 12, and 14, we would have to quantify the effects observed by~\cite{Fafilek2018}. 
+% However, based on the fact that~\cite{Fafilek2018} do not report \var{ERK} to be completely inactive, 
+% we can safely eliminate rows 12 and 14 (where \var{ERK} phenotype drops to 0). 
+% Furthermore, considering the fact that \var{ERK} is known to oscillate~\cite{Raina2022}, 
+% we prefer row 5 as the most likely option. 
 
 \subsection{Grieco MAPK}
 
