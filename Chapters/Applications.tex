@@ -243,7 +243,7 @@ Nonetheless, since the model is imprecise to some extent, the designed therapy m
 
 \subsection{Control-guided model refinement}
 
-In more complex cases, it is also possible, that the treatment is not replicated in vitro even for a perturbation with 100\% robustness. As a result, we might need to rework the model significantly, e.g., by introducing new model parts (regulations and variables) or by changing the existing components. Typically, these model adjustments significantly expand unknown parts of the model, since they are based on hypotheses and uncertainty. Then, a typical next step is verification of the hypotheses we posed as well as efforts to lower the introduced uncertainty. 
+In more complex cases, it is also possible, that the treatment is not replicated in vitro even for a perturbation with 100\% robustness. As a result, we might need to rework the model significantly, e.g., by introducing new model parts (regulations and variables) or by changing the existing components. Usually, these model adjustments significantly expand unknown parts of the model, since they are based on hypotheses and uncertainty. Then, a typical next step is verification of the hypotheses we posed as well as efforts to lower the introduced uncertainty. 
 
 As shown on the right side of the diagram in \autoref{fig:control_workflow}, we use phenotype control to guide an experimental design of knockout or over-expression experiments for the model refinement~\cite{UdDean2016}. Let us zoom in to the details of this process.
 
@@ -356,7 +356,7 @@ Performing the designed experiments in vitro is an ideal approach to refine the 
   \label{tab:perturbation_matrix}
   \end{table}
 
-For example, consider \autoref{tab:perturbation_matrix}, where we have selected two perturbations from the previous example in \autoref{fig:perturbations_example}. In the table, we assume that we have selected perturbations $\perturbation_A$ and $\perturbation_C$. We might be interested in finding out \emph{why} a particular perturbation works for some interpretations and not for the others. For this purpose, we infer the features of the interpretation sets. The vector of phenotypes for perturbations can thus be considered as a \emph{label}, and we can observe their \emph{mutual information gain} metric to measure impact of a feature on the~\cite{Kent83}. Note, that since question we are interested in is whether a perturbation works or not, thus it is more advantageous to consider binary labels (yes/no) for the labels. 
+For example, consider \autoref{tab:perturbation_matrix}, where we have selected two perturbations from the previous example in \autoref{fig:perturbations_example}. In the table, we assume that we have selected perturbations $\perturbation_A$ and $\perturbation_C$. We might be interested in finding out \emph{why} a particular perturbation works for some interpretations and not for the others. For this purpose, we infer the features of the interpretation sets. The vector of phenotypes for perturbations can thus be considered as a \emph{label}, and we can observe their NMIS to measure impact of a feature. Note, that since question we are interested in is whether a perturbation works or not, thus it is more advantageous to consider binary labels (yes/no) for the labels. 
 Given a set of interpretations $\interpretationSet$, the features we consider are following:
 \begin{itemize}
   \item A regulation is essential in all interpretations $\forall \interpretation \in \interpretationSet.$ \var{GRB2} $\rightarrow$ \var{FGFR3} is observable in \pbnMath(\interpretation).
@@ -366,7 +366,7 @@ Given a set of interpretations $\interpretationSet$, the features we consider ar
   \item A presence of a particular function instance in any of the given interpretations ($\exists \interpretation \in \interpretationSet.$ \var{FGFR3} $=$ \var{FGFR3\_stimulus} $\land$ $\neg$\var{GRB2} in \pbnMath(\interpretation)). This way we might find, that a particular function is preventing a perturbation from working.
 \end{itemize}
 
-Note, that the features can be combined in various ways as well as there might be other features to consider (e.g. monotonity of regulations, or particular values of the function symbols, etc.). A rule of the thumb is to refine as many potentially relevant features as possible. In our example, we can notice, that perturbation $\perturbation_C$ avoids proliferation exactly if an interpretation has update function $\var{FGFR3}$=0. This could be a surprising observation for the modeler since maybe they did not expect $\var{FGFR3}$ function to be so trivial, nor $\perturbation_C$ to have such effect on proliferation. If such is the case, approximately a third of the interpretations can be refuted using the analytical approach only.
+Note, that the features can be combined in various ways as well as there might be other features to consider (e.g. monotonicity of regulations, or particular values of the function symbols, etc.). A rule of the thumb is to refine as many potentially relevant features as possible. In our example, we can notice, that perturbation $\perturbation_C$ avoids proliferation exactly if an interpretation has update function $\var{FGFR3}$=0. This could be a surprising observation for the modeler since maybe they did not expect $\var{FGFR3}$ function to be so trivial, nor $\perturbation_C$ to have such effect on proliferation. If such is the case, approximately a third of the interpretations can be refuted using the analytical approach only.
 
 In more complex cases, it becomes complicated to assess which single feature can completely predict the observed phenotypes. To quantify an extent to which the phenotype is dependent on a given feature we use the mutual information gain metric. Therefore, we consider a single vector of features at a time, and a single vector of phenotype labels yielded by a perturbation, in order to select features best describing each perturbation, to analytically evaluate mechanics of a given perturbation. Since there might be different cardinality for possible phenotype outcomes (i.e. models and perturbations might achieve different number of varying phenotypes), we use normalization for the mutual information gain~\cite{Vinh2009}. 
 
@@ -400,9 +400,11 @@ Second, we consider a larger-scale model~\cite{Grieco2013} of general MAPK signa
   }
 \end{figure}
 
-Based on our previous research\cite{HSB}, we consider a minimalistic model representing an abstracted form of FGFR3-MAPK signaling pathway, focusing on the interactions among FGFR3, FRS2, SHIP2 and ERK proteins~\cite{Barnat2017}. The model is encoded as a PSBN consisting of 12 variables and 16 regulatory interactions. The model contains one input -- \var{FGFR3\_stimulus}, which is considered implicitly set to true to simulate constitutive activation of the pathway via suitable FGF ligands. This stimulus can be however disabled (perturbed to the value 0) with the phenotype control. The update logics of \var{FGFR3} and \var{FRS2} is partially specified reflecting the fact that the combined effect of variables regulating their activity as well as the presence of particular regulations is not well understood~\cite{Krejci2012,Santhana2023}. 
+Based on our previous research\cite{HSB}, we consider a minimalistic model representing an abstracted form of FGFR3-MAPK signaling pathway, focusing on the interactions among FGFR3, FRS2, SHIP2 and ERK proteins~\cite{Barnat2017}. The model is encoded as a PSBN consisting of 12 variables and 16 regulatory interactions. The model contains one input -- \var{FGFR3\_stimulus}, which is considered implicitly set to true to simulate constitutive activation of the pathway via suitable FGF ligands. This stimulus can be however disabled (perturbed to the value 0) with the phenotype control. 
 
-The dynamics of the final protein component ERK closing the isolated pathway forms the (model) phenotype. In particular, we consider three protein-level phenotypes targeting ERK activity: \var{ERK} stabilization, \var{ERK} avoidance, and \var{ERK} oscillation. Due to the introduced uncertainty, the FGFR3 model has 888 possible interpretations. 
+The update logics of \var{FGFR3} and \var{FRS2} are partially specified reflecting the fact that the combined effect of variables regulating their activity as well as the presence of particular regulations is not well understood~\cite{Krejci2012,Santhana2023}. The exact regulatory graph is shown in \autoref{fig:fgfr3_isolated}, while the update functions are shown in \autoref{tab:small_mapk_funs}.
+
+The dynamics of the final protein component ERK closing the isolated pathway forms the phenotype. In particular, we consider three protein-level phenotypes targeting ERK activity: \var{ERK} stabilization, \var{ERK} avoidance, and \var{ERK} oscillation. Due to the introduced uncertainty, the FGFR3 model has 888 possible interpretations. 
 
 %Using the following observations found in literature we perform control-guided model refinement (as depicted in \autoref{fig:control_workflow}) to exclude biologically inconsistent interpretations of the \PBN{}. Our hypotheses are based on the experimental evidence established with \emph{chondrocyte} cells. 
 
@@ -471,7 +473,7 @@ Let us we observe the non-perturbed behavior -- the ``natural'' phenotypes of th
 
 \paragraph{Initial perturbation screening}
 
-Next, we computed the phenotype control for all three considered phenotypes. The results are summarized in Table~\ref{tab:fgfr3_isolated}. Due to the small size of the model, we list only perturbations up to size one, since perturbations of bigger size did not achieve better results; not even in case of oscillation, where no perturbation has 100\% robustness. Even when perturbations of all sizes were computed, no perturbation achieved better robustness towards oscillation phenotype than \var{SHIP2}=0. This might be due to the incomplete model design, which we will discuss later.
+We computed the phenotype control for all three considered phenotypes. The results are summarized in Table~\ref{tab:fgfr3_isolated}. Due to the small size of the model, we list only perturbations up to size one, since perturbations of bigger size did not achieve better results; not even in case of oscillation, where no perturbation has 100\% robustness. Even when perturbations of all sizes were computed, no perturbation achieved better robustness towards oscillation phenotype than \var{SHIP2}=0. This might be due to the incomplete model design, which we will discuss later.
 
 \begin{figure}[ht!]
 \captionsetup[subfigure]{justification=centering}
@@ -717,7 +719,7 @@ we consider \texttt{FGFR3\_stimulus=0} ($Q_3$) and \texttt{SHIP2=0} ($Q_2$)
 to be the most relevant for the identification of a concrete model refinement. 
 We performed a literature search to identify plausible experimental results for these 
 two most relevant perturbations, leading to the following assumptions: 
-First, based on~\cite{KrejciReview2012}, we expect \var{FGFR3\_stimulus} 
+First, based on~\cite{Krejci2012}, we expect \var{FGFR3\_stimulus} 
 to be \emph{necessary} to achieve \var{ERK} stabilisation or oscillation in this isolated model. 
 Second, based on~\cite{Fafilek2018}, 
 we observe that \var{SHIP2=0} knock-out causes down-regulation of \var{ERK} activity.
