@@ -49,7 +49,7 @@ Since then, it has become a widely used model to study the dynamics of complex b
 
 \subsection{Notation}
 
-Here, the notation used in the context of Boolean networks is briefly summarized. For a complete overview of the used notation, refer to \autoref{app:notation}
+Here, the notation used in the context of Boolean networks is briefly summarized. For a complete overview of the used notation, refer to \autoref{app:notation}.
 
 We consider $0$ and $1$ as interchangeable with $\mathit{false}$ and $\mathit{true}$, respectively. We then define $\bools = \{ 0, 1 \}$ to be the set of Boolean values and $\bools_\unspecified = \{ 0, 1, {\unspecified} \}$ to be an extension of $\bools$ which also admits a \emph{free} value~$\unspecified$ (i.e.~neither $\mathit{true}$ nor $\mathit{false}$). We write $\bools^n$ to denote the set of all $n$-element vectors over $\bools$. For each $x \in \bools^n$, $x_i$ then denotes the $i$-th element of $x$. Finally, for $x \in \bools^n$, index $i \in [1,n]$, and a Boolean value $b \in \bools$, expression $x[i \mapsto b]$ denotes a substitution of the $i$-th element in $x$ for the value~$b$.  Formally, the result is $x' = x[i \mapsto b]$ s.t. $x'_j = b$ for $j = i$, and $x'_j = x_j$ otherwise.
 
@@ -150,7 +150,7 @@ Furthermore, we are only concerned with \emph{strongly fair} runs~\cite{Abadi199
 The focus on strongly fair runs naturally leads to the notions of trap set, trap space, and attractor, which dictate the long-term behavior of the corresponding BN:
 
 \begin{definition}
-	Let $\bnMath = \{ f_1, \ldots, f_n \}$ be a Boolean network and $X \subseteq \bools^n$ a set of network states. We say that $X$ is a \emph{trap set} when for all $x \in X$ and $y \in \bools^n$ we have that $x \to y$ implies $y \in X$ (i.e., $X$ cannot be escaped). A subspace $X = \bools^n_\unspecified$ which is also a trap set can be also called a \emph{trap space}. The $X$ is an \emph{attractor} when $X$ is strongly connected within $\STG(\bnMath)$.
+	Let $\bnMath = \{ f_1, \ldots, f_n \}$ be a Boolean network and $X \subseteq \bools^n$ a set of network states. We say that $X$ is a \emph{trap set} when for all $x \in X$ and $y \in \bools^n$ we have that $x \to y$ implies $y \in X$ (i.e., $X$ cannot be escaped). A subspace $X \in \bools^n_\unspecified$ which is also a trap set can be also called a \emph{trap space}. A trap set $X$ is an \emph{attractor} when $X$ is strongly connected within $\STG(\bnMath)$.
 \end{definition}
 
 \begin{figure}[bth]
@@ -165,7 +165,7 @@ The focus on strongly fair runs naturally leads to the notions of trap set, trap
 % \intention{Attractors} 
 For a visualization of the concepts, see \autoref{fig:traps}. Equivalently, we can define an attractor $A$ as the inclusion-minimal trap set of $\bnMath$. 
 
-Notice, that an attractor of a run is exactly the set of states that appear infinitely often in the run $inf(\run) = A$. We write $\allAttractors(\STG(\bnMath))$ to denote the set of all attractors of $\bnMath$. An attractor containing only a single state is called a \emph{steady state} or \emph{fixed point}. On the other hand, we will refer to attractors containing multiple states as \emph{oscillatory attractors}*. \marginpar{*Some works also distinguish oscillatory (where period of states repeating in the sequence is strictly regular) and chaotic attractors~\cite{Pastva2022}. In this work we call both these types as oscillatory.}
+Notice, that an attractor of a run is exactly the set of states that appear infinitely often in the run $inf(\run) = A$. We write $\allAttractors(\bnMath)$ to denote the set of all attractors of $\bnMath$. An attractor containing only a single state is called a \emph{steady state} or \emph{fixed point}. On the other hand, we will refer to attractors containing multiple states as \emph{oscillatory attractors}*. \marginpar{*Some works also distinguish oscillatory (where period of states repeating in the sequence is strictly regular) and chaotic attractors~\cite{Pastva2022}. In this work we call both these types as oscillatory.}
 
 Finally, observe that due to our fairness assumption, all runs admitted by $\STG(\bnMath)$ eventually reach some attractor. As such, for each strongly fair $\pi$, the set of states that appear infinitely often in $\pi$ is always an attractor. For example, if we consider the BN from \autoref{fig:bn_basic}, it has a single attractor; the oscillation in subspace $0\unspecified\unspecified$. All runs of this BN eventually reach this attractor.
 
@@ -210,7 +210,7 @@ In this section we zoom into the \emph{control} of Boolean networks. We first di
 % Source-target, target, full control, all pair
 The first aspect in which control problems differ is ``what kind of stabilization we are trying to achieve''. Since the only component stable in a BN are its attractors, the control objectives typically focus on navigating a system to reach a certain attractor or a set of attractors.
 
-There are two base types of control objectives: \emph{existential} and \emph{inevitable} control~\cite{Paul2018SETTA,Mandon2019PHD}. Existential control aims to find a strategy that make for a system \emph{possible} to reach the target. On the other hand, universal control seeks a strategy that \emph{ensures} convergence to the target attractor from any initial state. In this work, we consider only the inevitable control objectives.
+There are two base types of control objectives: \emph{existential} and \emph{inevitable} control~\cite{Paul2018SETTA,Mandon2019PHD}. Existential control aims to find a strategy that makes for a system \emph{possible} to reach the target. On the other hand, universal control seeks a strategy that \emph{ensures} convergence to the target attractor from any initial state. In this work, we consider only the inevitable control objectives.
 
 We consider five different control objectives based on the previous lines of research~\cite{Baudin2019,Fontanals2020}. The differences between control objectives are also illustrated in \autoref{fig:st}:
 
@@ -218,7 +218,7 @@ We consider five different control objectives based on the previous lines of res
 \item \emph{Source-target control}: Given a \emph{source state} $s \in \bools^n$, and a \emph{target attractor} $T \in \allAttractors$, ensure, that the BN converges from the state $s$ to the attractor $T$ (see \autoref{subfig:st_a}).
 \item \emph{Target control}: Given a \emph{target attractor} $T \in \allAttractors$, ensure that for \emph{any} initial state $s \in \bools^n$ the BN converges from $s$ to $T$ (see \autoref{subfig:st_b}).
 \item \emph{Full control}: Find a set of control strategies such that for all pairs of distinct attractors $S, T \in \allAttractors$, applying a strategy from this set guarantees that the BN converges from $S$ to $T$ (see \autoref{subfig:st_c}).
-\item \emph{All-pairs control}: Given a subset of source attractors $\mathcal{S} \subseteq \allAttractors$ and target attractors $\mathcal{T} \subseteq \allAttractors$, find a set of perturbations such that for every pair $S \in \mathcal{S}$ and $T \in \mathcal{T}$, applying a subset of the perturbations guarantees that the BN converges from $S$ to $T$ (similar to full control in~\autoref{subfig:st_c}).
+\item \emph{All-pairs control}: Given a subset of source attractors $\mathcal{S} \subseteq \allAttractors$ and target attractors $\mathcal{T} \subseteq \allAttractors$, find a set of perturbations $\mathcal{Q}$ such that for every pair $S \in \mathcal{S}$ and $T \in \mathcal{T}$, there exists a subset perturbations $\mathcal{Q}' \subseteq \mathcal{Q}$ that guarantees that the BN converges from $S$ to $T$ (similar to full control in~\autoref{subfig:st_c}).
 \item \emph{Phenotype control}: Given a subset of states $X \subseteq \bools^n$, ensure that from any initial state, the BN converges to an attractor $A \subseteq \allAttractors$ such that $A \subseteq X$ (\autoref{subfig:st_d}).
 \end{enumerate}
 
@@ -263,7 +263,7 @@ The perturbations are formally defined as follows:
 Given a Boolean network $\bnMath = \{f_1, \dots, f_n \}$, a \emph{variable perturbation} is a vector $\perturbation \in \bools_\unspecified^n$. For every $\perturbation_i = \unspecified$, we say that the $i$-th variable is \emph{unperturbed}, whereas for $\perturbation_i = 0$ or $\perturbation_i = 1$, we say that the variable is \emph{perturbed} (to either $0$ or $1$). The \emph{size} of $\perturbation$ is the number of perturbed variables: $\size(\perturbation) = \; \mid \{ i \mid \perturbation_i \neq \unspecified \} \mid$. A perturbation can again be seen as a \emph{subspace} of the $\bnMath$ state space $\bools^n$. The set of all considered perturbations is denoted as $\allPerturbations$ and typically equals to $\bools_\unspecified^n$. 
 \end{definition}
 
-We further recognize two special types of perturbations based on their size; an \emph{empty perturbation} is a perturbation of size $0$ (i.e., $\perturbation = \unspecified\unspecified\ldots\unspecified$) which does not perturb any variable, for short, denoted as \emptyPerturbation. In contrast, a \emph{trivial perturbation} is a perturbation of size $n$ (i.e., $\perturbation \in \bools^n$) which perturbs all variables in the network to a value of the target state. Finally, if a perturbation is very small (i.e one or two being perturbed), we can denote it as an assignment of perturbed variables instead of a full vector. For example, for $n=4$, instead of writing $\perturbation = 1\unspecified0\unspecified$, we can write $\{ \var{v1}=1, \var{v3}=0 \}$.
+We further recognize two special types of perturbations based on their size; an \emph{empty perturbation} is a perturbation of size $0$ (i.e., $\perturbation = \unspecified\unspecified\ldots\unspecified$) which does not perturb any variable, for short, denoted as \emptyPerturbation. In contrast, a \emph{trivial perturbation} is a perturbation of size $n$ (i.e., $\perturbation \in \bools^n$) which perturbs all variables in the network to a value of the target state. Finally, if a perturbation is very small (i.e one or two variables being perturbed), we can denote it as an assignment of perturbed variables instead of a full vector. For example, for $n=4$, instead of writing $\perturbation = 1\unspecified0\unspecified$, we can write $\{ \var{v1}=1, \var{v3}=0 \}$.
 
 Usually, the perturbations are expensive. Therefore, we want to keep the amount of performed perturbations as small as possible. Thus, control is an optimization problem and is typically measured by a perturbation size (number of perturbed variables), but other criteria might be considered as well.
 
@@ -283,7 +283,7 @@ The perturbations differ based on their temporal characteristics. The first clas
 \end{figure}
 
 
-\emph{One-step perturbation} (OSP) overrides values of controlled variables once, and then the network is left to evolve in its natural dynamics. Intuitively, the OSP can be viewed as a restriction of the initial states of all BN runs. Technically, the BN run may be at any state before the time step in which the perturbation is applied. Nonetheless, the very next step would bring the network to a state which is part of the OSP. The notion of one-step state perturbation is defined in the following way:
+\emph{One-step perturbation} (OSP) overrides values of controlled variables once, and then the network is left to evolve in its natural dynamics. Intuitively, for target control, the OSP can be viewed as a restriction of the initial states of all BN runs. Technically, the BN run may be at any state before the time step in which the perturbation is applied. Nonetheless, the very next step would bring the network to a state which is part of the OSP.
 
 The perturbations applied for multiple time-steps are temporary (TP) and permanent perturbations (PP). As the name suggest, when we use temporary perturbation, there exists a finite amount of time steps after which the perturbation is released, and BN is left to evolve in its natural dynamics. Temporary perturbation applied for only a single time step is equivalent to OSP. 
 
@@ -311,7 +311,7 @@ Another important concept we need to define to understand the application of tem
     \label{def:perturbed_stg}
     Given a BN $\bnMath = \{f_1, \ldots, f_n\}$ where $\STG(\bnMath) = (\vertices, \edges)$, \emph{application of a perturbation $\perturbation \in \allPerturbations$ to a Boolean network $\bnMath$} results in a \emph{perturbed Boolean network} $\bnMath_{\perturbation}$ with \emph{perturbed state transition graph} $\STG_{\perturbation}(\bnMath) = (\perturbation, \edges_{\perturbation})$ where vertices are a subspace of the unperturbed state space $\vertices = \bools^n$ given by the perturbation $\perturbation$ and a set of perturbed edges $\edges_{\perturbation} \subseteq \edges$ is given as follows:
     $$
-    \edges_{\perturbation} = \{(u, v') \mid (u, v) \in \edges \land u \in Q \land v \in \perturbation\}
+    \edges_{\perturbation} = \{(u, v) \mid (u, v) \in \edges \land u \in Q \land v \in \perturbation\}
     $$
 \end{definition}
 
@@ -329,19 +329,19 @@ Now, we can define a perturbed run of a BN:
 
 \begin{definition}
     \label{def:perturbed_run}
-    Let us assume a BN $\bnMath = \{f_1, \ldots, f_n\}$, a source states $S \subseteq \bools^n$, a perturbation $\perturbation \in \allPerturbations$, a time period $z \in \Nats_{\infty}$, after which the perturbation is withheld and a natural run $\run \in \STG(\bnMath)$, such that there exists a time-step $t'$ where $\run(t') \in S$. \emph{A perturbed run $\run_{\perturbation}$} is a run which satisfies the following conditions:
+    Let us assume a BN $\bnMath = \{f_1, \ldots, f_n\}$, source states $\mathcal{S} \subseteq \bools^n$, a perturbation $\perturbation \in \allPerturbations$, a time period $z \in \Nats_{\infty}$, after which the perturbation is withheld and a natural run $\run \in \STG(\bnMath)$, such that there exists a time-step $t'$ where $\run(t') \in \mathcal{S}$. \emph{A perturbed run $\run_{\perturbation}$} is a run which satisfies the following conditions:
     $$
     \run_{\perturbation}(t) = \begin{cases}
         \run(t) & \text{iff } t \leq t' \\
         \pertApply(t, \perturbation) & \text{iff } t = t' + 1 \\
-        s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges_{\perturbation} & \text{iff }  t'+z > t > t' + 1 \\
+        s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges_{\perturbation} & \text{iff }  t'+z \geq t > t' + 1 \\
         s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges & \text{iff } t > t'+z
     \end{cases}
     $$
-    A set $\allRuns_{\perturbation}(\bnMath, S, z)$ is a collection of all perturbed runs $\run_{\perturbation}$ for a given perturbation $\perturbation$, applied to any state from $S$ with perturbation being withheld after $z$ time-steps.
+    A set $\allRuns_{\perturbation}(\bnMath, \mathcal{S}, z)$ is a collection of all perturbed runs $\run_{\perturbation}$ for a given perturbation $\perturbation$, applied to any state from $\mathcal{S}$ with perturbation being withheld after $z$ time-steps.
 \end{definition}
 
- Intuitively, a perturbed run consists of four "stages". First, the run is evolved ``normally" in a given BN. When the BN reaches a state in $S$ (does not need to be the first occurrence of an $s \in S$ in the run), we apply a perturbation to that state. Asz a result, we obtain the nearest state which is compliant with the perturbation. From this state, the BN evolves according to the perturbed STG. If $z$ is not infinite, after $z$ time-steps, the perturbation is withheld, and the BN continues to evolve according to its natural dynamics. 
+ Intuitively, a perturbed run consists of four "stages". First, the run is evolved ``normally" in a given BN. When the BN reaches a state in $\mathcal{S}$ (does not need to be the first occurrence of an $s \in \mathcal{S}$ in the run), we apply a perturbation to that state. As a result, we obtain the nearest state which is compliant with the perturbation. From this state, the BN evolves according to the perturbed STG. If $z$ is not infinite, after $z$ time-steps, the perturbation is withheld, and the BN continues to evolve according to its natural dynamics. 
 
 \begin{example}
 An example of a valid perturbed run for a BN from our running example (\autoref{fig:bn_basic}) under perturbation $\unspecified\unspecified0$ applied to a state $101$ and withheld after $z=5$ time-steps is the following:
@@ -420,7 +420,7 @@ A shortcoming of classical Boolean networks as defined above is that to study ne
 
 Therefore, it was suggested to observe the dynamics of the Boolean network in context of of Boolean networks ensembles first~\cite{Kauffman2004,Schwab2020}. In this approach, we consider a set of Boolean networks that share some common properties (e.g., the same network structure or the same values of certain variables in their attractors). The goal is to study the dynamics of the whole ensemble instead of a single network. This way, we can obtain more robust results that are not dependent on a specific choice of update functions. 
 
-The ensemble approach described as above, however, has its limitations, as it is not formalized very well and is usually limited to simulations. To address this problem, we consider the notion of \emph{Partially Specified Boolean Networks} (PSBNs)~\cite{Benes2019,benevs2022bdd} (sometimes also termed parametrized Boolean networks or colored Boolean networks). 
+The ensemble approach described as above, however, has its limitations, as it is not formalized very well and is usually limited to simulations. To address this problem, we consider the notion of \emph{partially specified Boolean networks} (PSBNs)~\cite{Benes2019,benevs2022bdd} (sometimes also termed parametrized Boolean networks or colored Boolean networks). 
 
 In a PSBN, we use \emph{function symbols} as stand-ins for unknown (fixed but arbitrary) parts of the network's unspecified dynamics. Therefore, the dynamics of a variable are either denoted by a standard (fully specified) function or by its function symbol and input arguments.
 \begin{definition}
@@ -437,21 +437,21 @@ In other words, a PSBN is defined using standard Boolean constants ($0$ and $1$)
 
 To give meaning to a particular $\pbnMath$, we rely on the term \emph{interpretation}. Formally, an interpretation $\interpretation$ is a set of $\{i_1, \ldots, i_m \}$ Boolean functions such that for each $\funSymbol^{(a)} \in \allFunSymbols$, there is a corresponding Boolean function $i^{(a)} \in \interpretation$ of the matching arity $a$. 
 
-Intuitively, an interpretation associates a specific Boolean function to every function symbol. Consequently, we can substitute all symbols $\funSymbol \in \allFunSymbols$ for functions $i \in \interpretation$ in a $\allFunSymbols = \{\funSymbol_1, \ldots, \funSymbol_n\}$ of a $\pbnMath$, and a result we obtain a collection of $n$ fully specified functions. The result is a \emph{Boolean network instance} which we denote as $\pbnMath(\interpretation)$ and which has the same semantics as a standard BN. The set of all possible interpretations of $\allFunSymbols$ is denoted as $\allInterpretations(\allFunSymbols)$ or $\allInterpretations$ for short (i.e., when the context is clear). Some subset of interpretations is then referred to as $\interpretationSet \subseteq \allInterpretations$. 
+Intuitively, an interpretation associates a specific Boolean function to every function symbol. Consequently, we can substitute all symbols $\funSymbol \in \allFunSymbols$ for functions $i \in \interpretation$ in a $\allFunSymbols = \{\funSymbol_1, \ldots, \funSymbol_n\}$ of a $\pbnMath$, and as a result we obtain a collection of $n$ fully specified functions. The result is a \emph{Boolean network instance} which we denote as $\pbnMath(\interpretation)$ and which has the same semantics as a standard BN. The set of all possible interpretations of $\allFunSymbols$ is denoted as $\allInterpretations(\allFunSymbols)$ or $\allInterpretations$ for short (i.e., when the context is clear). Some subset of interpretations is then referred to as $\interpretationSet \subseteq \allInterpretations$. 
 
 \subsection[Normalization of PSBN]{Normalization of partially specified Boolean networks}
 
-Function symbols are practical as a human-friendly specification language of unknown network behavior. However, it is not entirely clear how algorithms should represent such functions symbolically, as is our goal in this paper. To alleviate this issue, we note the following: Assuming that all $m$ function symbols in $\allFunSymbols$ have arity zero, possible interpretations $\allInterpretations$ of $\allFunSymbols$ correspond to the vectors $\bools^{m}$. This is because a nullary function symbol is necessarily a constant and can be thus interpreted as a Boolean value. We call such zero arity symbols \emph{zero-arity symbols} (we can also simply write $\funSymbol$ instead of $\allFunSymbols^{(0)}()$ when using such symbols). In some literature, these are also referred to as network inputs~\cite{Kobayashi2011}. 
+Function symbols are practical as a human-friendly specification language of unknown network behavior. However, it is not entirely clear how algorithms should represent such functions symbolically, as is our goal in this paper. To alleviate this issue, we note the following: Assuming that all $m$ function symbols in $\allFunSymbols$ have arity zero, possible interpretations $\allInterpretations$ of $\allFunSymbols$ correspond to the vectors $\bools^{m}$. This is because a nullary function symbol is necessarily a constant and can be thus interpreted as a Boolean value. We call such symbols \emph{zero-arity symbols} (we can also simply write $\funSymbol$ instead of $\funSymbol^{(0)}()$ when using such symbols). In some literature, these are also referred to as network inputs~\cite{Kobayashi2011}. 
 
 Given any $\pbnMath$, we can produce a \emph{normalized} $\widehat{\pbnMath}$ that only uses a fresh set of logical nullary function symbols $\widehat{\allFunSymbols}$ instead of general function symbols $\allFunSymbols$, but its interpretations are the same fully specified BNs as for the original $\pbnMath$. To implement this normalization, we use the following expansion rule (here, $\expr_1, \ldots, \expr_a$ are arbitrary Boolean expressions):
 \begin{align*}
-	\allFunSymbols^{(a)}(\expr_1, \ldots, \expr_a) &\equiv (\expr_1 \Rightarrow \mathcal{F}^{(a-1)}_P(\expr_2, \ldots, \expr_a)) \\
+	\funSymbol^{(a)}(\expr_1, \ldots, \expr_a) &\equiv (\expr_1 \Rightarrow \funSymbol^{(a-1)}_P(\expr_2, \ldots, \expr_a)) \\
     &\land (\neg \expr_1 \Rightarrow \funSymbol^{(a-1)}_N(\expr_2, \ldots, \expr_a))
 \end{align*}
 
 This rule transforms any expression using a function symbol $\funSymbol$ of arity $a$ into an expression using two fresh function symbols of arity $a-1$ ($\funSymbol_P$ and $\funSymbol_N$). Interpretations of the original and the transformed expression result in the same concrete Boolean functions. By recursively applying this rule, we can transform any $\funSymbol^{(a)}$ into $2^a$ nullary function symbols, each corresponding to one row of the truth table of the original $\funSymbol$. Without the loss of generality, we can thus assume that the interpretations of a particular $\pbnMath$ are identified by the members of $\bools^{m}$ for some $m = |\widehat{\allFunSymbols}|$. The set of all interpretations is then exactly equivalent to  $\allInterpretations = \bools^m$. An example of a normalized $\widehat{\pbnMath}$ is given in \autoref{example:psbn}.
 
-We must not forget, that the basis of BNs (and PSBNs) are the regulatory networks as described in \autoref{s:reg_net}. Therefore, if we have a definition of an expression for $x_1$ given as $\expr_1 \equiv \funSymbol(x_1, x_2)$, and we know, that $x_2$ has a down-regulating effect on $x_1$, the functional symbol $\funSymbol$ should \textbf{not} be replaced by a function $x_1 \lor x_2$.
+We must not forget, that the basis of BNs (and PSBNs) are the regulatory networks as described in \autoref{s:reg_net}. Therefore, the interpretations should respect the constraints on the functions imposed by the regulations. For example, if we have a definition of an expression for $x_1$ given as $\expr_1 \equiv \funSymbol(x_1, x_2)$, and we know, that $x_2$ has a down-regulating effect on $x_1$, the functional symbol $\funSymbol$ should \emph{not} be replaced by a function $x_1 \lor x_2$.
 
 To address this, we will consider the set $\allInterpretations$ to contain only \emph{consistent} interpretations*.\marginpar{*More on the topic of consistent interpretations can be found in a line of work on Boolean networks refinement \cite{Benes2023}.}
  An interpretation $\interpretation$ is consistent with a given regulatory network if for every variable $x_i$ and its corresponding expression $\expr_i$, the function $f_i$ obtained by substituting all function symbols in $\expr_i$ with their corresponding functions from $\interpretation$ respects the regulatory structure of the network. The restrictions on regulations can be found in \autoref{ss:bn_definition}. 
@@ -498,7 +498,7 @@ In other words, the labelled state-transition graph is a unifying structure that
 
 Given the notions of labelled STG and a PSBN instance, we can transfer the state space structures previously introduced for BNs to the PSBN setting. We will not focus on the control and perturbation notions, since they are part of the contribution of the thesis and are described in \autoref{chapter:source_target_control} and \autoref{chapter:phenotype_control_psbn}.
 
-The notions which are independent transitions such as character, trait and phenotype do not depend on the actual dynamics of the network (only on its variables) are identical for BNs and PSBNs.
+The notions which are independent on edges (transitions) of a STG such as character, trait and phenotype do not depend on the actual dynamics of the network (only on its variables) are identical for BNs and PSBNs.
 
 Definitions of trap set, attractor, attractor's weak and strong basins for fully specified BNs are lifted to PSBNs per individual instances (interpretations). For example, we write that a set $\attractor \subseteq \vertices$ is an attractor for an instance $\pbnMath(\interpretation)$ (i.e. there are no attractors of $\pbnMath$, only attractors of its instance). 
 
@@ -542,4 +542,4 @@ We then discussed various control objectives, types of perturbations that can be
 
 Finally, we introduced partially specified Boolean networks, which allow for the representation of uncertainty in network dynamics, and discussed their normalization and the concept of a colored state transition graph. 
 
-This foundational knowledge sets the stage for the subsequent chapters, where we will delve into specific control strategies and algorithms for both fully specified (in terms of state of the art) and partially specified Boolean networks (in terms of contribution of this thesis).
+This foundational knowledge provides the basis for the following chapters. We first review existing control strategies and algorithms for fully specified Boolean networks, and then introduce the methods developed in this thesis for the partially specified setting.

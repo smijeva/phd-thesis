@@ -181,8 +181,12 @@
 % Visually separate conclusions from other chapters in TOC
 
 \chapter*{Conclusions}
+\phantomsection
+\addcontentsline{toc}{chapter}{\texorpdfstring{\textsc{Conclusions}}{Conclusions}}
+\makeatletter
+\def\@currentlabelname{Conclusions}
+\makeatother
 \label{chapter:conclusion}
-\addcontentsline{toc}{chapter}{\textsc{Conclusions}}
 \addtocontents{toc}{\protect\bigskip}
 
 In this thesis, we investigated control of partially specified Boolean
@@ -282,7 +286,7 @@ intrusive intervention strategies. Another promising direction is the
 combination of control-guided refinement with model checking, so that
 control objectives and temporal specifications can be used together to select
 the most informative experiments. Future work could also investigate richer
-classes of perturbations, including edge- or function-level interventions, and
+classes of perturbations, including edge or function level interventions, and
 their relationship to biological mechanisms such as mutations, pathway
 inhibition, or context-dependent regulation.
 

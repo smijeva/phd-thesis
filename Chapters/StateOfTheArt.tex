@@ -28,14 +28,14 @@ One of the major advancement in the discrete systems theory is the development o
 
 % Model checking -> less (parameter) options, more general properties
 % Control -> very specific property types, more flexible parameters/perturbations/interventions
-Formulas such as ensuring a system "eventually reaches a desired state" can be also viewed as a direct reduction of the control problem. This brings us to a provocative question -- what is the relationship between control and parametric model checking? Both problems involve identifying choices under which a system satisfies a desired specification, but the nature of these choices differs: control selects interventions, whereas parametric model checking selects parameter valuations. Model checking typically operates within a well-defined domain of parameters and verifies whether a selected property (drawn from a wide variety of types) holds for a given system. 
+Logical formulas expressing properties such as a system "eventually reaches a desired state" can be also viewed as a direct reduction of the control problem. This brings us to a provocative question -- what is the relationship between control and parametric model checking? Both problems involve identifying choices under which a system satisfies a desired specification, but the nature of these choices differs: control selects interventions, whereas parametric model checking selects parameter valuations. Model checking typically operates within a well-defined domain of parameters and verifies whether a selected property (drawn from a wide variety of types) holds for a given system. 
 
 Control theory, on the other hand, tends to focus on a narrower set of property types (i.e., reachability) but allows for greater flexibility in choosing parameters, applying perturbations, or designing other interventions to guide system behavior. Specifically, parameter synthesis typically infers a static system properties, whereas control might also apply temporal interventions. Therefore, narrowing the focus to a specific property type enables more efficient optimization for the problem at hand.
 
 % Booelan control networks
 The control of discrete systems eventually extended to the realm of BN theory thoroughly introduced in the previous chapter. Initially, Boolean \emph{control} networks (BCN) were considered as an object of the control~\cite{Akutsu2007,Cheng2010,Hochma2013,Zhao2015,Moradi2019}. BCNs are characteristic by containing a set of control (input) nodes and a set of controlled (output) nodes. The control problem lies in the assigning Boolean values to the given control inputs. This problem was extensively studied and successfully solved e.g. using algebraic and semi-tensor product methods~\cite{Cheng2010} or model checking~\cite{Langmead2009}. 
 
-The BCN control problem can be viewed as being closer to parameter synthesis than to the control of discrete-event systems. This is because the available control inputs are specified in advance, whereas the control framework considered in this thesis allows greater flexibility in the choice of perturbations. Nevertheless, as discussed later, our approach also employs BN inputs for control, but in a more tailored manner.
+The BCN control problem can be viewed as being closer to parameter synthesis than to the control of discrete-event systems. This is because the available control inputs are specified in advance, whereas the control framework considered in this thesis allows greater flexibility in the choice of perturbations. Nevertheless, as discussed later, our approach also employs BN inputs for control, but in a more tailored manner. The control of BCNs is also discussed in more detail in \autoref{sec:controlSynchronous}, as it is closely related to the control of synchronous BNs.
 
 \section{Control of partially specified systems} 
 \marginpar{
@@ -52,7 +52,7 @@ The notion of \emph{partial specification} plays a central role in this thesis, 
 
 
 % Non-determinism
-Another important source of uncertainty is \emph{non-determinism}, especially relevant in asynchronous BN. In such systems, the exact transition path from one state to another is not deterministic — multiple successor states may exist. This lack of transition determinsm can be viewed as a form of partial specification, as it obscures the system’s exact evolution over time. However, in this thesis, we treat non-determinism as an intrinsic property of the system rather than as an imperfection in its specification. The control task must therefore account for all possible transitions, ensuring control guarantee across all potential execution paths.
+Another important source of uncertainty is \emph{non-determinism}, especially relevant in asynchronous BN. In such systems, the exact transition path from one state to another is not deterministic — multiple successor states may exist. This lack of transition determinism can be viewed as a form of partial specification, as it obscures the system’s exact evolution over time. However, in this thesis, we treat non-determinism as an intrinsic property of the system rather than as an imperfection in its specification. The control task must therefore account for all possible transitions, ensuring control guarantee across all potential execution paths.
 
 
 % Game theory, Mandon
@@ -62,12 +62,12 @@ Nondeterminism also inspired a game theoretic interpretation of control. In this
 % Multiple possible functions 
 A more structural form of partial specification arises in models such as \emph{probabilistic Boolean networks} (PBNs)~\cite{Shmulevich2002}, where uncertainty is introduced by allowing each variable to be governed by multiple update functions, each with an associated selection probability. In such models, not only is the update time of variables uncertain, but so is the logic guiding those updates. Thus, control must operate over a probability-weighted ensemble of behaviors, further complicating the synthesis of effective system perturbations.
 
-In contrast, the \PBN{} framework central to this thesis allows each variable to have multiple possible update functions, but crucially assumes that only one “true” function per variable governs the evolution throughout the system's runtime. That is, while the identity of the function is unknown (and remains hidden due to non-observability), it is assumed fixed. The resulting dynamics are therefore equivalent do asynchronous BN under a hidden function instance, though unknown from the observer’s perspective. This hybrid interpretation combines partial structural knowledge, non-determinism, and limited observability, creating a novel challenging control problem that this thesis aims to address.
+In contrast, the partially specified Boolean network framework central to this thesis allows each variable to have multiple possible update functions, but crucially assumes that only one “true” function per variable governs the evolution throughout the system's runtime. That is, while the identity of the function is unknown (and remains hidden due to non-observability), it is assumed fixed. The resulting dynamics are therefore equivalent to asynchronous BN under a hidden function instance, though unknown from the observer’s perspective. This hybrid interpretation combines partial structural knowledge, non-determinism, and limited observability, creating a novel challenging control problem that this thesis aims to address.
 
 % Partial functions?
 
 % Control of other partially specified discrete systems?
-% The control of partially specified systems is also closely related to the broader framework of discrete event systems (DES), where uncertainties arise in timing, event ordering, and transition logic. Similar challenges are present in stochastic models such as Markov chains and probabilistic transition systems. These models share structural affinities with PBNs, particularly in how transitions are defined over distributions rather than deterministic rules. These are a few examples which were inspiration for development of the BN. Now let's focus on the control of BN and methods closer to our approach. 
+The control of partially specified systems is also closely related to the broader framework of discrete event systems (DES), where uncertainties arise in timing, event ordering, and transition logic. Similar challenges are present in stochastic models such as Markov chains and probabilistic transition systems. These models share structural affinities with PBNs, particularly in how transitions are defined over distributions rather than deterministic rules. These are a few examples which were inspiration for development of the BN. Now let us focus on the control of BN and methods closer to our approach. 
 
 
 
@@ -83,7 +83,7 @@ Synchronous Boolean networks are characterized by the \emph{simultaneous} update
 As discussed earlier, control of Boolean control networks (BCNs) represents the most basic form of  BN control. In BCNs, control inputs can be modeled as direct perturbations of network variables or update rules. Therefore, if one enumerates all possible perturbations as  BN inputs and adjusts update functions accordingly, BCN-based control can trivially solve the control problem for synchronous BNs. Nonetheless, this naive approach is exponentially complex. Moreover, despite the deterministic underlying dynamics, the control problem for synchronous BN remains computationally challenging as it was proven to be NP-hard~\cite{Akutsu2007}.
 
 % ASP
-Given the Boolean nature of BN, an interesting problem reduction to the \emph{answer set programming} (ASP) was explored in~\cite{Kaminski2013}. The encoding of the problem here is quite straightforward, as the BN can be represented as a logic program, the control problem is formulated as a query, and even perturbations can be expressed as additional rules very conveniently by using three-valued logic. The approach was proven efficient, being handle to solve BN with up to 200 variables and perturbation size 10. A slightly generalized approach was later developed, allowing to specify general changes in long-term behavior (as opposed to output behavior only). Finally, ASP was also used to not just control the BN but also to infer input-output experiments and design therapeutic targets also packaged as a tool caspo~\cite{Videla2014,Videla2017}.
+Given the Boolean nature of BN, an interesting problem reduction to the \emph{answer set programming} (ASP) was explored in~\cite{Kaminski2013}. The encoding of the problem here is quite straightforward, as the BN can be represented as a logic program, the control problem is formulated as a query, and even perturbations can be expressed as additional rules very conveniently by using three-valued logic. The approach was proven efficient, being handle to solve BN with up to 200 variables and perturbation size 10. A slightly generalized approach was later developed, allowing to specify general changes in long-term behavior (as opposed to output behavior only)~\cite{Videla2014}. Finally, ASP was also used to not just control the BN but also to infer input-output experiments and design therapeutic targets also packaged as a tool caspo~\cite{Videla2017}.
 
 % One-step control
 Beyond basic control problem, several more refined problem variations have emerged over time. Notably, Kim et al.~\cite{Kim2013} introduced the notion of a \emph{control kernel}, which is defined as the minimal set of variables that need to be set \emph{initially} in order to drive the system toward a desired attractor. This formulation corresponds to a one-step control problem and is closely aligned with the concept of perturbation strategies discussed in \autoref{subsec:perturbations}. 
@@ -92,12 +92,12 @@ Beyond basic control problem, several more refined problem variations have emerg
 Another perspective is provided by Choo et al.~\cite{Choo2018}, who generalized the target of control from a specific attractor to a broader \emph{phenotype}, defined as a set of target states sharing functional or biological characteristics. This abstraction reduces the granularity of control targets and allows for more flexible solution spaces. While computationally simpler than controlling asynchronous or partially specified networks, phenotype-based control provides valuable conceptual tools. Indeed, as discussed in \autoref{chapter:phenotype_control_psbn}, a similar generalization is central to our own contributions in control of \PBN{}.
 
 % Ensembles control
-A particularly relevant concept introduced for synchronous BNs is the control of \emph{Boolean network ensembles}~\cite{Gates2016,Correia2018,Gates2021,Videla2017}. In this setting, one considers a family of networks with identical topology but differing update functions. The control problem becomes finding a perturbation that guarantees convergence to the same attractor across all network instances. This notion aligns closely with the challenges posed by partial specification as we will see later in this work.
+A particularly relevant concept introduced for synchronous BNs is the control of \emph{Boolean network ensembles}~\cite{Gates2016,Correia2018,Gates2021,Videla2017}. In this setting, one considers a family of networks with identical topology but differing update functions. The control problem becomes finding a perturbation that guarantees convergence to the same attractor across \emph{all} network instances. This notion aligns closely with the challenges posed by partial specification as we will see later in this work.
 
 %Our own approach, presented in \autoref{chap:source_target_control}, generalizes this idea by relaxing the requirement for perturbations to strictly control every possible instance. This enables a framework for \emph{control-guided network inference}, as will be elaborated in \autoref{X}.
 
 % Attractor computation
-Finally, synchronous dynamics can also serve as a useful tool for analyzing asynchronous networks. Specifically, attractors identified under synchronous updates can act as approximations or partial indicators of stable attractors in the asynchronous setting~\cite{Zheng2013}. While this correspondence is limited to certain classes of attractors (e.g., stable fixed points), it provides valuable structural insights that can guide further analysis of asynchronous dynamics.
+Finally, synchronous dynamics can also serve as a useful tool for analyzing asynchronous networks. Specifically, attractors identified under synchronous updates can act as approximations or partial indicators of stable attractors in the asynchronous setting~\cite{Zheng2013}. While this correspondence is limited to certain classes of attractors (i.e., stable fixed points), it provides valuable structural insights that can guide further analysis of asynchronous dynamics.
 
 
 \section{Control of asynchronous Boolean networks} 
@@ -110,7 +110,7 @@ Asynchronous BN offer a more biologically realistic modeling framework, as they 
 
 Another branch of methods solving the BN control problem is based on the efficient identification of the strong basin of a target attractor (see \autoref{ss:state_space_structures}). By definition, a strong basin is the maximal set of states from which only the given attractor is reachable. Once the strong basin is identified, the control task reduces to finding the minimal perturbation that drives the BN into this basin. This is effectively a solution to the source-target control problem using one-step perturbations, since the solution there is as trivial as finding a state from strong basin with minimal Hamming distance to the source state. However, when considering other types of perturbations (e.g., temporary or permanent), additional computational steps are needed to determine appropriate control strategies.
 
-A trivial approach to identifying the strong basin is through a fixed-point algorithm: nodes are iteratively removed from the weak basin if they have transitions that lead outside the basin. When no such nodes remain, the resulting set constitutes the strong basin. While conceptually simple, this method does not scale well for large biological networks. To address this limitation, a more efficient algorithm was proposed by Paul et al.~\cite{Paul2018BCB}, based on a decomposition of the state-transition graph (STG) into blocks.
+A trivial approach to identifying the strong basin is through a fixed-point algorithm: nodes are iteratively removed from the weak basin if they have transitions that lead outside the basin. When no such nodes remain, the resulting set constitutes the strong basin. While conceptually simple, this method does not scale well for large biological networks. To address this limitation, a more efficient algorithm based on a decomposition of the state-transition graph (STG) into blocks was proposed~\cite{Paul2018BCB}.
 
 The core idea of this block-based method is to partition the STG into basic blocks, where each block consists of a strongly connected component and its parent states. These blocks are considered in partial projections of the BN (subsets of the full variable set). Once identified, the blocks are topologically sorted and then unfolded, starting from the block containing the attractor, until all states in the strong basin are identified.
 
@@ -126,7 +126,7 @@ One such approach is based on identification of \emph{stable motifs}~\cite{Zanud
 
 The strength of this method lies in its global topological analysis, which enables efficient performance. Once stable motifs are identified, they can be reused to compute control strategies for any attractor within the BN. This facilitates a solution to the full-control variant of the problem and offers valuable insights into the system robustness. However, the method is not complete as it may miss some viable control strategies. Additionally, stable motifs primarily serve as guidance for control design and must be validated through simulation to confirm their effectiveness. This validation also determines whether the required perturbations should be applied transiently (temporarily) or permanently.
 
-To support broader adoption, the method was later implemented as a Python package, significantly improving its performance as well as accessibility for the research community~\cite{Rozum2022}.
+To support broader adoption, the method was later implemented as a Python package pystablemotifs, significantly improving its performance as well as accessibility for the research community~\cite{Rozum2022}.
 
 \subsection{Trap spaces} 
 \label{ss:asp}
@@ -154,7 +154,7 @@ The model-checking approach is using CTL to easily express the control problem. 
 
 Therefore, the control method itself is based on the idea of using a model checking as a ``backup'' approach if we are unable to assess whether a control strategy works using the trap-space-based method introduced previously. This way we obtain both, high performance for the majority of the cases and a complete solution for the rest.
 
-The approach based on model checking for the phenotype control was implemented based on the python interface of the BoolNet tool~\cite{Klarner2018}.
+The approach based on model checking for the phenotype control was implemented based on the Python interface of the BoolNet tool~\cite{Klarner2018}.
 
 \subsection{Other techniques}
 Finally, we describe other techniques to control asynchronous BN which do not fit into the previous categories, because they use less conventional or a combination of multiple methods.
@@ -189,7 +189,7 @@ The tool BoNesis integrates various techniques for the analysis of most-permissi
 
 Control within BoNesis is guided by specifying biological markers, which semantically correspond to the phenotypes introduced in \autoref{ss:model_checking}. The perturbations computed by the tool are permanent, and the control is universal, meaning that the desired properties must hold across all possible runs of the Boolean network. To minimize the size of the required perturbation set, users can optionally specify an initial configuration, thereby avoiding over-optimization across all possible initial states.
 
-BoNesis supports differentiated control strategies for steady states (fixed points), and all attractors, enabling optimization tailored to task complexity, since reprogramming steady states is typically less computationally intensive~\cite{Pauleve2023}. Another notable feature of BoNesis is its ability to control ensembles of Boolean networks, which is especially relevant since model inference usually produces a set of plausible models rather than a single one. When controlling BN ensembles, users can choose between existential and universal control strategies. Existential control identifies perturbations that succeed in at least one model in the ensemble, while universal control yields perturbations that are guaranteed to work across all models. 
+BoNesis supports different control strategies for steady states (fixed points), and all attractors, enabling optimization tailored to task complexity, since reprogramming steady states is typically less computationally intensive~\cite{Pauleve2023}. Another notable feature of BoNesis is its ability to control ensembles of Boolean networks, which is especially relevant since model inference usually produces a set of plausible models rather than a single one. When controlling BN ensembles, users can choose between existential and universal control strategies. Existential control identifies perturbations that succeed in at least one model in the ensemble, while universal control yields perturbations that are guaranteed to work across all models. 
 
 \section{Leveraging control for model refinement}
 \label{sec:controlInference}
@@ -221,15 +221,15 @@ Another line of work concerned with perturbations experiment design uses a maxim
     \label{tab:tools_compare}
     \centering
         \caption{\textbf{Comparison of related software tools for Boolean network control.} The columns indicate whether the tool supports asynchronous dynamics, the type of control problems it can solve (source-target, target, phenotype), whether it can handle partial specification (e.g., ensembles), the types of perturbations supported (one-step (O), temporary (T), permanent (P)), completeness of the method, availability of a graphical user interface, and the main computational method employed. The checkmarks in \textcolor{gray}{gray} mean, that features were implemented as part of this thesis. * indicates that control can be achieved indirectly through trap space analysis. ** indicates that control is focused on driving a pathological model towards an archetype model rather than specific phenotypes. *** indicates that for phenotype control, only permanent perturbations are supported.}
-    \scalebox{0.8}{
+    \scalebox{0.7}{
     \begin{tabular}{rccccccccl}
     \textbf{Tool} & \rot{\textbf{Asynchronous}} & \rot{\textbf{Source-targ.}} & \rot{\textbf{Target}} & \rot{\textbf{Phenotypes}} & \rot{\textbf{Partial spec.}} & \rot{\textbf{Pert. types}} & \rot{\textbf{Completeness}} & \rot{\textbf{Graphical UI}} & \textbf{Main method}  \\
-    CABEAN & \checkmark & \checkmark & \checkmark &  &  & OTP & \checkmark & & Strong basin search, ASP \\
-    BoolNet & \checkmark & \checkmark* & \checkmark* & \checkmark &  & OP & \checkmark & & Trap spaces, model checking \\
-    KALI & \checkmark & &  & \checkmark** & & P &  &  & Simulations \\
-    CASPO   &  &  & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
-    BoNesis & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
-    AEON    & \checkmark & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{OTP***} & \checkmark & \checkmark & Symbolic BDDs
+    CABEAN~\cite{Su2020Bioinformatics} & \checkmark & \checkmark & \checkmark &  &  & OTP & \checkmark & & Strong basin search, ASP \\
+    BoolNet~\cite{Klarner2017} & \checkmark & \checkmark* & \checkmark* & \checkmark &  & OP & \checkmark & & Trap spaces, model checking \\
+    KALI~\cite{Poret2018} & \checkmark & &  & \checkmark** & & P &  &  & Simulations \\
+    CASPO~\cite{Videla2017}   &  &  & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    BoNesis~\cite{Pauleve2023} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & P & \checkmark & & ASP \\
+    AEON~\cite{aeon}    & \checkmark & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{\checkmark} & \textcolor{gray}{OTP***} & \checkmark & \checkmark & Symbolic BDDs
     \end{tabular}
     } 
 \end{table}
@@ -249,6 +249,6 @@ In terms of user-faced availability, the presence of a graphical user interface 
 \section{Summary}
 \label{sec:sota_summary}
 
-In this chapter, we have provided an overview of the state-of-the-art in the control of Boolean networks, with a particular focus on asynchronous dynamics and partial specification. We have discussed various methods for identifying control strategies, including strong basin search, stable motif identification, trap space analysis, and model checking. Additionally, we have highlighted the importance of control in the context of model refinement and experiment design. Finally, we have compared several software tools that implement these methods, noting their capabilities and limitations. This survey sets the stage for our own contributions to the field, which will be detailed in the subsequent chapters.
+In this chapter, we have provided an overview of the state-of-the-art in the control of Boolean networks, with a particular focus on asynchronous dynamics and partial specification. We have discussed various methods for identifying control strategies, including strong basin search, stable motif identification, trap space analysis, and model checking. Additionally, we have highlighted the importance of control in the context of model refinement and experiment design. Finally, we have compared several software tools that implement these methods, noting their capabilities and limitations. This overview provides the context for the contributions of this thesis, which extend Boolean network control to the partially specified setting.
 
 

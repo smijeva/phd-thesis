@@ -10,19 +10,19 @@ We begin with one-step perturbations, which constitute the simplest class of int
 
 However, one-step perturbations are often less efficient than perturbations applied over a longer time horizon. Therefore, we also develop methods for permanent and temporary perturbations, which are computationally more complex but may yield smaller perturbation sets.
 
-In this chapter, we first define the source-target control problem in \autoref{s:source_target_problem_definition}, including the notions of one-step, permanent, and temporary perturbations. Next, in \autoref{sec:target_semisymbolic}, we present a symbolic method for computing one-step source-target control in partially specified Boolean networks. Finally, in \autoref{sec:ostp_symbolic}, we extend this method by representing the state space of perturbed networks so as to handle permanent and temporary perturbations as well.
+In this chapter, we first define the source-target control problem in \autoref{s:source_target_problem_definition}, including the notions of one-step, permanent, and temporary perturbations. Next, in \autoref{sec:target_semisymbolic}, we present a semi-symbolic method for computing one-step source-target control in partially specified Boolean networks. Finally, in \autoref{sec:ostp_symbolic}, we extend this method by representing the state space of perturbed networks fully symbolically and to handle permanent and temporary perturbations as well.
 
 
 \section{Problem definition}
 \label{s:source_target_problem_definition}
 
-The cardinal difference between classical Boolean networks and partially specified Boolean networks is that the latter can be interpreted in many ways, depending on the chosen parameter valuation. As a consequence, the state transition graph of a PSBN is not uniquely defined. Instead, every interpretation induces a different instance of the PSBN, which in turn induces a different state transition graph.
+The cardinal difference between classical Boolean networks and partially specified Boolean networks is that the latter can be interpreted in many ways, depending on the chosen interpretation. As a consequence, every interpretation induces a different instance of the PSBN, which in turn induces a different state transition graph.
 
-On the other hand, the definition of a perturbation is independent of the network's parametrization. A perturbation simply fixes the values of certain variables to constants. Therefore, the definition of a perturbation is very similar to the one used in classical Boolean networks. 
+On the other hand, the definition of a perturbation is independent of the network's interpretation. A perturbation simply fixes the values of certain variables to constants. Therefore, the definition of a perturbation is very similar to the one used in classical Boolean networks. 
 
 What we need to keep in mind, however, is the effect of a perturbation on the network's transition system. In a classical Boolean network, a perturbation can be applied to the whole state space, and it simply removes all states that are not admissible by the perturbation. In a PSBN, however, the effect of a perturbation can differ between different interpretations. This is because the unperturbed variables can still evolve freely. As a result, a perturbation can achieve control for some interpretations, while failing for others.
 
-\subsection{Perturbations}
+\subsection{Perturbations, perturbed state transition graph and runs}
 
 Here, we build on the definitions of perturbations and their applications from the previous chapter. Most notably, we will leverage the concepts of perturbation (\autoref{def:perturbation}), application of a perturbation to a source state (\autoref{def:perturbation_application}), perturbation application to a state-transition graph (\autoref{def:perturbed_stg}) and a perturbed run of a Boolean network (\autoref{def:perturbed_run}).
 
@@ -42,8 +42,6 @@ Assume having a given \PBN{} $\pbnMath = \{\expr_1, \dots, \expr_n \}$. A \emph{
     \end{cases}$$
     where $s'$ is the state reached after applying the perturbation.
 \end{definition}
-
-\subsection{Perturbed state transition graph and runs}
 
 To facilitate the discussion of temporary and permanent perturbations, we also need to define the effect of a perturbation on the state transition graph of \PBN{}. Since the dynamics of a \PBN{} depend on the chosen interpretation, we also take it to the context for the definitions of the perturbed \PBN{} state transition as well as a perturbed \PBN{} run:
 
@@ -70,7 +68,7 @@ The perturbed STG of a PSBN is illustrated in \autoref{fig:psbn_perturbed_stg}.
     \run_{\perturbation}(t) = \begin{cases}
         s & \text{iff } t = 0 \\
         \pertApply(s, \perturbation) & \text{iff } t = 1 \\
-        s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges_{\perturbation} & \text{iff }  t'+z > t > t' + 1 \\
+        s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges_{\perturbation} & \text{iff }  t'+z \geq t > t' + 1 \\
         s'  \text{ s. t. } \run(t-1) = s'' \land (s'', s') \in \edges & \text{iff } t > t'+z
     \end{cases}
     $$
@@ -117,9 +115,9 @@ Consider STG from \autoref{fig:only_temporary_working}, source $s = 101$ (blue) 
 
 \subsection{Robustness}
 
-In practice, our goal is to not only find perturbations that successfully control the network, but that are efficient and biologically feasible. Indeed, for a target state $t$ any naive perturbation $\perturbation = t$ successfully controls the network towards $t$, but is most likely not realistic. When the network is fully known, we typically focus on finding perturbations that are minimal in terms of size~\cite{Su2019CMSB,Su2020}. This search can be further restricted to network variables where the perturbation is known to be biologically feasible if such information is available.
+In practice, our goal is to not only find perturbations that successfully control the network, but that are efficient and biologically feasible. Indeed, for a target state $t$ a trivial perturbation $\perturbation = t$ successfully controls the network towards $t$, but is most likely not realistic. When the network is fully known, we typically focus on finding perturbations that are minimal in terms of size~\cite{Su2019CMSB,Su2020}. This search can be further restricted to network variables where the perturbation is known to be biologically feasible if such information is available.
 
-However, if the network is not fully known, there are many possible interpretations, potentially resulting in very different sets of fair runs. In turn, most perturbations correctly control the network only for some subset of these interpretations. Since we do not know which interpretation (or interpretations) of the PSBN actually occurs in the wild, we may want to quantify such uncertainty. This allows us to search for perturbations that are not only small (in terms of perturbed variables), but that also work for a reasonable portion of the \PBN{} interpretations. Formally, this is captured by the metric of perturbation \emph{robustness}~\cite{Brim2021}:
+However, if the network is not fully known, there are many possible interpretations, potentially resulting in very different sets of fair runs. In turn, most perturbations correctly control the network only for some subset of these interpretations. Since we do not know which interpretation(s) of the PSBN actually occurs in the wild, we may want to quantify such uncertainty. This allows us to search for perturbations that are not only small (in terms of perturbed variables), but that also work for a reasonable portion of the \PBN{} interpretations. Formally, this is captured by the metric of perturbation \emph{robustness}~\cite{Brim2021}:
 
 \begin{definition}
 	The \emph{robustness} $\robustness$ of a perturbation $\perturbation \in \bools_\unspecified^n$ for a \PBN{} $\pbnMath$ and a target state $t$ is defined as follows:
@@ -136,12 +134,12 @@ As we can see, both size and robustness are critical factors when selecting viab
 
 \begin{definition}
 \label{def:control_relation}
-Given a \PBN{} $\pbnMath = \{\expr_1, \ldots, \expr_n\}$ with $m$ nullary function symbols $\allFunSymbols = \{\funSymbol_1, \ldots, \funSymbol_m \}$, a source state $s \in \bools^n$, and a target state $t \in \bools^n$ such that there exists an interpretation $\interpretation \in \allInterpretations$ for which $t \in \bigcup \allAttractors(\pbnMath(\interpretation))$, the goal of the \emph{source-target control problem} is to compute a \emph{control relation} $\controlRelation_{X}$ -- the set of all pairs $\controlRelation_{X} = \{ \perturbation, \interpretation \} \subseteq \bools_\unspecified^n \times \allInterpretations$ such that $\perturbation$ controls $\pbnMath(\mathcal{I}_c)$ from $s$ to $t$ assuming a type of perturbations $X \in \{ O, P, T \}$ as one-step ($\controlRelation_{O}$), permanent ($\controlRelation_{P}$), or temporary ($\controlRelation_{T}$) control.
+Given a \PBN{} $\pbnMath = \{\expr_1, \ldots, \expr_n\}$ with $m$ nullary function symbols $\allFunSymbols = \{\funSymbol_1, \ldots, \funSymbol_m \}$, a source state $s \in \bools^n$, and a target state $t \in \bools^n$ such that there exists an interpretation $\interpretation \in \allInterpretations$ for which $t \in \bigcup \allAttractors(\pbnMath(\interpretation))$, the goal of the \emph{source-target control problem} is to compute a \emph{control relation} $\controlRelation_{X}$ -- the set of all pairs $\controlRelation_{X} = \{ \perturbation, \interpretation \} \subseteq \bools_\unspecified^n \times \allInterpretations$ such that $\perturbation$ controls $\pbnMath(\interpretation)$ from $s$ to $t$ assuming a type of perturbations $X \in \{ O, P, T \}$ as one-step ($\controlRelation_{O}$), permanent ($\controlRelation_{P}$), or temporary ($\controlRelation_{T}$) control.
 \end{definition}
 
 The robustness measure gives us the ability to compare the ``quality'' of a single perturbation. To also compare the ``quality'' of different control relations (or control approaches in general), we extend the notion of robustness to be measurable on a control relation. Specifically, we define \emph{maximal robustness} $\rho_{\max}(\controlRelation_{X})$ to be the maximal robustness achievable by a single perturbation from $\controlRelation_{X}$, and \emph{union robustness} $\rho_{\cup}(\controlRelation_{X})$ to be the collective robustness achievable by all available perturbations: 
 \begin{align*}
-	\rho_{\max}(\controlRelation_{X}) &= \max_{\perturbation \in \controlRelation_{X}} \rho(\perturbation) \\
+	\rho_{\max}(\controlRelation_{X}) &= \max_{\perturbation \in \allPerturbations} \rho(\perturbation) \\
 	\rho_{\cup}(\controlRelation_{X}) &= \frac{ \mid \bigcup_{\interpretation \in \controlRelation_{X}}\ \interpretation \mid }{\mid \{ \interpretation \in \allInterpretations \mid t \in \bigcup \allAttractors(\pbnMath(\interpretation)) \} \mid}
 \end{align*}
 
@@ -165,7 +163,7 @@ Common logical operations on such BDDs (and, or, negation, ...) then correspond 
 
 As described in~\autoref{ss:psbn_stg}, \PBN{} dynamics $\STG(\pbnMath{})$ are represented as an edge-labelled state-transition graph, where each transition $s \to t$ has an associated set of interpretations $\interpretationSet(s, t) \subseteq \allInterpretations$ represented as a BDD. A~\emph{labelled state set} is a mapping $\vertices \to 2^{\allInterpretations}$ assigning to each state a set of interpretations. Furthermore, we suppose that the state space is represented \emph{explicitly}, meaning that all operations on states are performed element-wise (typically in parallel).
 
-We consider basic procedures over an STG of a PSBN. Given a source state $s$ and a viable interpretation set $\interpretationSet$ of a PSBN $\pbnMath$, procedures \pre and \post yield a set of labelled states reachable in one step backward/forward from $s$ under interpretations from $\interpretationSet$: 
+We consider basic procedures over an STG of a PSBN. Given a source state $s$ and a viable interpretation set $\interpretationSet$ of a PSBN $\pbnMath$, procedures $\pre$ and $\post$ yield a set of labelled states reachable in one step backward/forward from $s$ under interpretations from $\interpretationSet$: 
 \begin{align*}
 \pre(s, \interpretationSet) = \{ t \mapsto \interpretationSet_t \mid \forall \interpretation \in \interpretationSet_t : \interpretation \in \interpretationSet \land s \to_{\interpretation} t \}\\
 \post(s, \interpretationSet) =\{ t \mapsto \interpretationSet_t \mid \forall \interpretation \in \interpretationSet_t : \interpretation \in \interpretationSet \land t \to_{\interpretation} s \}
@@ -178,23 +176,36 @@ These procedures can be then used (e.g. using a fixed-point computation) to comp
 \bwd(s, \interpretationSet) =\{ t \mapsto \interpretationSet_t \mid \forall \interpretation \in \interpretationSet_t : \interpretation \in \interpretationSet \land t \to^*_{\interpretation} s \}
 \end{align*}
 
-This representation (explicit state space and symbolic interpretations) allows computing the reachability procedures in parallel. For the underlying implementation, we worked with internal libraries of the tool Aeon~\cite{aeon} which provides most of the necessary functionality, including a convenient format for specifying \PBN{s} and parallel reachability procedures.
+This representation (explicit state space and symbolic interpretations) allows computing the reachability procedures in parallel. For the underlying implementation, we worked with internal libraries of the tool AEON~\cite{aeon} which provides most of the necessary functionality, including a convenient format for specifying \PBN{s} and parallel reachability procedures.
 
 For control of \PBN{}, we first need to determine the relevant interpretations $\interpretationSet_A(t)$ for the target state $t$, where $t$ is a part of some attractor. This process is described in \autoref{algo:attractor-params}. The algorithm is following: we first compute all reachable states, but~only the one from which we can also reach back the target state itself are a part of a TSCC. Otherwise, it is possible to reach some other component of the system from the target state, and that contradicts the notion of attractor. In the partially specified setting, we obtain a mapping of states to interpretations in which it is not possible to return to the target again. Therefore, in all these interpretations the target state is not a part of any attractor, and so we discard them from the full parameter space $\allInterpretations$ to obtain $\interpretationSet_A(t)$. 
 
-\begin{algorithm}[h]
-	\SetKwInOut{Input}{Input}
-	\SetKwInOut{Output}{Output}
-	\Input{\PBN{} $\pbnMath{}$, target attractor state $\var{t}$}
-	\Output{Attractor interpretations $\interpretationSet_A(\var{t})$}
-	\BlankLine
-	$\var{F} \gets \fwd(\var{t}, \allInterpretations)$\;
-	$\var{B} \gets \bwd(\var{t}, \allInterpretations)$\;
+% \begin{algorithm}[h]
+% 	\SetKwInOut{Input}{Input}
+% 	\SetKwInOut{Output}{Output}
+% 	\Input{\PBN{} $\pbnMath{}$, target attractor state $\var{t}$}
+% 	\Output{Attractor interpretations $\interpretationSet_A(\var{t})$}
+% 	\BlankLine
+% 	$\var{F} \gets \fwd(\var{t}, \allInterpretations)$\;
+% 	$\var{B} \gets \bwd(\var{t}, \allInterpretations)$\;
+% 	\tcc{For every state, compute the BDD difference}
+% 	$\var{NA} \gets \var{F} \setminus \var{B}$\;
+% 	\Return{$\allInterpretations \setminus \bigcup_{\var{s} \in \vertices(\pbnMath)}$ \var{NA}(\var{s})}\;
+% 	\caption{Compute attractor interpretations $\interpretationSet_A(\var{t})$.}
+% 	\label{algo:attractor-params}
+% \end{algorithm}
+
+\begin{algorithm}
+  \SetKwProg{Fn}{Fn}{}{}
+  \Fn{\upshape \textsc{AttInterp}$(\var{t} \in \vertices)$}{
+    $\var{F} \gets \fwd(\var{t}, \allInterpretations)$\;
+    $\var{B} \gets \bwd(\var{t}, \allInterpretations)$\;
 	\tcc{For every state, compute the BDD difference}
-	$\var{NA} \gets \var{F} \setminus \var{B}$\;
-	\Return{$\allInterpretations \setminus \bigcup_{\var{s} \in \vertices(\pbnMath)}$ \var{NA}(\var{s})}\;
-	\caption{Compute attractor interpretations $\interpretationSet_A(\var{t})$.}
-	\label{algo:attractor-params}
+    $\var{NA} \gets \var{F} \setminus \var{B}$\;
+    \Return{\upshape $\allInterpretations \setminus \bigcup_{\var{s} \in \vertices(\pbnMath)} \var{NA}(\var{s})$}\;
+  }
+  \caption{Computation of attractor interpretations $\interpretationSet_A(\var{t})$.}
+  \label{algo:attractor-params}
 \end{algorithm}
 
 
@@ -203,39 +214,75 @@ The key observation for controlling \PBN{s} is that an attractor is always reach
 Our algorithm is based on the fixed-point approach for strong basin computation in fully specified BNs~\cite{Paul2018CMSB}. The premise is that only states from which it is possible to reach the attractor (weak basin) can be part of the strong basin. The weak basin of the attractor is computed using standard reachability algorithms, for example, BFS. Then states are iteratively removed if it is possible to leave the basin from them (and therefore not reach the given attractor). Finally, if there are no states left to remove, the fixed-point is achieved, and the strong basin is found.
 
 
-\begin{algorithm}[h]
-	\SetKwInOut{Input}{Input}
-	\SetKwInOut{Output}{Output}
-	\Input{PBN $\pbnMath$, target state $\var{t}$, interpretations $\interpretationSet_A(\var{t})$}
-	\Output{labelled state set $\vertices \to
-		2^{\interpretationSet_A(\var{t})}$ representing the strong basin}
-	\BlankLine
-	$\var{SB} \leftarrow \bwd(\var{t}, Ap(\var{t}))$\;
-	$\var{to\_update} \leftarrow \var{s}$ in $\{ \var{s} \in \vertices \mid \var{SB}(\var{s}) \not= \emptyset \}$\;
-	\Do{$\var{to\_update} \neq \emptyset$}{
-		$\var{updated} \gets \emptyset$\;
-		$\var{to\_remove} \gets \forall \var{s} \in \vertices \rightarrow \emptyset$\;
-		\textbf{parallel} \For{$\var{s}$ in $\var{to\_update}$}{  
-			\For {$\var{t}$ in $\post(\var{s})$} {
-				\tcc{Recompute interpretations leading outside of basin}
-				$\var{to\_remove}(\var{s}) \gets \var{SB}(\var{s}) \cap \interpretationSet(\var{s}, \var{t}) \cap (\interpretationSet_A(\var{t}) \setminus \var{SB}(\var{t}))$\;
-			}
-			\uIf{$\var{to\_remove}(\var{s}) \neq \emptyset$} {
-				$\var{updated} \gets \var{updated} \cup \{s\}$ \;
-			}
-		}
-		$\var{to\_update} \gets \emptyset$\;
-		\For {$\var{s}$ in $\var{updated}$} {
-			\tcc{Update strong basin}
-			$\var{SB}(\var{s}) \gets \var{SB}(\var{s}) \setminus \var{to\_remove}(\var{s})$\;
-			\tcc{Only predecessors of updated vars might be updated in the next iteration}
-			$\var{to\_update} \leftarrow \var{updated} \cup \pre(\var{s})$ \;
-		}
-	}
-	\Return{\var{SB}}\;
-	\caption{Parallel strong basin computation.}
-	\label{algo:strong-basin}
-\end{algorithm} 
+% \begin{algorithm}[h]
+% 	\SetKwInOut{Input}{Input}
+% 	\SetKwInOut{Output}{Output}
+% 	\Input{PBN $\pbnMath$, target state $\var{t}$, interpretations $\interpretationSet_A(\var{t})$}
+% 	\Output{labelled state set $\vertices \to
+% 		2^{\interpretationSet_A(\var{t})}$ representing the strong basin}
+% 	\BlankLine
+% 	$\var{SB} \leftarrow \bwd(\var{t}, Ap(\var{t}))$\;
+% 	$\var{to\_update} \leftarrow \var{s}$ in $\{ \var{s} \in \vertices \mid \var{SB}(\var{s}) \not= \emptyset \}$\;
+% 	\Do{$\var{to\_update} \neq \emptyset$}{
+% 		$\var{updated} \gets \emptyset$\;
+% 		$\var{to\_remove} \gets \forall \var{s} \in \vertices \rightarrow \emptyset$\;
+% 		\textbf{parallel} \For{$\var{s}$ in $\var{to\_update}$}{  
+% 			\For {$\var{t}$ in $\post(\var{s})$} {
+% 				\tcc{Recompute interpretations leading outside of basin}
+% 				$\var{to\_remove}(\var{s}) \gets \var{SB}(\var{s}) \cap \interpretationSet(\var{s}, \var{t}) \cap (\interpretationSet_A(\var{t}) \setminus \var{SB}(\var{t}))$\;
+% 			}
+% 			\uIf{$\var{to\_remove}(\var{s}) \neq \emptyset$} {
+% 				$\var{updated} \gets \var{updated} \cup \{s\}$ \;
+% 			}
+% 		}
+% 		$\var{to\_update} \gets \emptyset$\;
+% 		\For {$\var{s}$ in $\var{updated}$} {
+% 			\tcc{Update strong basin}
+% 			$\var{SB}(\var{s}) \gets \var{SB}(\var{s}) \setminus \var{to\_remove}(\var{s})$\;
+% 			\tcc{Only predecessors of updated vars might be updated in the next iteration}
+% 			$\var{to\_update} \leftarrow \var{updated} \cup \pre(\var{s})$ \;
+% 		}
+% 	}
+% 	\Return{\var{SB}}\;
+% 	\caption{Parallel strong basin computation.}
+% 	\label{algo:strong-basin}
+% \end{algorithm} 
+
+\begin{algorithm}
+  \SetKwProg{Fn}{Fn}{}{}
+  \Fn{\upshape \textsc{StrongBasin}$(\pbnMath{}, \var{t} \in \vertices(\pbnMath), \interpretationSet_A(\var{t}))$}{
+    $\var{SB} \gets \bwd(\var{t}, \interpretationSet_A(\var{t}))$\;
+    $\var{toUpdate} \gets \{ \var{s} \in \vertices(\pbnMath) \mid \var{SB}(\var{s}) \neq \emptyset \}$\;
+    \While{$\var{toUpdate} \neq \emptyset$}{
+      $\var{updated} \gets \emptyset$\;
+      $\var{toRemove} \gets \forall \var{s} \in \vertices(\pbnMath) \mapsto \emptyset$\;
+      \textbf{parallel} \For{$\var{s} \in \var{toUpdate}$}{
+        \For{$\var{u} \in \post(\var{s})$}{
+          \tcc{Recompute interpretations leading outside of basin}
+          $\var{toRemove}(\var{s}) \gets \var{toRemove}(\var{s}) \cup
+          \left(
+            \var{SB}(\var{s})
+            \cap \interpretationSet(\var{s}, \var{u})
+            \cap \left(\interpretationSet_A(\var{t}) \setminus \var{SB}(\var{u})\right)
+          \right)$\;
+        }
+        \If{$\var{toRemove}(\var{s}) \neq \emptyset$}{
+          $\var{updated} \gets \var{updated} \cup \{\var{s}\}$\;
+        }
+      }
+      $\var{toUpdate} \gets \emptyset$\;
+      \For{$\var{s} \in \var{updated}$}{
+        \tcc{Update strong basin}
+        $\var{SB}(\var{s}) \gets \var{SB}(\var{s}) \setminus \var{toRemove}(\var{s})$\;
+        \tcc{Only predecessors of updated states might be updated in the next iteration}
+        $\var{toUpdate} \gets \var{toUpdate} \cup \{\var{s}\} \cup \pre(\var{s})$\;
+      }
+    }
+    \Return{\upshape $\var{SB}$}\;
+  }
+  \caption{Parallel strong basin computation.}
+  \label{algo:strong-basin}
+\end{algorithm}
 
 In \autoref{algo:strong-basin}, we extend the approach from~\cite{Paul2018CMSB} onto \PBN{}. For each state we remember under which interpretations it is in the basin, starting with the labelled weak basin (backward reachability from the target state). Then we iterate over the basin's states. For~each state, we consider its successors, and we compute the interpretations for which some successor is \emph{not in the strong basin}. In these interpretations, it is possible to leave the basin, and therefore these interpretations are not part of the strong basin and so we remove them for this state. 
 
@@ -247,7 +294,7 @@ Now we can describe a complete workflow for computing the source-target control 
 
 Given an input \PBN{} and a target attractor state $t$, we start by computing valid interpretation set $\interpretationSet_A(t)$ using \autoref{algo:attractor-params}. Then, the labelled strong basin is computed from the \PBN{} with target attractor state $t$ and its valid interpretations $\interpretationSet_A(t)$ using \autoref{algo:strong-basin}. After that, from the strong basin and the source state, we obtain the complete control mapping. Notice that we do not need to know the source state for computing the strong basin and that we can re-use the target's strong basin for obtaining control for different~sources.
 
-To compute the control mapping, observe that viable controls correspond exactly to the Hamming differences (the variables with opposite values) between the source state and the states of the strong basin; yielding one viable perturbation $\perturbation$ for every state $s$ in the strong basin $\var{SB}$. Any other control $\perturbation'$ does not reach the strong basin and therefore does not guarantee to reach the target attractor (for these, $\controlRelation_O(\perturbation) = \emptyset$). A perturbation $\perturbation$ is then viable only for interpretations for which $s$ appears in the strong basin, we thus set $\controlRelation_O(\perturbation) = \var{SB}(s)$. 
+To compute the control mapping, observe that viable controls correspond exactly to the Hamming differences (the variables with opposite values) between the source state and the states of the strong basin; yielding one viable perturbation $\perturbation$ for every state $s$ in the strong basin $\var{SB}$. Any other control $\perturbation'$ does not reach the strong basin and therefore does not guarantee to reach the target attractor (for these, $\controlRelation_O(\perturbation) = \emptyPerturbation$). A perturbation $\perturbation$ is then viable only for interpretations for which $s$ appears in the strong basin, we thus set $\controlRelation_O(\perturbation) = \var{SB}(s)$. 
 
 \begin{figure}
 \checkoddpage
@@ -269,9 +316,16 @@ To compute the control mapping, observe that viable controls correspond exactly 
 
 Finally, we can compute the size and robustness of each control as we have all knowledge regarding the variables which need to be controlled and interpretations for which the controls work. If it is desired, we can construct a \emph{witness} \PBN{} instance for a perturbation $\perturbation$ (a fully specified BN where the given control works) by fixing the parameters from $\controlRelation_O(\perturbation)$.
 
-In complex and highly unspecified models, it is not unusual for empty perturbation $\emptyset$ to control the network where in some interpretations and therefore no action would be needed to control the model. This is because, in some interpretations, the source might already be a part of the target's strong basin. If this case is considered unrealistic (since there is probably a need for control, thus these interpretations appear to be invalid), the interpretations $\interpretationSet_A(t)$ can be replaced with a custom set of~interpretations.
+In complex and highly underspecified models, the empty perturbation
+\emptyPerturbation may satisfy the control objective for some
+interpretations. This occurs when, under a given interpretation, the source
+state already lies in the strong basin of the target, and therefore no
+intervention is required. If such interpretations are considered unrealistic,
+for example because they contradict the assumption that an intervention is
+needed, the set $\interpretationSet_A(t)$ can be replaced by a custom set of
+admissible interpretations.
 
-The resulting set of all available controls can be then used for e.g., cell reprogramming. However, we might obtain many possible controls, and we need to decide which one should be applied. To do that, we can decide based on the size of control or its robustness. The control set can be arbitrarily filtered discarding controls with size bigger than the trivial control (which always has 100\% robustness) or bigger than some set size. Similarly, the control relation can be pruned based on too low robustness. It is left to the actual application to decide which control would best suit its needs. Namely, whether it is more important for the control set to be small or to be robust, as typically, there is rarely available perturbation which would be optimal in both these factors.
+The resulting set of all available controls can be then used for example for cell reprogramming. However, we might obtain many possible controls, and we need to decide which one should be applied. To do that, we can decide based on the size of control or its robustness. The control set can be arbitrarily filtered discarding controls with size bigger than the trivial control (which always has 100\% robustness) or bigger than some set size. Similarly, the control relation can be pruned based on too low robustness. It is left to the actual application to decide which control would best suit its needs. Namely, whether it is more important for the control set to be small or to be robust, as typically, there is rarely available perturbation which would be optimal in both these factors.
 
 % \enlargethispage*{5mm}
 \subsection{Results}
@@ -376,9 +430,9 @@ In the previous section, we presented a method for computing the source-target c
 \subsection{Symbolic computation model}
 \label{ss:symbolic_computation_model}
 
-Similarly to the previous method, we employ symbolic representation using binary decision diagrams (BDDs)~\cite{Bryant86}. However, in this case, we extend the use of BDDs to represent not just interpretation space symbolically, but also the sets of states. The main advantage of BDDs is that a logical operation (e.g. a conjunction) can be performed directly on two operand graphs, maintaining the compact representation throughout the whole computation. Due to this correspondence, we do not differentiate between a BDD and the Boolean function that it represents. Furthermore, note that any set or relation $X$ consisting of Boolean vectors (e.g. $X \subseteq \bools^k$) can be represented by a Boolean function that returns $1$ exactly for the members of $X$ and $0$ otherwise. Therefore, any such $X$ can be also represented using a BDD. In particular, this includes subsets of network states ($X \subseteq \bools^n$), subsets of PSBN interpretations ($X \subseteq \bools^m$), and relations of the two ($X \subseteq \bools^n \times \bools^m$). Logical operations on BDDs then correspond to set operations (e.g. $\cap \equiv \land$, $\cup \equiv \lor$, etc.).
+Similarly to the previous method, we employ symbolic representation using binary decision diagrams (BDDs)~\cite{Bryant86}. However, in this case, we extend the use of BDDs to represent not just interpretation space symbolically, but also the sets of states. The main advantage of BDDs is that a logical operation (e.g. a conjunction) can be performed directly on two operand diagrams, maintaining the compact representation throughout the whole computation. Due to this correspondence, we do not differentiate between a BDD and the Boolean function that it represents. Furthermore, note that any set or relation $X$ consisting of Boolean vectors (e.g. $X \subseteq \bools^k$) can be represented by a Boolean function that returns $1$ exactly for the members of $X$ and $0$ otherwise. Therefore, any such $X$ can be also represented using a BDD. In particular, this includes subsets of network states ($X \subseteq \bools^n$), subsets of PSBN interpretations ($X \subseteq \bools^m$), and relations of the two ($X \subseteq \bools^n \times \bools^m$). Logical operations on BDDs then correspond to set operations (e.g. $\cap \equiv \land$, $\cup \equiv \lor$, etc.).
 
-Another important aspect is that a perturbation $\perturbation$ is not a Boolean vector, but rather a vector over $\bools_\unspecified$. Fortunately, in our algorithms, we do not need to manipulate whole perturbations. Instead, we only encode which variables in the network are perturbed ($q_i = 0$ or $q_i = 1$) and which are free ($q_i = \unspecified$). For this task, subsets of $\bools^n$ are sufficient. To summarize, we use the following notation:
+Another important aspect is that a perturbation $\perturbation$ is not a Boolean vector, but rather a vector over $\bools_\unspecified$. For our purposes, however, the algorithms do not need to manipulate whole perturbations. Instead, we only encode which variables in the network are perturbed ($q_i = 0$ or $q_i = 1$) and which are free ($q_i = \unspecified$). For this task, subsets of $\bools^n$ are sufficient. To summarize, we use the following notation:
 \begin{itemize}
 	\item $\vertices \equiv \bools^n$ encodes network states (vertices of $\STG(\pbnMath)$);
 	\item $\allInterpretations \equiv \bools^m$ encodes network interpretations (i.e. the set of all possible function symbols valuations);
@@ -387,7 +441,7 @@ Another important aspect is that a perturbation $\perturbation$ is not a Boolean
 
 Similar to the previous method, target state $t$ may not be an attractor state in all interpretations of the given PSBN. Consequently, instead of $\allInterpretations$, we again consider a smaller subset of interpretations $\interpretationSet_A \subseteq \allInterpretations$ where $t$ is guaranteed to be a member of some attractor. As this requires no functional changes to the presented algorithms, we generally use the set $\interpretationSet_A$, with the implicit assumption that a smaller $\interpretationSet'$ can be also used when desired.
 
-The reason why we do not have to encode full perturbations is because in our algorithms, we use a relation $X \subseteq \vertices \times \allInterpretations \times \mathbb{L}$ to encode the full state of the system. In such an $X$, we assume that if the network is perturbed, only the states that are compatible with the perturbation are permitted within $X$ (this invariant is maintained throughout the algorithms). Consequently, in a triple $(v, 
+The reason why we do not have to encode full perturbations is because in our algorithms, we use a relation $X \subseteq \vertices \times \allInterpretations \times \mathbb{L}$ to encode the full state of the system. In such an $X$, we assume that if the network is perturbed, only the states that are compatible with the perturbation are permitted (this invariant is maintained throughout the algorithms). Consequently, in a triple $(v, 
 \interpretation, l) \in X$ where $l_i$ encodes whether a variable is perturbed, $v_i$ encodes either the state of the network (when $l_i = 0$, i.e. unperturbed) or the constant value of the perturbation (when $l_i = 1$, i.e. perturbed).
 
 We then use $\mathbb{X} = \vertices \times \allInterpretations \times \mathbb{L}$ as a shorthand for this extended set of perturbable states and network interpretations. We also write that a pair $(v, l) \in \vertices \times L$ is \emph{equivalent} to a perturbation $\perturbation \in \bools_\unspecified^n$, $(v, l) \equiv \perturbation$, if $\perturbation_i = \unspecified$ when $l_i = 0$, and $\perturbation_i = v_i$ when $l_i = 1$.
@@ -510,7 +564,7 @@ Correctness of the procedures follows from the discussion above. All introduced 
 \subsection{Evaluation}
 \label{sec:control_evaluation}
 
-To evaluate our methods, we have implemented algorithms from the previous section by using internal libraries of the tool AEON~\cite{aeon}. Our experiments were run using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory. We describe the software implementation and how to access it in the next chapter. %The repository also includes all auxiliary scripts we used for generating partially specified model versions, running the experiments, and visualizing their results.
+To evaluate our methods, we have implemented algorithms from the previous section by using internal libraries of the tool AEON~\cite{aeon}. Our experiments were run using a computer with AMD Ryzen Threadripper 2990WX 32-Core Processor and 64GB of memory. We describe the software implementation and how to access in \autoref{chapter:software}. %The repository also includes all auxiliary scripts we used for generating partially specified model versions, running the experiments, and visualizing their results.
 
 
 \subsubsection{Benchmark model set} We use real-world biological BN models to evaluate our methods. The first model is a \emph{myeloid} differentiation network \cite{Krumsiek2011} which models a bone marrow tissue cell differentiation from common myeloid cells to specialised blood cells (megakaryocytes, erythrocytes, granulocytes and monocytes). The second model depicts heart development done by \emph{cardiac} kernel transcription factors~\cite{Waardenberg2014}. The third model explains regulatory interactions, which may cause \emph{ERBB} kinase over-expression -- a marker of breast cancer~\cite{Sahin2009}. The fourth model focuses on specific conditions which lead to a metastatic \emph{tumour}~\cite{Cohen2015}. The last model, the Mitogen-Activated Protein Kinase (\emph{MAPK}) network, consists of signalling pathways involved in diverse cellular processes, such as cell cycle, survival, apoptosis and differentiation~\cite{Grieco2013}. 
@@ -550,29 +604,29 @@ We then also randomly select the target and source attractor for every sampled m
         \label{subfig:otp_results_e}
 	\adjincludegraphics[trim={{0.75\width} 0 0 0},clip,width=0.33\textwidth]{Figures/mapk_all.pdf}
 	}
-    \caption{\textbf{Performance of the control methods.} Plots in every row show results for a different real-world model. The horizontal axis of all plots is showing the number of attractor colors (given by model instances from our benchmark set) and the vertical axis is for the duration (in ms) of the given method computation. Plots in the first three columns show all measurements for one-step, permanent and temporary controls using the colored markers which are surrounded by polygons to better visualize their disposition. The computations that did not finish computation within a threshold of 24 hours are not displayed in the figure. The last column displays scalability trends of all method results by interpolating logistic regression slope with $\log y = \log x$ function.} 
+    \caption{\textbf{Performance of the control methods.} Plots in every row show results for a different real-world model. The horizontal axis of all plots is showing the number of attractor interpretations (given by model instances from our benchmark set) and the vertical axis is for the duration (in ms) of the given method computation. Plots in the first three columns show all measurements for one-step, permanent and temporary controls using the colored markers which are surrounded by polygons to better visualize their disposition. The computations that did not finish computation within a threshold of 24 hours are not displayed in the figure. The last column displays scalability trends of all method results by interpolating logistic regression slope with $\log y = \log x$ function.} 
     \label{fig:otp_results}
 	\end{minipage}
 	}
 \end{figure}
 
-Our first experiment evaluates the performance and scalability of our method with respect to the model size (count of variables) and unknown knowledge (number of interpretations). We use the benchmark model set as described above. We list all results in \autoref{fig:otp_results}. All plots are showing the relation of method computation time to the number of considered attractor colors. The rows depict results for particular real-world models. In every column, there are results for different control methods (one-step, permanent, and temporary). The last column displays results from all methods in a single plot. To capture the scalability trends we use $\log y = \log x$ type of logistic regression (due to exponential scaling of colors as well as time). All computations had 24-hour time-out. Nonetheless, this case never occurred for one-step control and only in a MAPK model for permanent control (5 times). The temporary control yields more such cases, but only in the most demanding scenarios in ERBB (2 times), tumour (1 time) and MAPK (70 times) models. Note that as we disregard these results for compact logistic regression visualisation, the logistic regression might be slightly steeper in the reality.
+Our first experiment evaluates the performance and scalability of our method with respect to the model size (count of variables) and unknown knowledge (number of interpretations). We use the benchmark model set as described above. We list all results in \autoref{fig:otp_results}. All plots are showing the relation of method computation time to the number of considered attractor interpretations. The rows depict results for particular real-world models. In every column, there are results for different control methods (one-step, permanent, and temporary). The last column displays results from all methods in a single plot. To capture the scalability trends we use $\log y = \log x$ type of logistic regression (due to exponential scaling of interpretations as well as time). All computations had 24-hour time-out. Nonetheless, this case never occurred for one-step control and only in a MAPK model for permanent control (5 times). The temporary control yields more such cases, but only in the most demanding scenarios in ERBB (2 times), tumour (1 time) and MAPK (70 times) models. Note that as we disregard these results for compact logistic regression visualisation, the logistic regression might be slightly steeper in the reality.
 
 % Our first experiment measures the performance of methods on five biological models with varying state space size (induced by the number of variables), number of interpretations, and possible number of perturbations. All these three components influence the size of the labelled graph under consideration. Whereas the number of vertices is equal to the number of states, the number of all STG instances is equivalent to the product of interpretations and possible perturbations. 
 
 As described before, the symbolic representation is used to encode three types of entities: a set of the STG vertices, a set of interpretations (PSBN interpretations) which admit an edge in the STG, and a set of perturbations that permit the given edge. Therefore, when we increase the number of interpretations, only one dimension of the resulting symbolic representation grows. In opposition, when we increase the number of the system's variables, both the number of states and the number of available perturbations grow. Therefore, it is expected that increasing the model size has a bigger impact on the performance than increasing the number of model interpretations. This hypothesis is to some extent supported by our experiment captured in \autoref{fig:otp_results}. While the maximal increase of variables (myeloid vs. MAPK models) is just five-fold, we need to increase interpretations $10^7$ times to obtain the similar one-step control runtime of the myeloid model as the best-performing MAPK version. This difference is even amplified for other types of control. For example, in the case of temporary control, no myeloid model version performs as bad as the best-performing MAPK. 
 
-Nonetheless, it must be highlighted that the impact of scaling up colours as well as variables is to some extent unpredictable. This is given by the intrinsic mechanics of the introduced STGs. As the nature of our method relies on fixed-point computation where each iteration eliminates only the direct predecessors of a particular set, in cases where e.g. a long path in the graph arises, our method will not be able to scale well: the algorithm will need many iterations to converge, each eliminating only a small fraction of the STG vertices. Another unforeseeable effect on the method's performance have the BDDs themselves. The ordering of the BDD diagram has a significant impact on the effectiveness of all operations and no single ordering strategy can perform best in all cases~\cite{Harlow2001}. Our observation is also supported by the experiment. 
+Nonetheless, it must be highlighted that the impact of scaling up interpretations as well as variables is to some extent unpredictable. This is given by the intrinsic mechanics of the introduced STGs. As the nature of our method relies on fixed-point computation where each iteration eliminates only the direct predecessors of a particular set, in cases where e.g. a long path in the graph arises, our method will not be able to scale well: the algorithm will need many iterations to converge, each eliminating only a small fraction of the STG vertices. Another unforeseeable effect on the method's performance have the BDDs themselves. The ordering of the BDD diagram has a significant impact on the effectiveness of all operations and no single ordering strategy can perform best in all cases~\cite{Harlow2001}. Our observation is also supported by the experiment. 
 
 Notice, the high variance of run times for the similar size of attractor interpretations shown in the plots. For example, in the case of temporary control in the ERBB model, compared to versions with fewest interpretations, some highest attractor interpretations (over $10^8$) cause just approximately $10$-times longer execution time while other cases with a similar number of interpretations result in time-outing computations, therefore the slow-down of over $10^7$. Or in the case of the myeloid model, even despite its somewhat smaller variable count than in the cardiac model, some computations take longer than in the bigger cardiac model, especially in the temporary control case. 
 
 Another insight that can be obtained from \autoref{fig:otp_results} is how one-step, temporary and permanent controls differ in their complexity in terms of computational time. We can notice that one-step control is always over-performing other methods. This is because we do not need to consider perturbed state space when computing the trap set of the target attractor. In contrast, temporary control is usually by far the most computationally demanding compared to the other types of control. This should be given by the need to compute two trap sets. The first computed trap set is the same as in the case of one-step control and should be thus easy to compute. 
 
-However, the seed for the second computed trap space is a much bigger vertex set, and therefore the resulting second trap space (which incorporates perturbations) of the first trap space (without perturbations) can generate much more complex symbolic structure and also gives more space for slowly converging fixed-points which were discussed previously. Nonetheless, in some rare cases with models containing few interpretations (myeloid and ERBB), the temporary control might over-perform the permanent one. This can be caused by the first (unperturbed) strong basin computed by temporary control being very similar to the second (perturbed one) while the first computation might be somewhat faster as it does not consider perturbations. We do not observe such scenarios in bigger models (tumor and MAPK)where the trends of one-step over-performing permanent control, and permanent over-performing temporary one look quite consistent.
+However, the seed for the second computed trap space is a much bigger vertex set, and therefore the resulting second trap space (which incorporates perturbations) of the first trap space (without perturbations) can generate much more complex symbolic structure and also gives more space for slowly converging fixed-points which were discussed previously. Nonetheless, in some rare cases with models containing few interpretations (myeloid and ERBB), the temporary control might over-perform the permanent one. This can be caused by the first (unperturbed) strong basin computed by temporary control being very similar to the second (perturbed one) while the first computation might be somewhat faster as it does not consider perturbations. We do not observe such scenarios in bigger models (tumor and MAPK) where the trends of one-step over-performing permanent control, and permanent over-performing temporary one look quite consistent.
 
 \subsubsection{Robustness} 
 
-Next, we conduct experiments evaluating the presented robustness metrics across different types of controls. In particular, we use maximal robustness $\rho_{max}$ and union robustness $\rho_{union}$ metrics which we measure on sets of fixed perturbation size. The results are shown in \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}. 
+Next, we conduct experiments evaluating the presented robustness metrics across different types of controls. In particular, we use maximal robustness $\rho_{max}$ and union robustness $\rho_{\cup}$ metrics which we measure on sets of fixed perturbation size. The results are shown in \autoref{fig:maximal_robustness} and \autoref{fig:total_robustness}. 
 
 %For demonstration purposes, we selected just one arbitrary partially specified model instance for every real-world biological network from our benchmark model set, as the perturbation robustness across different randomized models is not directly comparable. 
 
@@ -656,7 +710,7 @@ As the one-step control is subsumed by temporary control, it is expected that th
 
 Specifically, they achieve 100\% maximal robustness for perturbations of size three (in the case of the cardiac model) or four (in the case of other models). Therefore, we successfully computed perturbations which surely work even despite the missing knowledge we introduced into the models for the purpose of our experiments. This is also in line with previous research demonstrated by, e.g.,~\cite{Su2019CMSB, Su2020}, where the necessary size of temporary or permanent control is often very small.
 
-The temporary control outperforms the permanent in the union robustness only in the cardiac model (\autoref{fig:total_robustness}a). This means there are some perturbations which work when applied temporarily as opposed to when applied permanently. The possible reasons for this were already discussed in the previous sections. Nonetheless, there are two admissible explanations. 
+The temporary control outperforms the permanent in the union robustness only in the cardiac model (\autoref{fig:total_robustness}a). This means there are some perturbations which work when applied temporarily as opposed to when applied permanently. The possible reasons for this were already discussed in the previous sections. There are two plausible explanations for this observation.
 
 The first may be a simple fact that the trap set computed for temporary control is expected to be bigger since the seed of the trap set is not only the given target state but also its unperturbed trap set. The second explanation for this is a scenario when a permanent perturbation disrupts the BN dynamics in such a way that the target attractor becomes unreachable or completely ceases to exist. Our observation is also in line with~\cite{Su2019FM}, where the minimal temporary control also outperformed the permanent one in a few cases.
 
@@ -690,18 +744,20 @@ The first may be a simple fact that the trap set computed for temporary control 
 
 We also compare the symbolic and the semi-symbolic approach described in the previous \autoref{sec:target_semisymbolic} (from~\cite{Brim2021}) one-step controls. The results are captured in \autoref{fig:benchmarks_os}. We use the same benchmark model set as in the previous experiment. We also use a similar layout for plots in the figure. 
 
-However, there are fewer rows as the semi-symbolic method was not able to compute any instance of tumor or MAPK models due to out-of-memory (OOM) errors. Also, some instances of ERBB model were not processed due to OOM rather than time-outs. The first column shows the results of the fully symbolic one-step control method while the second column shows the results of the previous semi-symbolic method. The plots in the last column compactly compare these two methods using the same logistic regression as in the previous experiment.
+However, there are fewer models considered as the semi-symbolic method was not able to compute any instance of tumor or MAPK models due to out-of-memory (OOM) errors. Also, some instances of ERBB model were not processed due to OOM rather than time-outs. The first column shows the results of the fully symbolic one-step control method while the second column shows the results of the previous semi-symbolic method. The plots in the last column compactly compare these two methods using the same logistic regression as in the previous experiment.
 
 
 
 % Experiment 2 - A bridge to related work
-Another insight of our experiments is a comparison of the novel symbolic approach to the semi-symbolic approach from~\cite{Brim2021}. The experiment captured in \autoref{fig:benchmarks_os} shows that the symbolic approach is performing better in all measured cases. As can be seen from the regression trends, the bigger the model, the bigger is also the margin by which the novel method over-performs the semi-symbolic one. However, in the highly parametrised cases, the parallelization of the semi-symbolic method might be faster than the fully symbolic one. This is also suggested by the linear regression trends where we can notice, that the semi-symbolic method has a less steep slope. Nonetheless, the greatest benefit of our novel method is the ability to process models with significantly bigger state space such as the tumor model or MAPK, as well as the highly unknown variants of the ERBB model, where the explicit state-space considered by the semi-symbolic approach completely fails to fit into the available memory.
+Another insight of our experiments is a comparison of the novel symbolic approach to the semi-symbolic approach from~\cite{Brim2021}. The experiment captured in \autoref{fig:benchmarks_os} shows that the symbolic approach is performing better in all measured cases. As can be seen from the regression trends, the bigger the model, the bigger is also the margin by which the novel method over-performs the semi-symbolic one. However, in the cases with high number of interpretations, the parallelization of the semi-symbolic method might be faster than the fully symbolic one. This is also suggested by the linear regression trends where we can notice, that the semi-symbolic method has a less steep slope. Nonetheless, the greatest benefit of our novel method is the ability to process models with significantly bigger state space such as the tumor model or MAPK, as well as the highly unknown variants of the ERBB model, where the explicit state-space considered by the semi-symbolic approach completely fails to fit into the available memory.
 
 \subsection{Summary}
 \label{s:discussion}
 
 
- In this section we have presented novel fully symbolic methods for solving the source-target control problem for partially specified BNs. We have described the algorithms for computing one-step, temporary and permanent control relations. Finally, we have evaluated our methods on a benchmark set of real-world biological models with varying sizes and degrees of uncertainty. We have compared the performance of different types of control and also compared our one-step control method to the semi-symbolic approach from \autoref{sec:target_semisymbolic}. We have shown, that new symbolic methods are superior in both performance and scalability, as well as in the size of perturbations enabled by temporary and permanent control.
+ In this section we presented fully symbolic methods for source-target control problem for \PBN{s}. We have described the algorithms for computing one-step, temporary and permanent control relations. Finally, we have evaluated our methods on a benchmark set of real-world biological models with varying sizes and degrees of uncertainty. We have compared the performance of different types of control and also compared our one-step control method to the semi-symbolic approach from \autoref{sec:target_semisymbolic}. We have shown, that new symbolic methods are superior in both performance and scalability, as well as in the size of perturbations enabled by temporary and permanent control.
+
+% In this section, we presented fully symbolic methods for source-target control of partially specified BNs, covering one-step, temporary, and permanent control relations. We evaluated them on real-world biological models with varying sizes and uncertainty levels, comparing both different control types and our one-step method against the semi-symbolic approach from \autoref{sec:target_semisymbolic}. The results show that the symbolic methods improve performance and scalability while enabling smaller perturbation sets through temporary and permanent control.
 
 % In this work, we have developed methods and efficient algorithms to solve the source-target control problem for partially specified BNs using one-step, temporary and permanent state perturbations. The methods we proposed are entirely symbolic and are based on BDDs. We demonstrated that our approach is capable of controlling models with a high degree of uncertainty in a conveniently short time. Such a result
 % cannot be achieved with the na\"ive scan over all BN parameters due to the doubly exponential explosion of the number of parameters representing the fully specified BN instances. We also showed that our novel methods are superior to the existing semi-symbolic one-step control approach~\cite{Brim2021}. We were also able to evaluate robustness between different types of control thanks to the metrics we introduced: maximal and union robustness.
